@@ -1,0 +1,14 @@
+name: ChatColor2
+main: com.sulphate.chatcolor2.main.MainClass
+version: 1.2.9
+author: Sulphate
+
+commands:
+
+  chatcolor:
+    description: Main command for ChatColor 2.
+    usage: /<command> <color> [modifiers]
+
+  confirm:
+    description: Confirms a choice within ChatColor 2.
+    usage: /<command>
