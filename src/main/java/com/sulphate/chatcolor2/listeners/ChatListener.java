@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.listeners;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,14 +48,24 @@ public class ChatListener implements Listener {
             return;
         }
         if (color.contains("rainbow")) {
+            String rs = MainClass.get().getConfig().getString("rainbow-sequence");
+            if (!verifyRainbowSequence(rs)) {
+                MainClass.get().getConfig().set("rainbow-sequence", "abcde");
+                MainClass.get().saveConfig();
+            }
+            String rainbowseq = MainClass.get().getConfig().getString("rainbow-sequence");
+            String[] rsc = rainbowseq.split("");
+            List<String> colors = new ArrayList<String>();
+            for (String s : rsc) {
+                colors.add(s);
+            }
             String msg = e.getMessage().replace("&", "");
             String[] mcs = msg.split("");
             String mods = color.replace("rainbow", "");
-            List<String> colors = Arrays.asList("§a", "§b", "§c", "§d", "§e");
             StringBuilder sb = new StringBuilder();
             int cn = 0;
             for (int i = 0; i < mcs.length; i++) {
-                if (cn == 5) {
+                if (cn == colors.size()) {
                     cn = 0;
                 }
                 String col = colors.get(cn);
@@ -70,6 +81,19 @@ public class ChatListener implements Listener {
 
         e.setMessage(ColorUtils.getColor(e.getPlayer().getName()) + e.getMessage().replace("&", ""));
 
+    }
+
+    public boolean verifyRainbowSequence(String seq) {
+
+        boolean verify = true;
+        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+        String[] chars = seq.split("");
+        for (String s : chars) {
+            if (!cols.contains(s)) {
+                verify = false;
+            }
+        }
+        return false;
     }
 
 }
