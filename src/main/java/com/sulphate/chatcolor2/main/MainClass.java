@@ -107,6 +107,10 @@ public class MainClass extends JavaPlugin {
         reloadConfig();
     }
 
+    public void check() {
+
+    }
+
     public String getMessage(String message) {
         return getConfig().getString("messages." + message);
     }
