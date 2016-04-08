@@ -70,7 +70,6 @@ public class MainClass extends JavaPlugin {
     public void reload() {
         getConfig().set("loaded", "no");
         getConfig().set("version", this.getDescription().getVersion());
-        getConfig().set("defaultchanged", false);
         getConfig().set("settings.color-override", false);
         getConfig().set("settings.notify-others", true);
         getConfig().set("settings.join-message", true);
