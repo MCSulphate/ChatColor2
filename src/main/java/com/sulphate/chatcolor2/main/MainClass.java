@@ -76,6 +76,8 @@ public class MainClass extends JavaPlugin {
         getConfig().set("settings.join-message", true);
         getConfig().set("settings.confirm-timeout", 10);
         getConfig().set("settings.default-color", "&f");
+        getConfig().set("settings.rainbow-sequence", "abcde");
+        getConfig().set("messages.help", "&eType &c/chatcolor help &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.players-only", "&cThis command can only be run by players.");
         getConfig().set("messages.player-not-online", "&cThat player is not online!");
         getConfig().set("messages.no-permissions", "&cYou do not have permission to use that command.");
@@ -99,11 +101,15 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.reloaded-config", "Reloaded the config!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
         getConfig().set("messages.set-description", "This command changes settings within the plugin.");
-        List<String> messages = Arrays.asList("players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description");
+        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", "yes");
         saveConfig();
         reloadConfig();
+    }
+
+    public String getMessage(String message) {
+        return getConfig().getString("messages." + message);
     }
 
 }

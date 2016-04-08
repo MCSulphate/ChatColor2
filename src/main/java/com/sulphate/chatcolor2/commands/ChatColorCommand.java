@@ -308,6 +308,7 @@ public class ChatColorCommand implements CommandExecutor {
                                 return true;
                             }
                         }
+
                         case "join-message": {
                             boolean val = false;
                             try {
@@ -341,6 +342,7 @@ public class ChatColorCommand implements CommandExecutor {
                                 return true;
                             }
                         }
+
                         case "confirm-timeout": {
                             int val = 0;
                             try {
@@ -354,7 +356,8 @@ public class ChatColorCommand implements CommandExecutor {
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
                             cs.confirm(s, "confirm-timeout", val);
-                        } 
+                        }
+
                         case "default-color": {
                             String color = getColor(args[2]);
                             if (color == null) {
@@ -369,6 +372,14 @@ public class ChatColorCommand implements CommandExecutor {
                             return true;
                         }
 
+                        case "rainbow-sequence": {
+                            String seq = args[2];
+                            if (!verifyRainbowSequence(seq)) {
+                                s.sendMessage(CCStrings.prefix + "§e" + args[2] + " §cis an invalid color sequence!");
+                                s.sendMessage(CCStrings.help);
+                            }
+                        }
+
                     }
 
                 }
@@ -380,6 +391,19 @@ public class ChatColorCommand implements CommandExecutor {
         s.sendMessage(CCStrings.invcom);
         return true;
 
+    }
+
+    public boolean verifyRainbowSequence(String seq) {
+
+        boolean verify = true;
+        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+        String[] chars = seq.split("");
+        for (String s : chars) {
+            if (!cols.contains(s)) {
+                verify = false;
+            }
+        }
+        return false;
     }
 
     public String getColor(String s) {
