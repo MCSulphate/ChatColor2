@@ -30,187 +30,14 @@ public class ChatColorCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 0) {
-            String color = ColorUtils.getColor(s.getName());
-            if (color.contains("rainbow")) {
-                String mods = color.replace("rainbow", "");
-                String ths = CCStrings.colthis;
-                String[] thss = ths.split("");
-                StringBuilder sb = new StringBuilder();
-                List<String> colors = Arrays.asList("§a", "§b", "§c", "§d", "§e");
-                int cn = 0;
-                for (int i = 0; i < thss.length; i++) {
-                    if (cn == 5) {
-                        cn = 0;
-                    }
-                    String col = colors.get(cn);
-                    String message = col + mods + thss[i];
-                    sb.append(message);
-                    cn++;
-                }
-                String end = sb.toString();
-                s.sendMessage(CCStrings.yourcol + end);
-            }
-            else {
-                s.sendMessage(CCStrings.yourcol + ColorUtils.getColor(s.getName()) + CCStrings.colthis);
-            }
-            return true;
-        }
+        int argsno = args.length;
 
-        if (args.length == 1) {
+        switch(argsno) {
 
-            if (args[0].equalsIgnoreCase("help")) {
-                s.sendMessage(CCStrings.prefix + "Help for ChatColor 2:");
-                s.sendMessage(" §7- §eMain command: §c/chatcolor <color> [modifiers]");
-                s.sendMessage("");
-                s.sendMessage("§eOther commands:");
-                if (s.hasPermission("chatcolor.gui") || s.hasPermission("chatcolor.*")) {
-                    s.sendMessage(" §7- §eSelector GUI: §c/chatcolor gui");
-                }
-                if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.reload")) {
-                    s.sendMessage(" §7- §eReload config: §c/chatcolor reload");
-                }
-                if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.reset")) {
-                    s.sendMessage(" §7- §eReset config: §c/chatcolor reset");
-                }
-                if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(" §7- §eChange settings: §c/chatcolor set <setting> <value>");
-                    s.sendMessage("§eValid settings: §bcolor-override, notify-others, join-message, confirm-timeout, default-color");
-                }
-                s.sendMessage(" §7- §eHelp command: §c/chatcolor help");
-                s.sendMessage("");
-                s.sendMessage("§eValid colors are as follows:");
-                s.sendMessage("§00, §11, §22, §33, §44, §55, §66, §77, §88, §99");
-                s.sendMessage("§aa, §bb, §cc, §dd, §ee, §ff");
-                s.sendMessage("§eThese can be used as well:");
-                s.sendMessage("§0black, §1dark.blue, §2green, §3dark.aqua, §4red, §5purple, §6gold, §7gray, §8dark.grey, §9blue");
-                s.sendMessage("§alight.green, §baqua, §clight.red, §dmagenta, §eyellow, §fwhite");
-                s.sendMessage("");
-                s.sendMessage("§eValid modifiers:");
-                s.sendMessage("§e§kk§r§ek, §ll§e, §mm§e, §nn§e, §oo");
-                s.sendMessage("§eThese can be used as well:");
-                s.sendMessage("§eobfuscated, §lbold§e, §munderlined§e, §nstrikethrough§e, §oitalic");
-                return true;
-            }
-
-            else if (args[0].equalsIgnoreCase("reset")) {
-                if (!s.hasPermission("chatcolor.admin.reset") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
-                    s.sendMessage(CCStrings.noperms);
-                    return true;
-                }
-                s.sendMessage(CCStrings.confirm);
-                ConfirmScheduler cs = new ConfirmScheduler();
-                MainClass.get().addConfirmee(s, cs);
-                cs.confirm(s, "reset", null);
-                return true;
-            }
-
-            else if (args[0].equalsIgnoreCase("reload")) {
-                if (!s.hasPermission("chatcolor.admin.reload") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
-                    s.sendMessage(CCStrings.noperms);
-                    return true;
-                }
-                MainClass.get().reloadConfig();
-                s.sendMessage(CCStrings.relconfig);
-                return true;
-            }
-
-            else if (args[0].equalsIgnoreCase("set")) {
-                if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(CCStrings.noperms);
-                    return true;
-                }
-                s.sendMessage(CCStrings.invset);
-                s.sendMessage("§eValid settings: §bcolor-override, notify-others, confirm-timeout, default-color");
-                return true;
-            }
-
-            if (args[0].length() > 1 && !args[0].equalsIgnoreCase("rainbow")) {
-                s.sendMessage(CCStrings.invcom);
-                return true;
-            }
-
-            if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.change.self")) {
-                s.sendMessage(CCStrings.noperms);
-                return true;
-            }
-
-            String color = getColor(args[0]);
-            if (color == null) {
-                s.sendMessage(CCStrings.invcol);
-                return true;
-            }
-            if (!checkPermissions(Arrays.asList(color), s)) {
-                s.sendMessage(CCStrings.nocolperm);
-                return true;
-            }
-            else {
-                ColorUtils.setColor(s.getName(), color);
+            case 0: {
+                String color = ColorUtils.getColor(s.getName());
                 if (color.contains("rainbow")) {
-                    s.sendMessage(CCStrings.setownc + "§ar§ba§ci§dn§eb§ao§bw§e!");
-                    return true;
-                }
-                s.sendMessage(CCStrings.setownc + color + CCStrings.colthis);
-                return true;
-            }
-
-        }
-
-        else if (args.length == 2) {
-
-            if (args[0].length() > 1 && args[1].length() > 1) {
-                s.sendMessage(CCStrings.invcom);
-                return true;
-            }
-
-            if (args[0].length() > 1 && args[1].length() == 1 && !args[0].equalsIgnoreCase("rainbow")) {
-                if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.change.others")) {
-                    s.sendMessage(CCStrings.noperms);
-                    return true;
-                }
-                if (Bukkit.getPlayer(args[0]) == null) {
-                    s.sendMessage(CCStrings.notonline);
-                    return true;
-                }
-                Player t = Bukkit.getPlayer(args[0]);
-                String color = getColor(args[1]);
-                if (color == null) {
-                    s.sendMessage(CCStrings.invcol);
-                    return true;
-                }
-                if (!checkPermissions(Arrays.asList(color), s)) {
-                    s.sendMessage(CCStrings.nocolperm);
-                    return true;
-                }
-                ColorUtils.setColor(t.getName(), color);
-                s.sendMessage(CCStrings.setothc.replace("[player]", t.getName()) + color + CCStrings.colthis);
-                if (MainClass.get().getConfig().getBoolean("settings.notify-others")) {
-                    t.sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + color + CCStrings.colthis);
-                }
-                return true;
-            }
-
-            if (!s.hasPermission("chatcolor.change.self") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.*")) {
-                s.sendMessage(CCStrings.noperms);
-                return true;
-            }
-
-            String color = getColor(args[0]);
-            String modifier = getModifier(args[1]);
-            if (color == null) {
-                s.sendMessage(CCStrings.invcol);
-                return true;
-            }
-            else if (modifier == null) {
-                s.sendMessage(CCStrings.invmod);
-                return true;
-            }
-            if (!checkPermissions(Arrays.asList(color, modifier), s)) {
-                s.sendMessage(CCStrings.nocmperm);
-                return true;
-            }
-            else {
-                if (color.equals("rainbow")) {
+                    String mods = color.replace("rainbow", "");
                     String ths = CCStrings.colthis;
                     String[] thss = ths.split("");
                     StringBuilder sb = new StringBuilder();
@@ -221,172 +48,327 @@ public class ChatColorCommand implements CommandExecutor {
                             cn = 0;
                         }
                         String col = colors.get(cn);
-                        String message = col + modifier + thss[i];
+                        String message = col + mods + thss[i];
                         sb.append(message);
                         cn++;
                     }
                     String end = sb.toString();
-                    s.sendMessage(CCStrings.setownc + end);
-                    return true;
+                    s.sendMessage(CCStrings.yourcol + end);
+                } else {
+                    s.sendMessage(CCStrings.yourcol + ColorUtils.getColor(s.getName()) + CCStrings.colthis);
                 }
-                String full = color + modifier;
-                ColorUtils.setColor(s.getName(), full);
-                s.sendMessage(CCStrings.setownc + full + CCStrings.colthis);
                 return true;
             }
 
-        }
+            case 1: {
 
-        else if (args.length == 3) {
+                if (args[0].equalsIgnoreCase("help")) {
+                    s.sendMessage(CCStrings.prefix + "Help for ChatColor 2:");
+                    s.sendMessage(" §7- §eMain command: §c/chatcolor <color> [modifiers]");
+                    s.sendMessage("");
+                    s.sendMessage("§eOther commands:");
+                    if (s.hasPermission("chatcolor.gui") || s.hasPermission("chatcolor.*")) {
+                        s.sendMessage(" §7- §eSelector GUI: §c/chatcolor gui");
+                    }
+                    if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.reload")) {
+                        s.sendMessage(" §7- §eReload config: §c/chatcolor reload");
+                    }
+                    if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.reset")) {
+                        s.sendMessage(" §7- §eReset config: §c/chatcolor reset");
+                    }
+                    if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.set")) {
+                        s.sendMessage(" §7- §eChange settings: §c/chatcolor set <setting> <value>");
+                        s.sendMessage("§eValid settings: §bcolor-override, notify-others, join-message, confirm-timeout, default-color");
+                    }
+                    s.sendMessage(" §7- §eHelp command: §c/chatcolor help");
+                    s.sendMessage("");
+                    s.sendMessage("§eValid colors are as follows:");
+                    s.sendMessage("§00, §11, §22, §33, §44, §55, §66, §77, §88, §99");
+                    s.sendMessage("§aa, §bb, §cc, §dd, §ee, §ff");
+                    s.sendMessage("§eThese can be used as well:");
+                    s.sendMessage("§0black, §1dark.blue, §2green, §3dark.aqua, §4red, §5purple, §6gold, §7gray, §8dark.grey, §9blue");
+                    s.sendMessage("§alight.green, §baqua, §clight.red, §dmagenta, §eyellow, §fwhite");
+                    s.sendMessage("");
+                    s.sendMessage("§eValid modifiers:");
+                    s.sendMessage("§e§kk§r§ek, §ll§e, §mm§e, §nn§e, §oo");
+                    s.sendMessage("§eThese can be used as well:");
+                    s.sendMessage("§eobfuscated, §lbold§e, §munderlined§e, §nstrikethrough§e, §oitalic");
+                    return true;
+                } else if (args[0].equalsIgnoreCase("reset")) {
+                    if (!s.hasPermission("chatcolor.admin.reset") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
+                        s.sendMessage(CCStrings.noperms);
+                        return true;
+                    }
+                    s.sendMessage(CCStrings.confirm);
+                    ConfirmScheduler cs = new ConfirmScheduler();
+                    MainClass.get().addConfirmee(s, cs);
+                    cs.confirm(s, "reset", null);
+                    return true;
+                } else if (args[0].equalsIgnoreCase("reload")) {
+                    if (!s.hasPermission("chatcolor.admin.reload") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
+                        s.sendMessage(CCStrings.noperms);
+                        return true;
+                    }
+                    MainClass.get().reloadConfig();
+                    s.sendMessage(CCStrings.relconfig);
+                    return true;
+                } else if (args[0].equalsIgnoreCase("set")) {
+                    if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.admin.set")) {
+                        s.sendMessage(CCStrings.noperms);
+                        return true;
+                    }
+                    s.sendMessage(CCStrings.invset);
+                    s.sendMessage("§eValid settings: §bcolor-override, notify-others, confirm-timeout, default-color");
+                    return true;
+                }
 
-            if (args[0].equalsIgnoreCase("set")) {
+                if (args[0].length() > 1 && !args[0].equalsIgnoreCase("rainbow")) {
+                    s.sendMessage(CCStrings.invcom);
+                    return true;
+                }
 
-                if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
+                if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.change.self")) {
                     s.sendMessage(CCStrings.noperms);
                     return true;
                 }
 
-                if  (args[1].equalsIgnoreCase("color-override")) {
-                    boolean val = false;
-                    try {
-                        val = Boolean.parseBoolean(args[2]);
-                    }
-                    catch(Exception e) {
-                        s.sendMessage(CCStrings.needbool);
-                        return true;
-                    }
-                    if (MainClass.get().getConfirmees().containsKey(s)) {
-                        s.sendMessage(CCStrings.alreadycon);
-                        return true;
-                    }
-                    boolean override = MainClass.get().getConfig().getBoolean("settings.color-override");
-                    if (val == override) {
-                        s.sendMessage(CCStrings.alreadyset);
-                        return true;
-                    }
-                    if (val) {
-                        s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §cFALSE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "color-override", val);
-                        return true;
-                    }
-                    else {
-                        s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §aTRUE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "color-override", val);
-                    }
+                String color = getColor(args[0]);
+                if (color == null) {
+                    s.sendMessage(CCStrings.invcol);
+                    return true;
                 }
-                else if (args[1].equalsIgnoreCase("notify-others")) {
-                    boolean val = false;
-                    try {
-                        val = Boolean.parseBoolean(args[2]);
-                    }
-                    catch(Exception e) {
-                        s.sendMessage(CCStrings.needbool);
+                if (!checkPermissions(Arrays.asList(color), s)) {
+                    s.sendMessage(CCStrings.nocolperm);
+                    return true;
+                } else {
+                    ColorUtils.setColor(s.getName(), color);
+                    if (color.contains("rainbow")) {
+                        s.sendMessage(CCStrings.setownc + "§ar§ba§ci§dn§eb§ao§bw§e!");
                         return true;
                     }
-                    if (MainClass.get().getConfirmees().containsKey(s)) {
-                        s.sendMessage(CCStrings.alreadycon);
-                        return true;
-                    }
-                    boolean notify = MainClass.get().getConfig().getBoolean("settings.notify-others");
-                    if (val == notify) {
-                        s.sendMessage(CCStrings.alreadyset);
-                        return true;
-                    }
-                    if (val) {
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "notify-others", val);
-                        return true;
-                    }
-                    else {
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "notify-others", val);
-                        return true;
-                    }
+                    s.sendMessage(CCStrings.setownc + color + CCStrings.colthis);
+                    return true;
                 }
-                else if (args[1].equalsIgnoreCase("join-message")) {
-                    boolean val = false;
-                    try {
-                        val = Boolean.parseBoolean(args[2]);
-                    }
-                    catch(Exception e) {
-                        s.sendMessage(CCStrings.needbool);
-                        return true;
-                    }
-                    if (MainClass.get().getConfirmees().containsKey(s)) {
-                        s.sendMessage(CCStrings.alreadycon);
-                        return true;
-                    }
-                    boolean notify = MainClass.get().getConfig().getBoolean("settings.join-message");
-                    if (val == notify) {
-                        s.sendMessage(CCStrings.alreadyset);
-                        return true;
-                    }
-                    if (val) {
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "join-message", val);
-                        return true;
-                    }
-                    else {
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "join-message", val);
-                        return true;
-                    }
+
+            }
+
+            case 2: {
+
+                if (args[0].length() > 1 && args[1].length() > 1) {
+                    s.sendMessage(CCStrings.invcom);
+                    return true;
                 }
-                else if (args[1].equalsIgnoreCase("confirm-timeout")) {
-                    int val = 0;
-                    try {
-                        val = Integer.parseInt(args[2]);
-                    }
-                    catch(Exception e) {
-                        s.sendMessage(CCStrings.needint);
+
+                if (args[0].length() > 1 && args[1].length() == 1 && !args[0].equalsIgnoreCase("rainbow")) {
+                    if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.change.others")) {
+                        s.sendMessage(CCStrings.noperms);
                         return true;
                     }
-                    s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
-                    s.sendMessage(CCStrings.confirm);
-                    ConfirmScheduler cs = new ConfirmScheduler();
-                    MainClass.get().addConfirmee(s, cs);
-                    cs.confirm(s, "confirm-timeout", val);
-                }
-                else if (args[1].equalsIgnoreCase("default-color")) {
-                    String color = getColor(args[2]);
+                    if (Bukkit.getPlayer(args[0]) == null) {
+                        s.sendMessage(CCStrings.notonline);
+                        return true;
+                    }
+                    Player t = Bukkit.getPlayer(args[0]);
+                    String color = getColor(args[1]);
                     if (color == null) {
                         s.sendMessage(CCStrings.invcol);
                         return true;
                     }
-                    s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color") + "this");
-                    s.sendMessage(CCStrings.confirm);
-                    ConfirmScheduler cs = new ConfirmScheduler();
-                    MainClass.get().addConfirmee(s, cs);
-                    cs.confirm(s, "default-color", color);
+                    if (!checkPermissions(Arrays.asList(color), s)) {
+                        s.sendMessage(CCStrings.nocolperm);
+                        return true;
+                    }
+                    ColorUtils.setColor(t.getName(), color);
+                    s.sendMessage(CCStrings.setothc.replace("[player]", t.getName()) + color + CCStrings.colthis);
+                    if (MainClass.get().getConfig().getBoolean("settings.notify-others")) {
+                        t.sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + color + CCStrings.colthis);
+                    }
                     return true;
+                }
+
+                if (!s.hasPermission("chatcolor.change.self") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.*")) {
+                    s.sendMessage(CCStrings.noperms);
+                    return true;
+                }
+
+                String color = getColor(args[0]);
+                String modifier = getModifier(args[1]);
+                if (color == null) {
+                    s.sendMessage(CCStrings.invcol);
+                    return true;
+                } else if (modifier == null) {
+                    s.sendMessage(CCStrings.invmod);
+                    return true;
+                }
+                if (!checkPermissions(Arrays.asList(color, modifier), s)) {
+                    s.sendMessage(CCStrings.nocmperm);
+                    return true;
+                } else {
+                    if (color.equals("rainbow")) {
+                        String ths = CCStrings.colthis;
+                        String[] thss = ths.split("");
+                        StringBuilder sb = new StringBuilder();
+                        List<String> colors = Arrays.asList("§a", "§b", "§c", "§d", "§e");
+                        int cn = 0;
+                        for (int i = 0; i < thss.length; i++) {
+                            if (cn == 5) {
+                                cn = 0;
+                            }
+                            String col = colors.get(cn);
+                            String message = col + modifier + thss[i];
+                            sb.append(message);
+                            cn++;
+                        }
+                        String end = sb.toString();
+                        s.sendMessage(CCStrings.setownc + end);
+                        return true;
+                    }
+                    String full = color + modifier;
+                    ColorUtils.setColor(s.getName(), full);
+                    s.sendMessage(CCStrings.setownc + full + CCStrings.colthis);
+                    return true;
+                }
+
+            }
+
+            case 3: {
+
+                if (args[0].equalsIgnoreCase("set")) {
+
+                    if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
+                        s.sendMessage(CCStrings.noperms);
+                        return true;
+                    }
+
+                    if (args[1].equalsIgnoreCase("color-override")) {
+                        boolean val = false;
+                        try {
+                            val = Boolean.parseBoolean(args[2]);
+                        } catch (Exception e) {
+                            s.sendMessage(CCStrings.needbool);
+                            return true;
+                        }
+                        if (MainClass.get().getConfirmees().containsKey(s)) {
+                            s.sendMessage(CCStrings.alreadycon);
+                            return true;
+                        }
+                        boolean override = MainClass.get().getConfig().getBoolean("settings.color-override");
+                        if (val == override) {
+                            s.sendMessage(CCStrings.alreadyset);
+                            return true;
+                        }
+                        if (val) {
+                            s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §cFALSE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "color-override", val);
+                            return true;
+                        } else {
+                            s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §aTRUE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "color-override", val);
+                        }
+                    } else if (args[1].equalsIgnoreCase("notify-others")) {
+                        boolean val = false;
+                        try {
+                            val = Boolean.parseBoolean(args[2]);
+                        } catch (Exception e) {
+                            s.sendMessage(CCStrings.needbool);
+                            return true;
+                        }
+                        if (MainClass.get().getConfirmees().containsKey(s)) {
+                            s.sendMessage(CCStrings.alreadycon);
+                            return true;
+                        }
+                        boolean notify = MainClass.get().getConfig().getBoolean("settings.notify-others");
+                        if (val == notify) {
+                            s.sendMessage(CCStrings.alreadyset);
+                            return true;
+                        }
+                        if (val) {
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "notify-others", val);
+                            return true;
+                        } else {
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "notify-others", val);
+                            return true;
+                        }
+                    } else if (args[1].equalsIgnoreCase("join-message")) {
+                        boolean val = false;
+                        try {
+                            val = Boolean.parseBoolean(args[2]);
+                        } catch (Exception e) {
+                            s.sendMessage(CCStrings.needbool);
+                            return true;
+                        }
+                        if (MainClass.get().getConfirmees().containsKey(s)) {
+                            s.sendMessage(CCStrings.alreadycon);
+                            return true;
+                        }
+                        boolean notify = MainClass.get().getConfig().getBoolean("settings.join-message");
+                        if (val == notify) {
+                            s.sendMessage(CCStrings.alreadyset);
+                            return true;
+                        }
+                        if (val) {
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "join-message", val);
+                            return true;
+                        } else {
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "join-message", val);
+                            return true;
+                        }
+                    } else if (args[1].equalsIgnoreCase("confirm-timeout")) {
+                        int val = 0;
+                        try {
+                            val = Integer.parseInt(args[2]);
+                        } catch (Exception e) {
+                            s.sendMessage(CCStrings.needint);
+                            return true;
+                        }
+                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
+                        s.sendMessage(CCStrings.confirm);
+                        ConfirmScheduler cs = new ConfirmScheduler();
+                        MainClass.get().addConfirmee(s, cs);
+                        cs.confirm(s, "confirm-timeout", val);
+                    } else if (args[1].equalsIgnoreCase("default-color")) {
+                        String color = getColor(args[2]);
+                        if (color == null) {
+                            s.sendMessage(CCStrings.invcol);
+                            return true;
+                        }
+                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color") + "this");
+                        s.sendMessage(CCStrings.confirm);
+                        ConfirmScheduler cs = new ConfirmScheduler();
+                        MainClass.get().addConfirmee(s, cs);
+                        cs.confirm(s, "default-color", color);
+                        return true;
+                    }
+
                 }
 
             }
 
         }
 
-        else {
-            s.sendMessage(CCStrings.invcom);
-            return true;
-        }
+        s.sendMessage(CCStrings.invcom);
         return true;
 
     }
