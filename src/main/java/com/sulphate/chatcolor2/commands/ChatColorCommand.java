@@ -240,126 +240,135 @@ public class ChatColorCommand implements CommandExecutor {
                         return true;
                     }
 
-                    if (args[1].equalsIgnoreCase("color-override")) {
-                        boolean val = false;
-                        try {
-                            val = Boolean.parseBoolean(args[2]);
-                        } catch (Exception e) {
-                            s.sendMessage(CCStrings.needbool);
-                            return true;
+                    switch(args[1]) {
+
+                        case "color-override": {
+                            boolean val = false;
+                            try {
+                                val = Boolean.parseBoolean(args[2]);
+                            } catch (Exception e) {
+                                s.sendMessage(CCStrings.needbool);
+                                return true;
+                            }
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
+                            boolean override = MainClass.get().getConfig().getBoolean("settings.color-override");
+                            if (val == override) {
+                                s.sendMessage(CCStrings.alreadyset);
+                                return true;
+                            }
+                            if (val) {
+                                s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "color-override", val);
+                                return true;
+                            } else {
+                                s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "color-override", val);
+                            }
                         }
-                        if (MainClass.get().getConfirmees().containsKey(s)) {
-                            s.sendMessage(CCStrings.alreadycon);
-                            return true;
+
+                        case "notify-others": {
+                            boolean val = false;
+                            try {
+                                val = Boolean.parseBoolean(args[2]);
+                            } catch (Exception e) {
+                                s.sendMessage(CCStrings.needbool);
+                                return true;
+                            }
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
+                            boolean notify = MainClass.get().getConfig().getBoolean("settings.notify-others");
+                            if (val == notify) {
+                                s.sendMessage(CCStrings.alreadyset);
+                                return true;
+                            }
+                            if (val) {
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "notify-others", val);
+                                return true;
+                            } else {
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "notify-others", val);
+                                return true;
+                            }
                         }
-                        boolean override = MainClass.get().getConfig().getBoolean("settings.color-override");
-                        if (val == override) {
-                            s.sendMessage(CCStrings.alreadyset);
-                            return true;
+                        case "join-message": {
+                            boolean val = false;
+                            try {
+                                val = Boolean.parseBoolean(args[2]);
+                            } catch (Exception e) {
+                                s.sendMessage(CCStrings.needbool);
+                                return true;
+                            }
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
+                            boolean notify = MainClass.get().getConfig().getBoolean("settings.join-message");
+                            if (val == notify) {
+                                s.sendMessage(CCStrings.alreadyset);
+                                return true;
+                            }
+                            if (val) {
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "join-message", val);
+                                return true;
+                            } else {
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.confirm);
+                                ConfirmScheduler cs = new ConfirmScheduler();
+                                MainClass.get().addConfirmee(s, cs);
+                                cs.confirm(s, "join-message", val);
+                                return true;
+                            }
                         }
-                        if (val) {
-                            s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §cFALSE");
+                        case "confirm-timeout": {
+                            int val = 0;
+                            try {
+                                val = Integer.parseInt(args[2]);
+                            } catch (Exception e) {
+                                s.sendMessage(CCStrings.needint);
+                                return true;
+                            }
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "color-override", val);
-                            return true;
-                        } else {
-                            s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §aTRUE");
+                            cs.confirm(s, "confirm-timeout", val);
+                        } 
+                        case "default-color": {
+                            String color = getColor(args[2]);
+                            if (color == null) {
+                                s.sendMessage(CCStrings.invcol);
+                                return true;
+                            }
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color") + "this");
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "color-override", val);
-                        }
-                    } else if (args[1].equalsIgnoreCase("notify-others")) {
-                        boolean val = false;
-                        try {
-                            val = Boolean.parseBoolean(args[2]);
-                        } catch (Exception e) {
-                            s.sendMessage(CCStrings.needbool);
+                            cs.confirm(s, "default-color", color);
                             return true;
                         }
-                        if (MainClass.get().getConfirmees().containsKey(s)) {
-                            s.sendMessage(CCStrings.alreadycon);
-                            return true;
-                        }
-                        boolean notify = MainClass.get().getConfig().getBoolean("settings.notify-others");
-                        if (val == notify) {
-                            s.sendMessage(CCStrings.alreadyset);
-                            return true;
-                        }
-                        if (val) {
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
-                            s.sendMessage(CCStrings.confirm);
-                            ConfirmScheduler cs = new ConfirmScheduler();
-                            MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "notify-others", val);
-                            return true;
-                        } else {
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
-                            s.sendMessage(CCStrings.confirm);
-                            ConfirmScheduler cs = new ConfirmScheduler();
-                            MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "notify-others", val);
-                            return true;
-                        }
-                    } else if (args[1].equalsIgnoreCase("join-message")) {
-                        boolean val = false;
-                        try {
-                            val = Boolean.parseBoolean(args[2]);
-                        } catch (Exception e) {
-                            s.sendMessage(CCStrings.needbool);
-                            return true;
-                        }
-                        if (MainClass.get().getConfirmees().containsKey(s)) {
-                            s.sendMessage(CCStrings.alreadycon);
-                            return true;
-                        }
-                        boolean notify = MainClass.get().getConfig().getBoolean("settings.join-message");
-                        if (val == notify) {
-                            s.sendMessage(CCStrings.alreadyset);
-                            return true;
-                        }
-                        if (val) {
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
-                            s.sendMessage(CCStrings.confirm);
-                            ConfirmScheduler cs = new ConfirmScheduler();
-                            MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "join-message", val);
-                            return true;
-                        } else {
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
-                            s.sendMessage(CCStrings.confirm);
-                            ConfirmScheduler cs = new ConfirmScheduler();
-                            MainClass.get().addConfirmee(s, cs);
-                            cs.confirm(s, "join-message", val);
-                            return true;
-                        }
-                    } else if (args[1].equalsIgnoreCase("confirm-timeout")) {
-                        int val = 0;
-                        try {
-                            val = Integer.parseInt(args[2]);
-                        } catch (Exception e) {
-                            s.sendMessage(CCStrings.needint);
-                            return true;
-                        }
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "confirm-timeout", val);
-                    } else if (args[1].equalsIgnoreCase("default-color")) {
-                        String color = getColor(args[2]);
-                        if (color == null) {
-                            s.sendMessage(CCStrings.invcol);
-                            return true;
-                        }
-                        s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color") + "this");
-                        s.sendMessage(CCStrings.confirm);
-                        ConfirmScheduler cs = new ConfirmScheduler();
-                        MainClass.get().addConfirmee(s, cs);
-                        cs.confirm(s, "default-color", color);
-                        return true;
+
                     }
 
                 }
