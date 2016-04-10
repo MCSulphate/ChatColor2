@@ -29,12 +29,12 @@ public class MainClass extends JavaPlugin {
             reload();
         }
         else if (!getConfig().getString("version").equals(this.getDescription().getVersion())) {
-            reload();
+            reload(); //TODO: Replace with always running checkConfig() on startup
         }
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: PlayerFiles integration!");
+        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: Custom Rainbow + No Config Resets on Upgrade!");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
@@ -107,8 +107,9 @@ public class MainClass extends JavaPlugin {
         reloadConfig();
     }
 
-    public void check() {
-
+    public void checkConfig() {
+        //TODO: Update any new values + set defaults for ones that are null / non-existant
+        
     }
 
     public String getMessage(String message) {

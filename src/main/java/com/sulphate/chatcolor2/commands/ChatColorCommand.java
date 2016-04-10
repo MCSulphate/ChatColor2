@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -378,6 +379,18 @@ public class ChatColorCommand implements CommandExecutor {
                                 s.sendMessage(CCStrings.prefix + "§e" + args[2] + " §cis an invalid color sequence!");
                                 s.sendMessage(CCStrings.help);
                             }
+                            String[] ss = MainClass.get().getConfig().getString("settings.rainbow-sequence").split("");
+                            StringBuilder sb = new StringBuilder();
+                            for (String st : ss) {
+                                sb.append("§" + st);
+                            }
+                            String rc = sb.toString();
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + rc);
+                            s.sendMessage(CCStrings.confirm);
+                            ConfirmScheduler cs = new ConfirmScheduler();
+                            MainClass.get().addConfirmee(s, cs);
+                            cs.confirm(s, "rainbow-sequence", seq);
+                            return true;
                         }
 
                     }
