@@ -39,22 +39,20 @@ public class ChatColorCommand implements CommandExecutor {
                 String color = ColorUtils.getColor(s.getName());
                 if (color.contains("rainbow")) {
                     String mods = color.replace("rainbow", "");
-                    String ths = CCStrings.colthis;
-                    String[] thss = ths.split("");
+                    String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+                    if (!verifyRainbowSequence(rseq)) {
+                        MainClass.get().getConfig().set("rainbow-sequence", "abcde");
+                        MainClass.get().saveConfig();
+                    }
+                    String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+                    String[] rss = rs.split("");
                     StringBuilder sb = new StringBuilder();
-                    List<String> colors = Arrays.asList("§a", "§b", "§c", "§d", "§e");
-                    int cn = 0;
-                    for (int i = 0; i < thss.length; i++) {
-                        if (cn == 5) {
-                            cn = 0;
-                        }
-                        String col = colors.get(cn);
-                        String message = col + mods + thss[i];
-                        sb.append(message);
-                        cn++;
+                    for (String st : rss) {
+                        sb.append("§" + st + st);
                     }
                     String end = sb.toString();
                     s.sendMessage(CCStrings.yourcol + end);
+                    return true;
                 } else {
                     s.sendMessage(CCStrings.yourcol + ColorUtils.getColor(s.getName()) + CCStrings.colthis);
                 }

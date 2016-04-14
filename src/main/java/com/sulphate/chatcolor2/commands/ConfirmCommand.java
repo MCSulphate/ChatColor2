@@ -127,7 +127,7 @@ public class ConfirmCommand implements CommandExecutor {
                 String[] ss = seq.split("");
                 StringBuilder sb = new StringBuilder();
                 for (String st : ss) {
-                    sb.append("§" + st);
+                    sb.append("§" + st + st);
                 }
                 String rc = sb.toString();
                 s.sendMessage(CCStrings.prefix + "Success! §crainbow-sequence §ehas been set to " + rc);
