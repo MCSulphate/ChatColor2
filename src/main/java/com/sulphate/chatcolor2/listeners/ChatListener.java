@@ -93,7 +93,7 @@ public class ChatListener implements Listener {
                 verify = false;
             }
         }
-        return false;
+        return verify;
     }
 
 }
