@@ -108,6 +108,7 @@ public class ChatColorCommand implements CommandExecutor {
                         s.sendMessage(CCStrings.noperms);
                         return true;
                     }
+                    MainClass.get().checkConfig();
                     MainClass.get().reloadConfig();
                     s.sendMessage(CCStrings.relconfig);
                     return true;
@@ -121,7 +122,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (args[0].length() > 1 && !args[0].equalsIgnoreCase("rainbow")) {
+                if (args[0].length() > 1 && !args[0].equalsIgnoreCase("rainbow") && getColor(args[0]) == null) {
                     s.sendMessage(CCStrings.invcom);
                     return true;
                 }
