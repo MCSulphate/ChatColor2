@@ -51,7 +51,7 @@ public class PlayerJoinListener implements Listener {
                 for (String s : rss) {
                     sb.append("§" + s + s);
                 }
-                String end = " " + sb.toString();
+                String end = sb.toString();
                 p.sendMessage(CCStrings.yourcol + end);
                 return;
             }

@@ -48,34 +48,26 @@ public class ChatListener implements Listener {
             return;
         }
         if (color.contains("rainbow")) {
-            String rs = MainClass.get().getConfig().getString("rainbow-sequence");
-            if (!verifyRainbowSequence(rs)) {
-                MainClass.get().getConfig().set("rainbow-sequence", "abcde");
+            String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+            if (!verifyRainbowSequence(rseq)) {
+                MainClass.get().getConfig().set("settings.rainbow-sequence", "abcde");
                 MainClass.get().saveConfig();
             }
-            String rainbowseq = MainClass.get().getConfig().getString("rainbow-sequence");
-            String[] rsc = rainbowseq.split("");
-            List<String> colors = new ArrayList<String>();
-            for (String s : rsc) {
-                colors.add(s);
-            }
+            String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
             String msg = e.getMessage().replace("&", "");
-            String[] mcs = msg.split("");
-            String mods = color.replace("rainbow", "");
+            String[] rss = rs.split("");
+            String[] mss = msg.split("");
+            int rn = 0;
             StringBuilder sb = new StringBuilder();
-            int cn = 0;
-            for (int i = 0; i < mcs.length; i++) {
-                if (cn == colors.size()) {
-                    cn = 0;
+            for (int i = 0; i < mss.length; i++) {
+                if (rn == rss.length) {
+                    rn = 0;
                 }
-                String col = colors.get(cn);
-                String message = col + mods + mcs[i];
-                sb.append(message);
-                cn++;
+                sb.append("§" + rss[rn] + mss[i]);
+                rn++;
             }
-
-            String finish = sb.toString();
-            e.setMessage(finish);
+            String end = sb.toString();
+            e.setMessage(end);
             return;
         }
 

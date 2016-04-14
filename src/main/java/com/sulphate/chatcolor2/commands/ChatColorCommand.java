@@ -79,7 +79,7 @@ public class ChatColorCommand implements CommandExecutor {
                     }
                     if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.set")) {
                         s.sendMessage(" §7- §eChange settings: §c/chatcolor set <setting> <value>");
-                        s.sendMessage("§eValid settings: §bcolor-override, notify-others, join-message, confirm-timeout, default-color");
+                        s.sendMessage("§eValid settings: §bcolor-override, notify-others, join-message, confirm-timeout, default-color, rainbow-sequence");
                     }
                     s.sendMessage(" §7- §eHelp command: §c/chatcolor help");
                     s.sendMessage("");
@@ -119,7 +119,7 @@ public class ChatColorCommand implements CommandExecutor {
                         return true;
                     }
                     s.sendMessage(CCStrings.invset);
-                    s.sendMessage("§eValid settings: §bcolor-override, notify-others, confirm-timeout, default-color");
+                    s.sendMessage("§eValid settings: §bcolor-override, notify-others, confirm-timeout, default-color, rainbow-sequence");
                     return true;
                 }
 
@@ -378,11 +378,12 @@ public class ChatColorCommand implements CommandExecutor {
                             if (!verifyRainbowSequence(seq)) {
                                 s.sendMessage(CCStrings.prefix + "§e" + args[2] + " §cis an invalid color sequence!");
                                 s.sendMessage(CCStrings.help);
+                                return true;
                             }
                             String[] ss = MainClass.get().getConfig().getString("settings.rainbow-sequence").split("");
                             StringBuilder sb = new StringBuilder();
                             for (String st : ss) {
-                                sb.append("§" + st);
+                                sb.append("§" + st + st);
                             }
                             String rc = sb.toString();
                             s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + rc);
@@ -416,7 +417,7 @@ public class ChatColorCommand implements CommandExecutor {
                 verify = false;
             }
         }
-        return false;
+        return verify;
     }
 
     public String getColor(String s) {
