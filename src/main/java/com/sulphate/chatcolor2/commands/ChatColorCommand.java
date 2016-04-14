@@ -364,7 +364,7 @@ public class ChatColorCommand implements CommandExecutor {
                                 s.sendMessage(CCStrings.invcol);
                                 return true;
                             }
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color") + "this");
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color").replace("&", "§") + CCStrings.colthis);
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
