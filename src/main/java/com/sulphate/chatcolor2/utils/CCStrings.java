@@ -10,7 +10,7 @@ public class CCStrings {
     public static String notonline = prefix + MainClass.get().getMessage("player-not-online").replace("&", "§");
     public static String noperms = prefix + MainClass.get().getMessage("no-permissions").replace("&", "§");
     public static String nocolperm = prefix + MainClass.get().getMessage("no-color-perms").replace("&", "§");
-    public static String nocmperm = prefix + MainClass.get().getMessage("no-col-mod-perms").replace("&", "§");
+    public static String nomodperm = prefix + MainClass.get().getMessage("no-mod-perms").replace("&", "§");
     public static String invcol = prefix + MainClass.get().getMessage("invalid-color").replace("&", "§");
     public static String invcom = prefix + MainClass.get().getMessage("invalid-command").replace("&", "§");
     public static String invmod = prefix + MainClass.get().getMessage("invalid-modifier").replace("&", "§");

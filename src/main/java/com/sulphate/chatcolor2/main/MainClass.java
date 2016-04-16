@@ -32,6 +32,9 @@ public class MainClass extends JavaPlugin {
         List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
         getConfig().set("message-list", messages);
         checkConfig();
+        if (getConfig().getString("version").equals("v1.5")) {
+            reload();
+        }
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
@@ -80,12 +83,12 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.players-only", "&cThis command can only be run by players.");
         getConfig().set("messages.player-not-online", "&cThat player is not online!");
         getConfig().set("messages.no-permissions", "&cYou do not have permission to use that command.");
-        getConfig().set("messages.no-color-perms", "&cYou do not have permission to use that color.");
-        getConfig().set("messages.no-col-mod-perms", "&cYou do not have permission to use that color or modifier!");
-        getConfig().set("messages.invalid-color", "&cThat is an invalid color! &eType &d/chatcolor help &eto see valid colors and commands.");
+        getConfig().set("messages.no-color-perms", "&cYou do not have permission to use the color: &");
+        getConfig().set("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
+        getConfig().set("messages.invalid-color", "&cInvalid color: &e");
         getConfig().set("messages.invalid-command", "&cThat is an invalid command! &eType &d/chatcolor help &eto see valid colors and commands.");
-        getConfig().set("messages.invalid-modifier", "&cThat is an invalid modifier! &eType &d/chatcolor help &eto see valid colors and commands.");
-        getConfig().set("messages.invalid-setting", "&cThat is an invalid setting!");
+        getConfig().set("messages.invalid-modifier", "&cInvalid modifier: &e");
+        getConfig().set("messages.invalid-setting", "&cInvalid Setting: &e");
         getConfig().set("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
         getConfig().set("messages.needs-number", "&cThat setting requires a number!");
         getConfig().set("messages.current-color", "Your color is currently: ");
@@ -123,12 +126,12 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.players-only", "&cThis command can only be run by players.");
         hmp.put("messages.player-not-online", "&cThat player is not online!");
         hmp.put("messages.no-permissions", "&cYou do not have permission to use that command.");
-        hmp.put("messages.no-color-perms", "&cYou do not have permission to use that color.");
-        hmp.put("messages.no-col-mod-perms", "&cYou do not have permission to use that color or modifier!");
-        hmp.put("messages.invalid-color", "&cThat is an invalid color! &eType &d/chatcolor help &eto see valid colors and commands.");
-        hmp.put("messages.invalid-command", "&cThat is an invalid command! &eType &d/chatcolor help &eto see valid colors and commands.");
-        hmp.put("messages.invalid-modifier", "&cThat is an invalid modifier! &eType &d/chatcolor help &eto see valid colors and commands.");
-        hmp.put("messages.invalid-setting", "&cThat is an invalid setting!");
+        hmp.put("messages.no-color-perms", "&cYou do not have permission to use the color: &");
+        hmp.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
+        hmp.put("messages.invalid-color", "&cInvalid color: &e");
+        hmp.put("messages.invalid-command", "&cThat is an invalid command!");
+        hmp.put("messages.invalid-modifier", "&cInvalid modifier: &e");
+        hmp.put("messages.invalid-setting", "&cInvalid setting: &e");
         hmp.put("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
         hmp.put("messages.needs-number", "&cThat setting requires a number!");
         hmp.put("messages.current-color", "Your color is currently: ");

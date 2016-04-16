@@ -214,7 +214,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return true;
                 }
                 if (!checkPermissions(Arrays.asList(color, modifier), s)) {
-                    s.sendMessage(CCStrings.nocmperm);
+                    s.sendMessage(CCStrings.nomodperm);
                     return true;
                 } else {
                     if (color.equals("rainbow")) {
