@@ -28,6 +28,7 @@ public class CCStrings {
     public static String noconfirm = prefix + MainClass.get().getMessage("nothing-to-confirm").replace("&", "§");
     public static String relconfig = prefix + MainClass.get().getMessage("reloaded-config").replace("&", "§");
     public static String alreadyset = prefix + MainClass.get().getMessage("already-set").replace("&", "§");
-    public static String setdesc = prefix + MainClass.get().getMessage("set-description").replace("&", "§");
+    public static String iscur = MainClass.get().getMessage("is-currently").replace("&", "§");
+    public static String tochng = prefix + MainClass.get().getMessage("to-change").replace("&", "§");
 
 }

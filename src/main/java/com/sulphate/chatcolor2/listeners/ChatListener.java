@@ -55,6 +55,7 @@ public class ChatListener implements Listener {
             }
             String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
             String msg = e.getMessage().replace("&", "");
+            String mods = color.replace("rainbow","");
             String[] rss = rs.split("");
             String[] mss = msg.split("");
             int rn = 0;
@@ -63,8 +64,13 @@ public class ChatListener implements Listener {
                 if (rn == rss.length) {
                     rn = 0;
                 }
-                sb.append("§" + rss[rn] + mss[i]);
-                rn++;
+                if (mss[i].equals(" ")) {
+                    sb.append(" ");
+                }
+                else {
+                    sb.append("§" + rss[rn] + mods + mss[i]);
+                    rn++;
+                }
             }
             String end = sb.toString();
             e.setMessage(end);

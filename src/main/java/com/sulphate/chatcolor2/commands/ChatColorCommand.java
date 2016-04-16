@@ -89,9 +89,9 @@ public class ChatColorCommand implements CommandExecutor {
                     s.sendMessage("§alight.green, §baqua, §clight.red, §dmagenta, §eyellow, §fwhite");
                     s.sendMessage("");
                     s.sendMessage("§eValid modifiers:");
-                    s.sendMessage("§e§kk§r§ek, §ll§e, §mm§e, §nn§e, §oo");
+                    s.sendMessage("§b§kk§r§bk, §ll§b, §mm§b, §nn§b, §oo");
                     s.sendMessage("§eThese can be used as well:");
-                    s.sendMessage("§eobfuscated, §lbold§e, §munderlined§e, §nstrikethrough§e, §oitalic");
+                    s.sendMessage("§bobfuscated, §lbold§e, §munderlined§e, §nstrikethrough§e, §oitalic");
                     return true;
                 } else if (args[0].equalsIgnoreCase("reset")) {
                     if (!s.hasPermission("chatcolor.admin.reset") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*")) {
@@ -143,7 +143,20 @@ public class ChatColorCommand implements CommandExecutor {
                 } else {
                     ColorUtils.setColor(s.getName(), color);
                     if (color.contains("rainbow")) {
-                        s.sendMessage(CCStrings.setownc + "§ar§ba§ci§dn§eb§ao§bw§e!");
+                        String mods = color.replace("rainbow", "");
+                        String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+                        if (!verifyRainbowSequence(rseq)) {
+                            MainClass.get().getConfig().set("rainbow-sequence", "abcde");
+                            MainClass.get().saveConfig();
+                        }
+                        String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+                        String[] rss = rs.split("");
+                        StringBuilder sb = new StringBuilder();
+                        for (String st : rss) {
+                            sb.append("§" + st + mods + st);
+                        }
+                        String end = sb.toString();
+                        s.sendMessage(CCStrings.setownc + end);
                         return true;
                     }
                     s.sendMessage(CCStrings.setownc + color + CCStrings.colthis);
@@ -159,7 +172,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (args[0].length() > 1 && args[1].length() == 1 && !args[0].equalsIgnoreCase("rainbow")) {
+                if (args[0].length() > 1 && args[1].length() == 1 && !args[0].equalsIgnoreCase("rainbow") && getColor(args[0]) == null) {
                     if (!s.hasPermission("chatcolor.*") && !s.hasPermission("chatcolor.change.*") && !s.hasPermission("chatcolor.change.others")) {
                         s.sendMessage(CCStrings.noperms);
                         return true;
@@ -260,14 +273,16 @@ public class ChatColorCommand implements CommandExecutor {
                                 return true;
                             }
                             if (val) {
-                                s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.prefix + "§ccolor-override" + CCStrings.iscur + "§cFALSE");
+                                s.sendMessage(CCStrings.tochng + "§aTRUE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
                                 cs.confirm(s, "color-override", val);
                                 return true;
                             } else {
-                                s.sendMessage(CCStrings.prefix + "§ccolor-override §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.prefix + "§ccolor-override" + CCStrings.iscur + "§aTRUE");
+                                s.sendMessage(CCStrings.tochng + "§cFALSE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
@@ -293,14 +308,16 @@ public class ChatColorCommand implements CommandExecutor {
                                 return true;
                             }
                             if (val) {
-                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + "§cFALSE");
+                                s.sendMessage(CCStrings.tochng + "§aTRUE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
                                 cs.confirm(s, "notify-others", val);
                                 return true;
                             } else {
-                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + "§aTRUE");
+                                s.sendMessage(CCStrings.tochng + "§cFALSE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
@@ -327,14 +344,16 @@ public class ChatColorCommand implements CommandExecutor {
                                 return true;
                             }
                             if (val) {
-                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §cFALSE");
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + "§cFALSE");
+                                s.sendMessage(CCStrings.tochng + "§aTRUE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
                                 cs.confirm(s, "join-message", val);
                                 return true;
                             } else {
-                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §aTRUE");
+                                s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + "§aTRUE");
+                                s.sendMessage(CCStrings.tochng + "§cFALSE");
                                 s.sendMessage(CCStrings.confirm);
                                 ConfirmScheduler cs = new ConfirmScheduler();
                                 MainClass.get().addConfirmee(s, cs);
@@ -351,7 +370,12 @@ public class ChatColorCommand implements CommandExecutor {
                                 s.sendMessage(CCStrings.needint);
                                 return true;
                             }
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently §c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + "§c" + MainClass.get().getConfig().getString("settings.confirm-timeout") + " seconds");
+                            s.sendMessage(CCStrings.tochng + "§c" + val);
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
@@ -364,7 +388,12 @@ public class ChatColorCommand implements CommandExecutor {
                                 s.sendMessage(CCStrings.invcol);
                                 return true;
                             }
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + MainClass.get().getConfig().getString("settings.default-color").replace("&", "§") + CCStrings.colthis);
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + MainClass.get().getConfig().getString("settings.default-color").replace("&", "§") + CCStrings.colthis);
+                            s.sendMessage(CCStrings.tochng + color);
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
@@ -379,13 +408,24 @@ public class ChatColorCommand implements CommandExecutor {
                                 s.sendMessage(CCStrings.help);
                                 return true;
                             }
+                            if (MainClass.get().getConfirmees().containsKey(s)) {
+                                s.sendMessage(CCStrings.alreadycon);
+                                return true;
+                            }
                             String[] ss = MainClass.get().getConfig().getString("settings.rainbow-sequence").split("");
                             StringBuilder sb = new StringBuilder();
                             for (String st : ss) {
                                 sb.append("§" + st + st);
                             }
                             String rc = sb.toString();
-                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + " §eis currently " + rc);
+                            String[] sqs = args[2].split("");
+                            StringBuilder sq = new StringBuilder();
+                            for (String sts : sqs) {
+                                sq.append("§" + sts + sts);
+                            }
+                            String rcs = sq.toString();
+                            s.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + rc);
+                            s.sendMessage(CCStrings.tochng + rcs);
                             s.sendMessage(CCStrings.confirm);
                             ConfirmScheduler cs = new ConfirmScheduler();
                             MainClass.get().addConfirmee(s, cs);
@@ -502,7 +542,8 @@ public class ChatColorCommand implements CommandExecutor {
             }
             List<String> colors = Arrays.asList("0", "1", "2", "3", "3", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
             List<String> modifiers = Arrays.asList("k", "l", "m", "n", "o");
-            String lc = s.toLowerCase();
+            String l = s.toLowerCase();
+            String lc = l.replace("§", "");
             if (colors.contains(lc)) {
                 if (player.hasPermission("chatcolor.color.*")) {
                     return true;

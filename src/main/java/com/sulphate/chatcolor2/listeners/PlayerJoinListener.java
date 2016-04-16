@@ -49,7 +49,7 @@ public class PlayerJoinListener implements Listener {
                 String[] rss = rs.split("");
                 StringBuilder sb = new StringBuilder();
                 for (String s : rss) {
-                    sb.append("§" + s + s);
+                    sb.append("§" + s + mods + s);
                 }
                 String end = sb.toString();
                 p.sendMessage(CCStrings.yourcol + end);

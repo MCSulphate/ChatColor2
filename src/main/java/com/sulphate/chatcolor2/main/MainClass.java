@@ -29,13 +29,13 @@ public class MainClass extends JavaPlugin {
             reload();
         }
         //Setting msg list and checking config for errors!
-        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description");
+        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
         getConfig().set("message-list", messages);
         checkConfig();
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: Custom Rainbow + No Config Resets on Upgrade!");
+        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bMany bug fixes + small improvements!");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
@@ -99,8 +99,8 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
         getConfig().set("messages.reloaded-config", "Reloaded the config!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
-        getConfig().set("messages.set-description", "This command changes settings within the plugin.");
-        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description");
+        getConfig().set("messages.is-currently", " &eis currently: ");
+        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", "yes");
         saveConfig();
@@ -108,8 +108,6 @@ public class MainClass extends JavaPlugin {
     }
 
     public void checkConfig() {
-        //TODO: Update any new values + set defaults for ones that are null / non-existant
-        //Method: Check firstly if the key is in the config in a try/catch so that if it errors it sets it as well.
         
         //HashMap with all the defaults in it
         HashMap<String, Object> hmp = new HashMap<String, Object>();
@@ -144,7 +142,8 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
         hmp.put("messages.reloaded-config", "Reloaded the config!");
         hmp.put("messages.already-set", "&cThat value is already set!");
-        hmp.put("messages.set-description", "This command changes settings within the plugin.");
+        hmp.put("messages.is-currently", " &eis currently: ");
+        hmp.put("messages.to-change", "You are changing it to: ");
         
         //ArrayList with all keys
         List<String> keys = new ArrayList<String>();
@@ -179,8 +178,14 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.nothing-to-confirm");
         keys.add("messages.reloaded-config");
         keys.add("messages.already-set");
-        keys.add("messages.set-description");
+        keys.add("messages.is-currently");
+        keys.add("messages.to-change");
 
+        for (String st : keys) {
+            if (!getConfig().contains(st)) {
+                getConfig().set(st, hmp.get(st));
+            }
+        }
         for (String st : keys) {
             try {
                 Object o = getConfig().get(st);
@@ -189,6 +194,10 @@ public class MainClass extends JavaPlugin {
                 getConfig().set(st, hmp.get(st));
                 saveConfig();
             }
+        }
+        if (getConfig().getString("version") != Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion()) {
+            getConfig().set("version", Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
+            saveConfig();
         }
 
         reloadConfig();

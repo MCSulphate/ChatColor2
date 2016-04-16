@@ -130,7 +130,7 @@ public class ConfirmCommand implements CommandExecutor {
                     sb.append("§" + st + st);
                 }
                 String rc = sb.toString();
-                s.sendMessage(CCStrings.prefix + "Success! §crainbow-sequence §ehas been set to " + rc);
+                s.sendMessage(CCStrings.prefix + "Success! §crainbow-sequence §ehas been set to §r" + rc);
                 return true;
             }
 
