@@ -1,6 +1,10 @@
 package com.sulphate.chatcolor2.test;
 
+import com.sulphate.chatcolor2.main.MainClass;
+import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.CCStrings;
+import com.sulphate.chatcolor2.utils.FileUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,13 +27,39 @@ public class NewChatColorCommand implements CommandExecutor {
         if (sender instanceof Player) {
 
             Player s = (Player) sender;
-            if (!checkPermissions(args, s)) {
+            if (!checkCommand(args, s)) {
                 return true;
             }
 
-
+            List<String> cmds = Arrays.asList("help", "set", "reset", "reload");
+            if (cmds.contains(args[0])) {
+                switch(args[0]) {
+                    case "help": {
+                        handleHelp(s);
+                        return true;
+                    }
+                    case "set": {
+                        handleSet(args, s);
+                        return true;
+                    }
+                    case "reset": {
+                        s.sendMessage(CCStrings.confirm);
+                        ConfirmScheduler cs = new ConfirmScheduler();
+                        MainClass.get().addConfirmee(s, cs);
+                        cs.confirm(s, "reset", null);
+                        return true;
+                    }
+                    case "reload": {
+                        MainClass.get().checkConfig();
+                        s.sendMessage(CCStrings.relconfig);
+                        return true;
+                    }
+                }
+            }
 
         }
+
+        //This is the console.
         else {
 
             if (argsno < 2) {
@@ -43,7 +73,7 @@ public class NewChatColorCommand implements CommandExecutor {
     }
 
     //This is a test for a universal permissions checker, to clean up the code.
-    public boolean checkPermissions(String[] args, Player player) {
+    public boolean checkCommand(String[] args, Player player) {
 
         if (player.hasPermission("chatcolor.*")) {
             return true;
@@ -54,14 +84,49 @@ public class NewChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        List<String> cmds = Arrays.asList("help", "set", "reload", "reset");
+        List<String> cmds = Arrays.asList("set", "reload", "reset");
         if (cmds.contains(args[0])) {
-            
+            if (!hasPermission("chatcolor.admin." + args[0], player)) {
+                player.sendMessage(CCStrings.noperms);
+                return false;
+            }
+            return true;
+        }
+
+        if (FileUtils.getPlayerFile(args[0]) != null) {
+            if (!hasPermission("chatcolor.change.others", player)) {
+                player.sendMessage(CCStrings.noperms);
+                return false;
+            }
+            if (getColor(args[1]) != null) {
+                for (int i = 0; i < args.length; i++) {
+                    if (i == 0) {
+                        if (!hasPermission("chatcolor.color." + args[0], player)) {
+                            player.sendMessage(CCStrings.nocolperm + args[0] + args[0]);
+                            return false;
+                        }
+                        continue;
+                    }
+                    if (getModifier(args[i]) == null) {
+                        player.sendMessage(CCStrings.invmod + args[i]);
+                        return false;
+                    }
+                    if (!hasPermission("chatcolor.modifier." + args[i], player)) {
+                        player.sendMessage(CCStrings.nomodperm + args[i] + args[i]);
+                        return false;
+                    }
+                }
+                return true;
+            }
+            player.sendMessage(CCStrings.invcol + args[0] + args[0]);
+            return false;
         }
 
         if (getColor(args[0]) != null) {
-            int type = 0;
-            boolean inv = false;
+            if (!hasPermission("chatcolor.change.self", player)) {
+                player.sendMessage(CCStrings.noperms);
+                return false;
+            }
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
                     if (!hasPermission("chatcolor.color." + args[0], player)) {
@@ -76,14 +141,16 @@ public class NewChatColorCommand implements CommandExecutor {
                 }
                 if (!hasPermission("chatcolor.modifier." + args[i], player)) {
                     player.sendMessage(CCStrings.nomodperm + args[i] + args[i]);
+                    return false;
                 }
-
             }
-            if (inv) {
-
-            }
+            return true;
         }
-
+        if (args[0].length() == 1) {
+            player.sendMessage(CCStrings.invcol + args[0]);
+            return false;
+        }
+        player.sendMessage(CCStrings.invcom);
         return false;
 
     }
@@ -99,6 +166,24 @@ public class NewChatColorCommand implements CommandExecutor {
             return false;
         }
         return true;
+    }
+
+    //This is how the help command will be handled.
+    public void handleHelp(Player player) {
+        player.sendMessage(CCStrings.prefix + "Displaying help!");
+        player.sendMessage(colorString(" &7- &eMain Command: &b/chatcolor <color> [modifiers]"));
+        player.sendMessage(colorString(" &eOther Commands:"));
+        player.sendMessage(colorString(" &eBANTER"));
+    }
+
+    //This is how the set command will be handled.
+    public void handleSet(String[] args, Player player) {
+
+    }
+
+    //New method for safety of colors.
+    public String colorString(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
     public boolean verifyRainbowSequence(String seq) {

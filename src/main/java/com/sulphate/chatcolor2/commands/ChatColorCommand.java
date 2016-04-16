@@ -66,9 +66,6 @@ public class ChatColorCommand implements CommandExecutor {
                     s.sendMessage(" §7- §eMain command: §c/chatcolor <color> [modifiers]");
                     s.sendMessage("");
                     s.sendMessage("§eOther commands:");
-                    if (s.hasPermission("chatcolor.gui") || s.hasPermission("chatcolor.*")) {
-                        s.sendMessage(" §7- §eSelector GUI: §c/chatcolor gui");
-                    }
                     if (s.hasPermission("chatcolor.*") || s.hasPermission("chatcolor.admin.*") || s.hasPermission("chatcolor.admin.reload")) {
                         s.sendMessage(" §7- §eReload config: §c/chatcolor reload");
                     }
