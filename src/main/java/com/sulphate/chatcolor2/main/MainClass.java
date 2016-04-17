@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
-import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.commands.ConfirmCommand;
 import com.sulphate.chatcolor2.listeners.ChatListener;
 import com.sulphate.chatcolor2.listeners.PlayerJoinListener;
@@ -29,14 +28,18 @@ public class MainClass extends JavaPlugin {
         if (getConfig().getString("loaded") == null) {
             reload();
         }
+        if (getConfig().getString("resetted") == null) {
+            getConfig().set("resetted", "yes");
+            reload();
+        }
         //Setting msg list and checking config for errors!
-        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
+        List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
         getConfig().set("message-list", messages);
         checkConfig();
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bMany bug fixes + small improvements!");
+        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §b§HUGE UPDATE! §b4 Modifiers + Console Command Support!");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new NewChatColorCommand());
@@ -78,8 +81,10 @@ public class MainClass extends JavaPlugin {
         getConfig().set("settings.default-color", "&f");
         getConfig().set("settings.rainbow-sequence", "abcde");
         getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
+        getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
+        getConfig().set("messages.too-many-args", "&cToo many arguments!");
+        getConfig().set("messages.player-not-joined", "&cThat player has not joined yet!");
         getConfig().set("messages.players-only", "&cThis command can only be run by players.");
-        getConfig().set("messages.player-not-online", "&cThat player is not online!");
         getConfig().set("messages.no-permissions", "&cYou do not have permission to use that command.");
         getConfig().set("messages.no-color-perms", "&cYou do not have permission to use the color: &");
         getConfig().set("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
@@ -101,7 +106,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.reloaded-config", "Reloaded the config!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
         getConfig().set("messages.is-currently", " &eis currently: ");
-        List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
+        List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", "yes");
         saveConfig();
@@ -121,8 +126,10 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
+        hmp.put("messages.not-enough-args", "&cNot enough arguments!");
+        hmp.put("messages.too-many-args", "&cToo many arguments!");
+        hmp.put("messages.player-not-joined", "&cThat player has not joined yet!");
         hmp.put("messages.players-only", "&cThis command can only be run by players.");
-        hmp.put("messages.player-not-online", "&cThat player is not online!");
         hmp.put("messages.no-permissions", "&cYou do not have permission to use that command.");
         hmp.put("messages.no-color-perms", "&cYou do not have permission to use the color: &");
         hmp.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
@@ -157,6 +164,9 @@ public class MainClass extends JavaPlugin {
         keys.add("settings.default-color");
         keys.add("settings.rainbow-sequence");
         keys.add("messages.help");
+        keys.add("messages.not-enough-args");
+        keys.add("messages.too-many-args");
+        keys.add("messages.player-not-joined");
         keys.add("messages.players-only");
         keys.add("messages.player-not-online");
         keys.add("messages.no-permissions");

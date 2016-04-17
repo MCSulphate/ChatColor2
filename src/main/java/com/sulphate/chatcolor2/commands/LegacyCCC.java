@@ -175,7 +175,6 @@ public class LegacyCCC implements CommandExecutor {
                         return true;
                     }
                     if (Bukkit.getPlayer(args[0]) == null) {
-                        s.sendMessage(CCStrings.notonline);
                         return true;
                     }
                     Player t = Bukkit.getPlayer(args[0]);

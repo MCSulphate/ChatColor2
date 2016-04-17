@@ -7,8 +7,10 @@ public class CCStrings {
 
     public static String prefix = "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e".replace('&', ChatColor.COLOR_CHAR);
     public static String help = prefix + MainClass.get().getMessage("help").replace('&', ChatColor.COLOR_CHAR);
+    public static String notargs = prefix + MainClass.get().getMessage("not-enough-args").replace('&', ChatColor.COLOR_CHAR);
+    public static String plusargs = prefix + MainClass.get().getMessage("too-many-args").replace('&', ChatColor.COLOR_CHAR);
+    public static String notjoin = prefix + MainClass.get().getMessage("player-not-joined").replace('&', ChatColor.COLOR_CHAR);
     public static String notplayer = prefix + MainClass.get().getMessage("players-only").replace('&', ChatColor.COLOR_CHAR);
-    public static String notonline = prefix + MainClass.get().getMessage("player-not-online").replace('&', ChatColor.COLOR_CHAR);
     public static String noperms = prefix + MainClass.get().getMessage("no-permissions").replace('&', ChatColor.COLOR_CHAR);
     public static String nocolperm = prefix + MainClass.get().getMessage("no-color-perms").replace('&', ChatColor.COLOR_CHAR);
     public static String nomodperm = prefix + MainClass.get().getMessage("no-mod-perms").replace('&', ChatColor.COLOR_CHAR);

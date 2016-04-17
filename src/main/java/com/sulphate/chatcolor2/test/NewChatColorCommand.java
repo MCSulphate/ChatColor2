@@ -17,17 +17,10 @@ import java.util.List;
 
 public class NewChatColorCommand implements CommandExecutor {
 
-    //Will be added to CCStrings after testing.
-    String notargs = CCStrings.prefix + colorString("&cNot enough arguments!");
-    String plusargs = CCStrings.prefix + colorString("&cToo many arguments!");
-    String notjoin = CCStrings.prefix + colorString("&cThat player has not joined yet!");
-
-    //This is a test class. It has not been implemented.
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         int argsno = args.length;
 
-        //This is a test for console commands.
         if (sender instanceof Player) {
 
             Player s = (Player) sender;
@@ -65,7 +58,6 @@ public class NewChatColorCommand implements CommandExecutor {
                 }
             }
 
-            //Test for handling ALL changes including modifiers to other players.
             if (FileUtils.getPlayerListConfig().contains(args[0])) {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i < args.length; i++) {
@@ -100,7 +92,6 @@ public class NewChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            //Test for handling ALL changes including modifiers to the sender.
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < args.length; i++) {
                 if (args[i].toLowerCase().equals("rainbow")) {
@@ -129,10 +120,9 @@ public class NewChatColorCommand implements CommandExecutor {
 
         }
 
-        //This is the console.
         else {
             if (argsno < 2) {
-                sender.sendMessage(notargs);
+                sender.sendMessage(CCStrings.notargs);
                 return true;
             }
             if (FileUtils.getPlayerListConfig().contains(args[0])) {
@@ -169,14 +159,13 @@ public class NewChatColorCommand implements CommandExecutor {
                 return true;
             }
             else {
-                sender.sendMessage(notjoin);
+                sender.sendMessage(CCStrings.notjoin);
             }
         }
         return true;
 
     }
 
-    //This is a test for a universal command + permissions checker, to clean up the code.
     public boolean checkCommand(String[] args, Player player) {
 
         boolean other = false;
@@ -207,7 +196,7 @@ public class NewChatColorCommand implements CommandExecutor {
         List<String> cmds = Arrays.asList("set", "reload", "reset", "permhelp");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("set") && args.length < 3) {
-                player.sendMessage(notargs);
+                player.sendMessage(CCStrings.notargs);
                 return false;
             }
             if ((args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset")) && MainClass.get().getConfirmees().containsKey(player)) {
@@ -228,11 +217,11 @@ public class NewChatColorCommand implements CommandExecutor {
                 return false;
             }
             if (args.length > 5) {
-                player.sendMessage(plusargs);
+                player.sendMessage(CCStrings.plusargs);
                 return false;
             }
             if (args.length < 2) {
-                player.sendMessage(notargs);
+                player.sendMessage(CCStrings.notargs);
                 return false;
             }
             if (getColor(args[1]) != null) {
@@ -268,7 +257,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 return false;
             }
             if (args.length > 4) {
-                player.sendMessage(plusargs);
+                player.sendMessage(CCStrings.plusargs);
                 return false;
             }
             for (int i = 0; i < args.length; i++) {
@@ -302,7 +291,6 @@ public class NewChatColorCommand implements CommandExecutor {
 
     }
 
-    //This is a test for checking a single permission node.
     public boolean hasPermission(String permission, Player player) {
         int d1 = permission.indexOf(".");
         String root = permission.substring(0, d1 + 1);
@@ -378,7 +366,6 @@ public class NewChatColorCommand implements CommandExecutor {
         player.sendMessage(colorString(" &7- Change Other's Color: &cchatcolor.change.others"));
     }
 
-    //This is how the set command will be handled.
     public void handleSet(String[] args, Player player) {
         switch(args[1]) {
 
@@ -539,7 +526,6 @@ public class NewChatColorCommand implements CommandExecutor {
         }
     }
 
-    //New method for safety of colors.
     public String colorString(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
