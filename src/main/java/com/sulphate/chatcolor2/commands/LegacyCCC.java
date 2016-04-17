@@ -15,7 +15,7 @@ import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.utils.CCStrings;
 import com.sulphate.chatcolor2.utils.ColorUtils;
 
-public class ChatColorCommand implements CommandExecutor {
+public class LegacyCCC implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 

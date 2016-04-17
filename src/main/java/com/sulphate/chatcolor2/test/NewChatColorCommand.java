@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.Main;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -21,6 +20,7 @@ public class NewChatColorCommand implements CommandExecutor {
     //Will be added to CCStrings after testing.
     String notargs = CCStrings.prefix + colorString("&cNot enough arguments!");
     String plusargs = CCStrings.prefix + colorString("&cToo many arguments!");
+    String notjoin = CCStrings.prefix + colorString("&cThat player has not joined yet!");
 
     //This is a test class. It has not been implemented.
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -66,53 +66,65 @@ public class NewChatColorCommand implements CommandExecutor {
             }
 
             //Test for handling ALL changes including modifiers to other players.
-            if (FileUtils.getPlayerFile(args[0]).getName() != "null.yml") {
+            if (FileUtils.getPlayerListConfig().contains(args[0])) {
                 StringBuilder sb = new StringBuilder();
-                for (int i = args.length-1; i > 0; i--) {
-                    sb.append(ChatColor.COLOR_CHAR + args[i].toLowerCase());
+                for (int i = 1; i < args.length; i++) {
+                    if (args[i].toLowerCase().equals("rainbow")) {
+                        sb.append(args[i].toLowerCase());
+                        continue;
+                    }
+                    sb.append("&" + args[i].toLowerCase());
                 }
                 String color = sb.toString();
                 if (color.contains("rainbow")) {
                     verifyRainbowSequence(MainClass.get().getConfig().getString("settings.rainbow-sequence"), true);
                     char[] seq = MainClass.get().getConfig().getString("settings.rainbow-sequence").toCharArray();
                     StringBuilder sb2 = new StringBuilder();
+                    String mods = color.replace("rainbow", "");
                     for (char c : seq) {
-                        sb.append(ChatColor.COLOR_CHAR + c + ChatColor.COLOR_CHAR + color.replace("rainbow", "") + c);
+                        sb2.append("&" + c + mods + c);
                     }
-                    String end = sb2.toString();
-                    s.sendMessage(CCStrings.setothc + end);
-                    if (MainClass.get().getConfig().getBoolean("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    String end = colorString(sb2.toString());
+                    ColorUtils.setColor(args[0], colorString(color));
+                    s.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + end);
+                    if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + end);
                     }
                     return true;
                 }
-                ColorUtils.setColor(args[0], color);
-                s.sendMessage(CCStrings.setothc + color + CCStrings.colthis);
-                if (MainClass.get().getConfig().getBoolean("notify-others") && Bukkit.getPlayer(args[0]) != null) {
-                    Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + color + CCStrings.colthis);
+                ColorUtils.setColor(args[0], colorString(color));
+                s.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
+                if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + colorString(color) + CCStrings.colthis);
                 }
                 return true;
             }
 
             //Test for handling ALL changes including modifiers to the sender.
             StringBuilder sb = new StringBuilder();
-            for (int i = args.length-1; i > -1; i--) {
-                sb.append(ChatColor.COLOR_CHAR + args[i].toLowerCase());
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].toLowerCase().equals("rainbow")) {
+                    sb.append(args[i].toLowerCase());
+                    continue;
+                }
+                sb.append("&" + args[i].toLowerCase());
             }
             String color = sb.toString();
             if (color.contains("rainbow")) {
                 verifyRainbowSequence(MainClass.get().getConfig().getString("settings.rainbow-sequence"), true);
                 char[] seq = MainClass.get().getConfig().getString("settings.rainbow-sequence").toCharArray();
                 StringBuilder sb2 = new StringBuilder();
+                String mods = color.replace("rainbow", "");
                 for (char c : seq) {
-                    sb2.append(ChatColor.COLOR_CHAR + c + ChatColor.COLOR_CHAR + color.replace("rainbow", "") + c);
+                    sb2.append("&" + c + mods + c);
                 }
-                String end = sb2.toString();
+                String end = colorString(sb2.toString());
+                ColorUtils.setColor(s.getName(), colorString(color));
                 s.sendMessage(CCStrings.setownc + end);
                 return true;
             }
-            ColorUtils.setColor(s.getName(), color);
-            s.sendMessage(CCStrings.setownc + color + CCStrings.colthis);
+            ColorUtils.setColor(s.getName(), colorString(color));
+            s.sendMessage(CCStrings.setownc + colorString(color) + CCStrings.colthis);
             return true;
 
         }
@@ -123,32 +135,41 @@ public class NewChatColorCommand implements CommandExecutor {
                 sender.sendMessage(notargs);
                 return true;
             }
-            if (FileUtils.getPlayerFile(args[0]).getName() != "null.yml") {
+            if (FileUtils.getPlayerListConfig().contains(args[0])) {
                 StringBuilder sb = new StringBuilder();
-                for (int i = args.length-1; i > 0; i--) {
-                    sb.append(ChatColor.COLOR_CHAR + args[i].toLowerCase());
+                for (int i = 1; i < args.length; i++) {
+                    if (args[i].toLowerCase().equals("rainbow")) {
+                        sb.append(args[i].toLowerCase());
+                        continue;
+                    }
+                    sb.append("&" + args[i].toLowerCase());
                 }
                 String color = sb.toString();
                 if (color.contains("rainbow")) {
                     verifyRainbowSequence(MainClass.get().getConfig().getString("settings.rainbow-sequence"), true);
                     char[] seq = MainClass.get().getConfig().getString("settings.rainbow-sequence").toCharArray();
                     StringBuilder sb2 = new StringBuilder();
+                    String mods = color.replace("rainbow", "");
                     for (char c : seq) {
-                        sb.append(ChatColor.COLOR_CHAR + c + ChatColor.COLOR_CHAR + color.replace("rainbow", "") + c);
+                        sb2.append("&" + c + mods + c);
                     }
-                    String end = sb2.toString();
-                    sender.sendMessage(CCStrings.setothc + end);
-                    if (MainClass.get().getConfig().getBoolean("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    String end = colorString(sb2.toString());
+                    ColorUtils.setColor(args[0], colorString(color));
+                    sender.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + end);
+                    if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", "CONSOLE") + end);
                     }
                     return true;
                 }
-                ColorUtils.setColor(args[0], color);
-                sender.sendMessage(CCStrings.setothc + color + CCStrings.colthis);
-                if (MainClass.get().getConfig().getBoolean("notify-others") && Bukkit.getPlayer(args[0]) != null) {
-                    Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", "CONSOLE") + color + CCStrings.colthis);
+                ColorUtils.setColor(args[0], colorString(color));
+                sender.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
+                if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", "CONSOLE") + colorString(color) + CCStrings.colthis);
                 }
                 return true;
+            }
+            else {
+                sender.sendMessage(notjoin);
             }
         }
         return true;
@@ -158,14 +179,17 @@ public class NewChatColorCommand implements CommandExecutor {
     //This is a test for a universal command + permissions checker, to clean up the code.
     public boolean checkCommand(String[] args, Player player) {
 
+        boolean other = false;
+
         if (args.length == 0) {
             String color = ColorUtils.getColor(player.getName());
             if (color.contains("rainbow")) {
                 verifyRainbowSequence(MainClass.get().getConfig().getString("settings.rainbow-sequence"), true);
                 char[] seq = MainClass.get().getConfig().getString("settings.rainbow-sequence").toCharArray();
                 StringBuilder sb = new StringBuilder();
+                String mods = color.replace("rainbow", "");
                 for (char c : seq) {
-                    sb.append(ChatColor.COLOR_CHAR + c + color.replace("rainbow", "") + c);
+                    sb.append("&" + c + mods + c);
                 }
                 String end = sb.toString();
                 player.sendMessage(CCStrings.yourcol + end);
@@ -173,10 +197,6 @@ public class NewChatColorCommand implements CommandExecutor {
             }
             player.sendMessage(CCStrings.yourcol + color);
             return false;
-        }
-
-        if (player.hasPermission("chatcolor.*")) {
-            return true;
         }
 
         if (!player.hasPermission("chatcolor.use")) {
@@ -190,7 +210,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(notargs);
                 return false;
             }
-            if (args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset") && MainClass.get().getConfirmees().containsKey(player)) {
+            if ((args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset")) && MainClass.get().getConfirmees().containsKey(player)) {
                 player.sendMessage(CCStrings.alreadycon);
                 return false;
             }
@@ -201,7 +221,8 @@ public class NewChatColorCommand implements CommandExecutor {
             return true;
         }
 
-        if (FileUtils.getPlayerFile(args[0]).getName() != "null.yml") {
+        if (FileUtils.getPlayerListConfig().contains(args[0])) {
+            other = true;
             if (!hasPermission("chatcolor.change.others", player)) {
                 player.sendMessage(CCStrings.noperms);
                 return false;
@@ -273,6 +294,9 @@ public class NewChatColorCommand implements CommandExecutor {
             player.sendMessage(CCStrings.invcol + args[0]);
             return false;
         }
+        if (other) {
+            player.sendMessage(CCStrings.invcol + args[1]);
+        }
         player.sendMessage(CCStrings.invcom);
         return false;
 
@@ -285,7 +309,7 @@ public class NewChatColorCommand implements CommandExecutor {
         String s = permission.replace(root, "");
         int d2 = s.indexOf(".");
         String cat = s.substring(0, d2 + 1);
-        if (!player.hasPermission(permission) && !player.hasPermission(root + cat + ".*")) {
+        if (!player.hasPermission(permission) && !player.hasPermission(root + cat + ".*") && !player.hasPermission(root + ".*")) {
             return false;
         }
         return true;
@@ -293,7 +317,7 @@ public class NewChatColorCommand implements CommandExecutor {
 
     //This is how the help command will be handled.
     public void handleCmdHelp(Player player) {
-        player.sendMessage(CCStrings.prefix + "Displaying command-based help!");
+        player.sendMessage(CCStrings.prefix + "Displaying command help!");
         player.sendMessage(colorString(" &7- &eMain Command: &c/chatcolor <color> [modifiers]"));
         player.sendMessage("");
         player.sendMessage(colorString(" &eOther Commands:"));
@@ -328,7 +352,7 @@ public class NewChatColorCommand implements CommandExecutor {
     }
 
     public void handlePermHelp(Player player) {
-        player.sendMessage(CCStrings.prefix + "Displaying command-based help!");
+        player.sendMessage(CCStrings.prefix + "Displaying permissions help!");
         player.sendMessage(colorString(" &7- &eMain Permission: &cchatcolor.use"));
         player.sendMessage(colorString(" &7- &eAll Perms: &cchatcolor.*"));
         player.sendMessage("");
@@ -473,10 +497,6 @@ public class NewChatColorCommand implements CommandExecutor {
                 String color = getColor(args[2]);
                 if (color == null) {
                     player.sendMessage(CCStrings.invcol);
-                    return;
-                }
-                if (MainClass.get().getConfirmees().containsKey(player)) {
-                    player.sendMessage(CCStrings.alreadycon);
                     return;
                 }
                 player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscur + MainClass.get().getConfig().getString("settings.default-color").replace("&", "§") + CCStrings.colthis);

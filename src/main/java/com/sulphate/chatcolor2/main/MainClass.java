@@ -33,12 +33,6 @@ public class MainClass extends JavaPlugin {
         List<String> messages = Arrays.asList("help", "players-only", "player-not-online", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
         getConfig().set("message-list", messages);
         checkConfig();
-        //if (Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion().equals("v1.5")) {
-         //   if (getConfig().getString("resetted") == null) {
-         //       getConfig().set("resetted", "yes");
-          //      reload();
-         //   }
-        //}
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
@@ -90,7 +84,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.no-color-perms", "&cYou do not have permission to use the color: &");
         getConfig().set("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
         getConfig().set("messages.invalid-color", "&cInvalid color: &e");
-        getConfig().set("messages.invalid-command", "&cThat is an invalid command! &eType &d/chatcolor help &eto see valid colors and commands.");
+        getConfig().set("messages.invalid-command", "&cThat is an invalid command!");
         getConfig().set("messages.invalid-modifier", "&cInvalid modifier: &e");
         getConfig().set("messages.invalid-setting", "&cInvalid Setting: &e");
         getConfig().set("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
