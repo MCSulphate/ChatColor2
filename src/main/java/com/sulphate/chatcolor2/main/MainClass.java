@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.sulphate.chatcolor2.test.NewChatColorCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,7 +42,7 @@ public class MainClass extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bMany bug fixes + small improvements!");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
-        getCommand("chatcolor").setExecutor(new ChatColorCommand());
+        getCommand("chatcolor").setExecutor(new NewChatColorCommand());
         getCommand("confirm").setExecutor(new ConfirmCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
@@ -79,7 +80,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("settings.confirm-timeout", 10);
         getConfig().set("settings.default-color", "&f");
         getConfig().set("settings.rainbow-sequence", "abcde");
-        getConfig().set("messages.help", "&eType &c/chatcolor help &eto see valid colors, modifiers and settings!");
+        getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.players-only", "&cThis command can only be run by players.");
         getConfig().set("messages.player-not-online", "&cThat player is not online!");
         getConfig().set("messages.no-permissions", "&cYou do not have permission to use that command.");
@@ -122,7 +123,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.confirm-timeout", 10);
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
-        hmp.put("messages.help", "&eType &c/chatcolor help &eto see valid colors, modifiers and settings!");
+        hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.players-only", "&cThis command can only be run by players.");
         hmp.put("messages.player-not-online", "&cThat player is not online!");
         hmp.put("messages.no-permissions", "&cYou do not have permission to use that command.");
