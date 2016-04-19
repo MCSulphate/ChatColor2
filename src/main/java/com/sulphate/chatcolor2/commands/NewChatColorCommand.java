@@ -1,4 +1,4 @@
-package com.sulphate.chatcolor2.test;
+package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
@@ -61,11 +61,11 @@ public class NewChatColorCommand implements CommandExecutor {
             if (FileUtils.getPlayerListConfig().contains(args[0])) {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i < args.length; i++) {
-                    if (args[i].toLowerCase().equals("rainbow")) {
-                        sb.append(args[i].toLowerCase());
+                    if (i == 1) {
+                        sb.append(getColor(args[i]));
                         continue;
                     }
-                    sb.append("&" + args[i].toLowerCase());
+                    sb.append(getModifier(args[i]));
                 }
                 String color = sb.toString();
                 if (color.contains("rainbow")) {
@@ -94,11 +94,11 @@ public class NewChatColorCommand implements CommandExecutor {
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < args.length; i++) {
-                if (args[i].toLowerCase().equals("rainbow")) {
-                    sb.append(args[i].toLowerCase());
+                if (i == 0) {
+                    sb.append(getColor(args[i]));
                     continue;
                 }
-                sb.append("&" + args[i].toLowerCase());
+                sb.append(getModifier(args[i]));
             }
             String color = sb.toString();
             if (color.contains("rainbow")) {
@@ -125,14 +125,18 @@ public class NewChatColorCommand implements CommandExecutor {
                 sender.sendMessage(CCStrings.notargs);
                 return true;
             }
+            if (argsno > 6) {
+                sender.sendMessage(CCStrings.plusargs);
+                return true;
+            }
             if (FileUtils.getPlayerListConfig().contains(args[0])) {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 1; i < args.length; i++) {
-                    if (args[i].toLowerCase().equals("rainbow")) {
-                        sb.append(args[i].toLowerCase());
+                    if (i == 1) {
+                        sb.append(getColor(args[i]));
                         continue;
                     }
-                    sb.append("&" + args[i].toLowerCase());
+                    sb.append(getColor(args[i]));
                 }
                 String color = sb.toString();
                 if (color.contains("rainbow")) {
@@ -197,6 +201,11 @@ public class NewChatColorCommand implements CommandExecutor {
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("set") && args.length < 3) {
                 player.sendMessage(CCStrings.notargs);
+                return false;
+            }
+            List<String> settings = Arrays.asList("color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence");
+            if (args[0].equalsIgnoreCase("set") && !settings.contains(args[1])) {
+                player.sendMessage(CCStrings.invset);
                 return false;
             }
             if ((args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset")) && MainClass.get().getConfirmees().containsKey(player)) {
@@ -547,7 +556,8 @@ public class NewChatColorCommand implements CommandExecutor {
         return verify;
     }
 
-    public String getColor(String s) {
+    public String getColor(String str) {
+        String s = str.toLowerCase();
         if (s.equalsIgnoreCase("rainbow")) {
             return s;
         }
@@ -559,57 +569,58 @@ public class NewChatColorCommand implements CommandExecutor {
                 }
                 String st = words.get(i);
                 if (s.equalsIgnoreCase(st)) {
-                    return "§" + i.toString();
+                    return "&" + i.toString();
                 }
             }
             if (s.equalsIgnoreCase("light.green")) {
-                return "§a";
+                return "&a";
             }
             else if (s.equalsIgnoreCase("aqua")) {
-                return "§b";
+                return "&b";
             }
             else if (s.equalsIgnoreCase("light.red")) {
-                return "§c";
+                return "&c";
             }
             else if (s.equalsIgnoreCase("magenta")) {
-                return "§d";
+                return "&d";
             }
             else if (s.equalsIgnoreCase("yellow")) {
-                return "§e";
+                return "&e";
             }
             else if (s.equalsIgnoreCase("white")) {
-                return "§f";
+                return "&f";
             }
         }
         List<String> other = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
         if (other.contains(s)) {
-            return "§" + s;
+            return "&" + s;
         }
         else {
             return null;
         }
     }
 
-    public String getModifier(String s) {
+    public String getModifier(String str) {
+        String s = str.toLowerCase();
         if (s.equalsIgnoreCase("obfuscated")) {
-            return "§k";
+            return "&k";
         }
         else if (s.equalsIgnoreCase("bold")) {
-            return "§l";
+            return "&l";
         }
         else if (s.equalsIgnoreCase("strikethrough")) {
-            return "§m";
+            return "&m";
         }
         else if (s.equalsIgnoreCase("underlined")) {
-            return "§n";
+            return "&n";
         }
         else if (s.equalsIgnoreCase("italic")) {
-            return "§o";
+            return "&o";
         }
         else {
             List<String> other = Arrays.asList("k", "l", "m", "n", "o");
             if (other.contains(s)) {
-                return "§" + s;
+                return "&" + s;
             }
             return null;
         }
