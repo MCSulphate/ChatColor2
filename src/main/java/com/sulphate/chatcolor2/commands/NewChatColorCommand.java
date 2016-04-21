@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -188,7 +189,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.yourcol + end);
                 return false;
             }
-            player.sendMessage(CCStrings.yourcol + color);
+            player.sendMessage(CCStrings.yourcol + color + CCStrings.colthis);
             return false;
         }
 
@@ -203,9 +204,9 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.notargs);
                 return false;
             }
-            List<String> settings = Arrays.asList("color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence");
+            List<String> settings = Arrays.asList("color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name");
             if (args[0].equalsIgnoreCase("set") && !settings.contains(args[1])) {
-                player.sendMessage(CCStrings.invset);
+                player.sendMessage(CCStrings.invset + colorString("&e" + args[1]));
                 return false;
             }
             if ((args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset")) && MainClass.get().getConfirmees().containsKey(player)) {
@@ -225,7 +226,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.noperms);
                 return false;
             }
-            if (args.length > 5) {
+            if (args.length > 6) {
                 player.sendMessage(CCStrings.plusargs);
                 return false;
             }
@@ -265,7 +266,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.noperms);
                 return false;
             }
-            if (args.length > 4) {
+            if (args.length > 5) {
                 player.sendMessage(CCStrings.plusargs);
                 return false;
             }
@@ -530,6 +531,24 @@ public class NewChatColorCommand implements CommandExecutor {
                 MainClass.get().addConfirmee(player, cs);
                 cs.confirm(player, "rainbow-sequence", seq);
                 return;
+            }
+
+            case "command-name": {
+                String cmd = args[2];
+                for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
+                    if (p.getDescription().getCommands() != null) {
+                        if (p.getDescription().getCommands().containsKey(cmd)) {
+                            player.sendMessage(CCStrings.cmdexst);
+                            return;
+                        }
+                    }
+                }
+                player.sendMessage(CCStrings.prefix + colorString("&c" + args[1]) + CCStrings.iscur + colorString("&c/") + MainClass.get().getConfig().getString("settings.command-name"));
+                player.sendMessage(CCStrings.tochng + colorString("&c/" + cmd));
+                player.sendMessage(CCStrings.confirm);
+                ConfirmScheduler cs = new ConfirmScheduler();
+                MainClass.get().addConfirmee(player, cs);
+                cs.confirm(player, "command-name", cmd);
             }
 
         }

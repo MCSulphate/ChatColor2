@@ -33,5 +33,6 @@ public class CCStrings {
     public static String alreadyset = prefix + MainClass.get().getMessage("already-set").replace('&', ChatColor.COLOR_CHAR);
     public static String iscur = MainClass.get().getMessage("is-currently").replace('&', ChatColor.COLOR_CHAR);
     public static String tochng = prefix + MainClass.get().getMessage("to-change").replace('&', ChatColor.COLOR_CHAR);
+    public static String cmdexst = prefix + MainClass.get().getMessage("command-exists").replace('&', ChatColor.COLOR_CHAR);
 
 }

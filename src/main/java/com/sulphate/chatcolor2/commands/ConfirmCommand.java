@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -131,6 +132,19 @@ public class ConfirmCommand implements CommandExecutor {
                 }
                 String rc = sb.toString();
                 s.sendMessage(CCStrings.prefix + "Success! §crainbow-sequence §ehas been set to §r" + rc);
+                return true;
+            }
+            case "command-name": {
+                if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
+                    s.sendMessage(CCStrings.noperms);
+                }
+                String cmnd = (String) cs.val;
+                MainClass.get().getConfig().set("settings.command-name", cmnd);
+                MainClass.get().saveConfig();
+                MainClass.get().reloadConfig();
+                Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("ChatColor2"));
+                Bukkit.getPluginManager().enablePlugin(Bukkit.getPluginManager().getPlugin("ChatColor2"));
+                s.sendMessage(CCStrings.prefix + "Success! §ccommand-name §ehas been set to §c/" + cmnd);
                 return true;
             }
 

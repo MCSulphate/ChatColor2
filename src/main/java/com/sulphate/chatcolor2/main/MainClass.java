@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.sulphate.chatcolor2.commands.NewChatColorCommand;
+import com.sulphate.chatcolor2.listeners.CustomCommandListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,13 +40,15 @@ public class MainClass extends JavaPlugin {
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §b§HUGE UPDATE! §b4 Modifiers + Console Command Support!");
+        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bCustom Command Update!");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new NewChatColorCommand());
+        getCommand("chatcolor").setAliases(Arrays.asList(getConfig().getString("settings.command-name")));
         getCommand("confirm").setExecutor(new ConfirmCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomCommandListener(), this);
     }
 
     @Override
@@ -80,6 +83,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("settings.confirm-timeout", 10);
         getConfig().set("settings.default-color", "&f");
         getConfig().set("settings.rainbow-sequence", "abcde");
+        getConfig().set("settings.command-name", "chatcolor");
         getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
         getConfig().set("messages.too-many-args", "&cToo many arguments!");
@@ -106,6 +110,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.reloaded-config", "Reloaded the config!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
         getConfig().set("messages.is-currently", " &eis currently: ");
+        getConfig().set("messages.command-exists", "&cThat command already exists!");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", "yes");
@@ -125,6 +130,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.confirm-timeout", 10);
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
+        TODO: hmp.put("settings.command-name", "chatcolor");
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.not-enough-args", "&cNot enough arguments!");
         hmp.put("messages.too-many-args", "&cToo many arguments!");
@@ -152,6 +158,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.already-set", "&cThat value is already set!");
         hmp.put("messages.is-currently", " &eis currently: ");
         hmp.put("messages.to-change", "You are changing it to: ");
+        hmp.put("messages.command-exists", "&cThat command already exists!");
         
         //ArrayList with all keys
         List<String> keys = new ArrayList<String>();
@@ -163,6 +170,7 @@ public class MainClass extends JavaPlugin {
         keys.add("settings.confirm-timeout");
         keys.add("settings.default-color");
         keys.add("settings.rainbow-sequence");
+        keys.add("settings.command-name");
         keys.add("messages.help");
         keys.add("messages.not-enough-args");
         keys.add("messages.too-many-args");
@@ -191,6 +199,7 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.already-set");
         keys.add("messages.is-currently");
         keys.add("messages.to-change");
+        keys.add("messages.command-exists");
 
         for (String st : keys) {
             if (!getConfig().contains(st)) {
