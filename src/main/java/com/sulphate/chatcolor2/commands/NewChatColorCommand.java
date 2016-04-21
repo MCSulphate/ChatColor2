@@ -226,7 +226,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.noperms);
                 return false;
             }
-            if (args.length > 6) {
+            if (args.length > 7) {
                 player.sendMessage(CCStrings.plusargs);
                 return false;
             }
@@ -266,7 +266,7 @@ public class NewChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.noperms);
                 return false;
             }
-            if (args.length > 5) {
+            if (args.length > 6) {
                 player.sendMessage(CCStrings.plusargs);
                 return false;
             }

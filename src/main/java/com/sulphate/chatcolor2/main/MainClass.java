@@ -40,7 +40,7 @@ public class MainClass extends JavaPlugin {
         //Console startup messages
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bCustom Command Update!");
+        Bukkit.getConsoleSender().sendMessage(CCStrings.prefix + "Current update: §bCustom Command Update! +Bug Fixes and Improvements");
         Bukkit.getConsoleSender().sendMessage("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new NewChatColorCommand());
