@@ -39,7 +39,7 @@ public class ColorUtils {
 
     public static void check(Player player) {
         if (player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"))) {
-            player.sendMessage(CCStrings.prefix + "Running ChatColor 2 §c" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
+            player.sendMessage(CCStrings.prefix + "Server is running ChatColor 2 §cv" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
         }
     }
 

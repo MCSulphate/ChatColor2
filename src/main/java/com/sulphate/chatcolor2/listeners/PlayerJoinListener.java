@@ -35,7 +35,6 @@ public class PlayerJoinListener implements Listener {
         }
 
         checkDefault();
-        ColorUtils.check(p);
 
         if (MainClass.get().getConfig().getBoolean("settings.join-message")) {
             String color = ColorUtils.getColor(e.getPlayer().getName());
@@ -58,7 +57,7 @@ public class PlayerJoinListener implements Listener {
             }
             e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName()) + CCStrings.colthis);
         }
-
+        ColorUtils.check(p);
     }
 
     public void checkDefault() {

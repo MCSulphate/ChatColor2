@@ -1,6 +1,6 @@
 name: ChatColor2
 main: com.sulphate.chatcolor2.main.MainClass
-version: 1.6.6
+version: 1.6.8
 author: Sulphate
 
 commands:
