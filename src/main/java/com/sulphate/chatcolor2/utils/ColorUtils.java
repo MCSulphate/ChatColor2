@@ -3,12 +3,15 @@ package com.sulphate.chatcolor2.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.sulphate.chatcolor2.main.MainClass;
+import org.bukkit.entity.Player;
 
 public class ColorUtils {
 
@@ -32,6 +35,12 @@ public class ColorUtils {
 
         FileConfiguration fc = FileUtils.getPlayerFileConfig(playername);
         return fc.getString("color");
+    }
+
+    public static void check(Player player) {
+        if (player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"))) {
+            player.sendMessage(CCStrings.prefix + "Running ChatColor 2 §c" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
+        }
     }
 
     public static String getDefaultCode(String playername) {
