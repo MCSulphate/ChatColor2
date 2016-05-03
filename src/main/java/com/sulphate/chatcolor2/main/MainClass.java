@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,6 +94,14 @@ public class MainClass extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin = null;
+        try {
+            if (sql.getConnection() != null) {
+                sql.getConnection().close();
+            }
+        }
+        catch (SQLException ex) {
+            log.warning(ex.getMessage());
+        }
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
@@ -138,6 +147,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("backend.sql.dbname", "databasename");
         getConfig().set("backend.sql.user", "username");
         getConfig().set("backend.sql.pass", "password");
+        getConfig().set("backend.sql.force-update-time", -1);
         getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
         getConfig().set("messages.too-many-args", "&cToo many arguments!");
@@ -166,7 +176,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.is-currently", " &eis currently: ");
         getConfig().set("messages.command-exists", "&cThat command already exists!");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
-        getConfig().set("messages.message-list", messages);
+        getConfig().set("message-list", messages);
         getConfig().set("loaded", "yes");
         saveConfig();
         reloadConfig();
@@ -192,6 +202,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("backend.sql.dbname", "databasename");
         hmp.put("backend.sql.user", "username");
         hmp.put("backend.sql.pass", "password");
+        hmp.put("backend.sql.force-update-time", -1);
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.not-enough-args", "&cNot enough arguments!");
         hmp.put("messages.too-many-args", "&cToo many arguments!");
@@ -239,6 +250,7 @@ public class MainClass extends JavaPlugin {
         keys.add("backend.sql.dbname");
         keys.add("backend.sql.user");
         keys.add("backed.sql.pass");
+        keys.add("backend.sql.force-update-time");
         keys.add("messages.help");
         keys.add("messages.not-enough-args");
         keys.add("messages.too-many-args");

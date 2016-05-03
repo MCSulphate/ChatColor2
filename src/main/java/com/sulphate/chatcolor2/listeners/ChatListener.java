@@ -31,18 +31,18 @@ public class ChatListener implements Listener {
                 FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
                 conf.set("default-code", defcode);
                 FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol);
+                ColorUtils.setColor(name, defcol, false);
             }
             else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
                 FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
                 conf.set("default-code", defcode);
                 FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol);
+                ColorUtils.setColor(name, defcol, false);
             }
 
         }
 
-        String color = ColorUtils.getColor(e.getPlayer().getName());
+        String color = ColorUtils.getColor(e.getPlayer().getName(), false, false);
         if (e.getMessage().contains("&") && !MainClass.get().getConfig().getBoolean("settings.color-override")) {
             e.setMessage(e.getMessage().replace("&", "§"));
             return;
@@ -77,7 +77,7 @@ public class ChatListener implements Listener {
             return;
         }
 
-        e.setMessage(ColorUtils.getColor(e.getPlayer().getName()) + e.getMessage().replace("&", ""));
+        e.setMessage(ColorUtils.getColor(e.getPlayer().getName(), false, false) + e.getMessage().replace("&", ""));
 
     }
 

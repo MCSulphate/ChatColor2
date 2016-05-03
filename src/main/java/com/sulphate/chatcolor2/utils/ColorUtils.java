@@ -15,9 +15,11 @@ import org.bukkit.entity.Player;
 
 public class ColorUtils {
 
-    public static boolean setColor(String playername, String color) {
-        if (MainClass.get().getBackendType().equals("sql")) {
+    private static SQLUtils sql = MainClass.get().getSQL();
 
+    public static boolean setColor(String playername, String color, boolean removefromcache) {
+        if (MainClass.get().getBackendType().equals("sql")) {
+            sql.setSQLColor(playername, color, removefromcache);
         }
         if (FileUtils.getPlayerFile(playername) == null) {
             return false;
@@ -31,9 +33,9 @@ public class ColorUtils {
         return true;
     }
 
-    public static String getColor(String playername) {
+    public static String getColor(String playername, boolean forceupdate) {
         if (MainClass.get().getBackendType().equals("sql")) {
-            return MainClass.get().getSQL().getSQLColor(playername);
+            return sql.getSQLColor(playername, forceupdate);
         }
         if (FileUtils.getPlayerFile(playername) == null) {
             return null;
@@ -49,6 +51,9 @@ public class ColorUtils {
     }
 
     public static String getDefaultCode(String playername) {
+        if (MainClass.get().getConfig().getString("backend.type").equals("sql")) {
+            return sql.getSQLPlayerDefaultColorCode(playername);
+        }
         if (FileUtils.getPlayerFile(playername) == null) {
             return null;
         }

@@ -31,13 +31,13 @@ public class PlayerJoinListener implements Listener {
         FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
 
         if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
-            ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"));
+            ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"), false);
         }
 
         checkDefault();
 
         if (MainClass.get().getConfig().getBoolean("settings.join-message")) {
-            String color = ColorUtils.getColor(e.getPlayer().getName());
+            String color = ColorUtils.getColor(e.getPlayer().getName(), false, false);
             if (color.contains("rainbow")) {
                 String mods = color.replace("rainbow", "");
                 String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
@@ -55,7 +55,7 @@ public class PlayerJoinListener implements Listener {
                 p.sendMessage(CCStrings.yourcol + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName()) + CCStrings.colthis);
+            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName(), false, false) + CCStrings.colthis);
         }
         ColorUtils.check(p);
     }
@@ -72,13 +72,13 @@ public class PlayerJoinListener implements Listener {
             FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
             conf.set("default-code", defcode);
             FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol);
+            ColorUtils.setColor(name, defcol, false);
         }
         else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
             FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
             conf.set("default-code", defcode);
             FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol);
+            ColorUtils.setColor(name, defcol, false);
         }
     }
 
