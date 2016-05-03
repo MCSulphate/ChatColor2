@@ -58,8 +58,8 @@ public class SQLUtils {
     }
 
     public String getSQLColor(String playername) {
-        PreparedStatement pst;
-        ResultSet rs;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         String uuid;
 
         try {
@@ -71,6 +71,17 @@ public class SQLUtils {
                 uuid = rs.getString(2);
             }
             else {
+                try {
+                    if (pst != null) {
+                        pst.close();
+                    }
+                    if (rs != null) {
+                        rs.close();
+                    }
+                }
+                catch (SQLException ex) {
+                    log.warning(ex.getMessage());
+                }
                 return null;
             }
 
@@ -80,6 +91,17 @@ public class SQLUtils {
                 return rs.getString(2);
             }
             else {
+                try {
+                    if (pst != null) {
+                        pst.close();
+                    }
+                    if (rs != null) {
+                        rs.close();
+                    }
+                }
+                catch (SQLException ex) {
+                    log.warning(ex.getMessage());
+                }
                 return null;
             }
 
@@ -87,7 +109,28 @@ public class SQLUtils {
         catch (SQLException ex) {
             log.severe(ex.getMessage());
         }
+        finally {
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+            catch (SQLException ex) {
+                log.warning(ex.getMessage());
+            }
+        }
+        return null;
+    }
 
+    public void setSQLColor(String playername) {
+
+    }
+
+    public Connection getConnection() {
+        return con;
     }
 
 }
