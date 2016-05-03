@@ -512,6 +512,10 @@ public class NewChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.help);
                     return;
                 }
+                if (seq.length() >= 49) {
+                    player.sendMessage(CCStrings.invcom);
+                    return;
+                }
                 String[] ss = MainClass.get().getConfig().getString("settings.rainbow-sequence").split("");
                 StringBuilder sb = new StringBuilder();
                 for (String st : ss) {

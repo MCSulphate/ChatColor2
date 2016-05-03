@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import com.sulphate.chatcolor2.commands.NewChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
 import com.sulphate.chatcolor2.utils.Metrics;
+import com.sulphate.chatcolor2.utils.SQLUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,11 +27,14 @@ public class MainClass extends JavaPlugin {
     private static MainClass plugin;
     private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<Player,ConfirmScheduler>();
     private Logger log = Bukkit.getLogger();
+    private SQLUtils sql = new SQLUtils();
 
     @Override
     public void onEnable() {
         plugin = this;
         boolean metrics;
+        boolean sqlenabled;
+        boolean connected = false;
         boolean ioex = false;
         //Checking if first time setup needed (Config reload)
         if (getConfig().getString("loaded") == null) {
@@ -51,6 +55,10 @@ public class MainClass extends JavaPlugin {
                 ioex = true;
             }
         }
+        sqlenabled = getConfig().getString("backend.type").equals("sql");
+        if (sqlenabled) {
+            connected = sql.connectToDataBase();
+        }
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
@@ -63,6 +71,14 @@ public class MainClass extends JavaPlugin {
         }
         else {
             log.info(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttp://mcstats.org");
+        }
+        if (connected) {
+            log.info(CCStrings.prefix + "§bMySQL Database §ehas connected §asuccessfully§e!");
+        }
+        else if (sqlenabled && !connected) {
+            log.info(CCStrings.prefix + "§cMySQL Database failed to connect! Reverting to file backend!");
+            getConfig().set("backend.type", "file");
+            saveConfig();
         }
         log.info("§b------------------------------------------------------------");
         //Commands & Listeners
@@ -278,6 +294,14 @@ public class MainClass extends JavaPlugin {
 
     public String getMessage(String message) {
         return getConfig().getString("messages." + message);
+    }
+
+    public String getBackendType() {
+        return getConfig().getString("backend.type");
+    }
+
+    public SQLUtils getSQL() {
+        return sql;
     }
 
 }
