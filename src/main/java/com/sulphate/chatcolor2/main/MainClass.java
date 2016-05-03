@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +98,14 @@ public class MainClass extends JavaPlugin {
 
 
     public void reload() {
+        File f = new File(getDataFolder(), "config.yml");
+        f.delete();
+        try {
+            f.createNewFile();
+        }
+        catch (IOException e) {
+            log.severe("Failed to create config file!");
+        }
         getConfig().set("loaded", "no");
         getConfig().set("version", this.getDescription().getVersion());
         getConfig().set("stats", true);
@@ -107,6 +116,12 @@ public class MainClass extends JavaPlugin {
         getConfig().set("settings.default-color", "&f");
         getConfig().set("settings.rainbow-sequence", "abcde");
         getConfig().set("settings.command-name", "chatcolor");
+        getConfig().set("backend.type", "file");
+        getConfig().set("backend.sql.host", "localhost");
+        getConfig().set("backend.sql.port", "3306");
+        getConfig().set("backend.sql.dbname", "databasename");
+        getConfig().set("backend.sql.user", "username");
+        getConfig().set("backend.sql.pass", "password");
         getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
         getConfig().set("messages.too-many-args", "&cToo many arguments!");
@@ -154,7 +169,13 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.confirm-timeout", 10);
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
-        TODO: hmp.put("settings.command-name", "chatcolor");
+        hmp.put("settings.command-name", "chatcolor");
+        hmp.put("backend.type", "file");
+        hmp.put("backend.sql.host", "localhost");
+        hmp.put("backend.sql.port", "3306");
+        hmp.put("backend.sql.dbname", "databasename");
+        hmp.put("backend.sql.user", "username");
+        hmp.put("backend.sql.pass", "password");
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.not-enough-args", "&cNot enough arguments!");
         hmp.put("messages.too-many-args", "&cToo many arguments!");
@@ -196,6 +217,12 @@ public class MainClass extends JavaPlugin {
         keys.add("settings.default-color");
         keys.add("settings.rainbow-sequence");
         keys.add("settings.command-name");
+        keys.add("backend.type");
+        keys.add("backend.sql.host");
+        keys.add("backend.sql.port");
+        keys.add("backend.sql.dbname");
+        keys.add("backend.sql.user");
+        keys.add("backed.sql.pass");
         keys.add("messages.help");
         keys.add("messages.not-enough-args");
         keys.add("messages.too-many-args");
