@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.MainClass;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import java.sql.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +17,9 @@ public class SQLUtils {
     private String user;
     private String pass;
     private ConcurrentHashMap<String, String> colorcache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> defcolorcache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> nameuuidcache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> uuidnamecache = new ConcurrentHashMap<>();
     private String[] defaultdata = new String[2];
 
     public boolean connectToDataBase() {
@@ -40,6 +44,8 @@ public class SQLUtils {
         catch (SQLException ex) {
             return false;
         }
+        checkTables();
+        getSQLDefaultColorOrCode(false, true);
         return true;
     }
 
@@ -71,7 +77,6 @@ public class SQLUtils {
     }
 
     public void updatePlayer(String playername, String uuid) {
-        checkTables();
         PreparedStatement pst = null;
 
         try {
@@ -90,6 +95,8 @@ public class SQLUtils {
                 pst.setString(2, uuid);
                 pst.executeUpdate();
             }
+            getSQLColor(playername, true);
+            getSQLPlayerDefaultColorCode(playername, true);
         }
         catch (SQLException ex) {
             log.severe(ex.getMessage());
@@ -107,16 +114,20 @@ public class SQLUtils {
     }
 
     public String getPlayerName(String uuid) {
-        checkTables();
         PreparedStatement pst = null;
         ResultSet rs = null;
         String result = null;
+
+        if (uuidnamecache.containsKey(uuid)) {
+            return uuidnamecache.get(uuid);
+        }
 
         try {
             pst = con.prepareStatement("SELECT Name FROM PlayerList WHERE UniqueID=?");
             pst.setString(1, uuid);
             rs = pst.executeQuery();
             if (rs.next()) {
+                uuidnamecache.put(uuid, rs.getString(1));
                 result = rs.getString(1);
             }
         }
@@ -140,16 +151,20 @@ public class SQLUtils {
     }
 
     public String getUUID(String playername) {
-        checkTables();
         PreparedStatement pst = null;
         ResultSet rs = null;
         String result = null;
+
+        if (nameuuidcache.containsKey(playername)) {
+            return nameuuidcache.get(playername);
+        }
 
         try {
             pst = con.prepareStatement("SELECT UniqueID FROM PlayerList WHERE Name=?");
             pst.setString(1, playername);
             rs = pst.executeQuery();
             if (rs.next()) {
+                nameuuidcache.put(playername, rs.getString(1));
                 result = rs.getString(1);
             }
         }
@@ -179,7 +194,7 @@ public class SQLUtils {
         String uuid = getUUID(playername);
         String result = null;
 
-        if (isCached(playername) && !forceupdate) {
+        if (colorcache.containsKey(playername) && !forceupdate) {
             return colorcache.get(playername);
         }
 
@@ -207,8 +222,8 @@ public class SQLUtils {
                 log.warning(ex.getMessage());
             }
         }
-        if (!isCached(playername) || forceupdate) {
-            if (isCached(playername)) {
+        if (!colorcache.containsKey(playername) || forceupdate) {
+            if (colorcache.containsKey(playername)) {
                 colorcache.remove(playername);
             }
             colorcache.put(playername, result);
@@ -216,10 +231,16 @@ public class SQLUtils {
         return result;
     }
 
-    public void setSQLColor(String playername, String color, boolean removefromcache) {
+    public void setSQLColor(String playername, String color) {
         checkTables();
         PreparedStatement pst = null;
         String uuid = getUUID(playername);
+
+        if (colorcache.containsKey(playername)) {
+            colorcache.remove(playername);
+        }
+        colorcache.put(playername, color);
+
         try {
             pst = con.prepareStatement("INSERT INTO Colors(UniqueID, Color) VALUES(?, ?) ON DUPLICATE KEY UPDATE UniqueID=VALUES(UniqueID), Color=VALUES(Color)");
             pst.setString(1, uuid);
@@ -239,13 +260,15 @@ public class SQLUtils {
                 log.warning(ex.getMessage());
             }
         }
-        if (removefromcache && isCached(playername)) {
-            colorcache.remove(playername);
-        }
     }
 
     public void checkDefaultSQLColor(String playername) {
-
+        if (getSQLDefaultColorOrCode(false, false) == null) {
+            return;
+        }
+        if (!getSQLPlayerDefaultColorCode(playername, false).equals(getSQLDefaultColorOrCode(false, false))) {
+            setSQLPlayerDefaultColorAndCode(getSQLDefaultColorOrCode(true, false), getSQLDefaultColorOrCode(false, false), playername);
+        }
     }
 
     public String getSQLDefaultColorOrCode(boolean color, boolean forceupdate) {
@@ -273,6 +296,9 @@ public class SQLUtils {
                     result = rs.getString(2);
                 }
             }
+            else {
+                ColorUtils.newDefaultColor(ChatColor.translateAlternateColorCodes('&', "&f"));
+            }
         }
         catch (SQLException ex) {
             log.severe(ex.getMessage());
@@ -293,13 +319,16 @@ public class SQLUtils {
         return result;
     }
 
-    public void setSQLDefaultColor(String code, String color) {
+    public void setSQLDefaultColorAndCode(String code, String color) {
         PreparedStatement pst = null;
+
+        defaultdata[0] = code;
+        defaultdata[1] = color;
 
         try {
             if (getSQLDefaultColorOrCode(false, true) != null) {
                 pst = con.prepareStatement("DELETE FROM DefaultCode WHERE DefID=?");
-                pst.setString(1, getSQLDefaultColorOrCode(false, true));
+                pst.setString(1, getSQLDefaultColorOrCode(false, false));
                 pst.executeUpdate();
             }
             pst = con.prepareStatement("INSERT INTO DefaultColor(DefID, Color) VALUES(?, ?)");
@@ -322,17 +351,22 @@ public class SQLUtils {
         }
     }
 
-    public String getSQLPlayerDefaultColorCode(String playername) {
+    public String getSQLPlayerDefaultColorCode(String playername, boolean forceupdate) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         String result = null;
         String uuid = getUUID(playername);
+
+        if (defcolorcache.containsKey(playername) && !forceupdate) {
+            return defcolorcache.get(playername);
+        }
 
         try {
             pst = con.prepareStatement("SELECT DefID FROM DefaultColorList WHERE UniqueID=?");
             pst.setString(1, uuid);
             rs = pst.executeQuery();
             if (rs.next()) {
+                defcolorcache.put(playername, rs.getString(1));
                 result = rs.getString(1);
             }
         }
@@ -355,11 +389,44 @@ public class SQLUtils {
         return result;
     }
 
-    public boolean isCached(String playername) {
-        if (colorcache.containsKey(playername)) {
-            return true;
+    public void setSQLPlayerDefaultColorAndCode(String color, String code, String playername) {
+        PreparedStatement pst = null;
+        String uuid = getUUID(playername);
+
+        try {
+            pst = con.prepareStatement("INSERT INTO DefaultColorList(UniqueID, DefID) VALUES(?, ?) ON DUPLICATE KEY UPDATE UniqueID=VALUES(UniqueID), DefID=VALUES(DefID)");
+            pst.setString(1, uuid);
+            pst.setString(2, code);
+            pst.executeUpdate();
+            setSQLColor(playername, color);
         }
-        return false;
+        catch (SQLException ex) {
+            log.severe(ex.getMessage());
+        }
+        finally {
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+            }
+            catch (SQLException ex) {
+                log.warning(ex.getMessage());
+            }
+        }
+    }
+
+    public void removePlayerFromCaches(String playername) {
+        if (colorcache.containsKey(playername)) {
+            colorcache.remove(playername);
+        }
+        if (nameuuidcache.containsKey(playername)) {
+            String uuid = nameuuidcache.get(playername);
+            nameuuidcache.remove(playername);
+            uuidnamecache.remove(uuid);
+        }
+        if (defcolorcache.containsKey(playername)) {
+            defcolorcache.remove(playername);
+        }
     }
 
     public Connection getConnection() {

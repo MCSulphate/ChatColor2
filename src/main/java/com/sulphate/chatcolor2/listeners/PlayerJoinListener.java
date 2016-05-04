@@ -25,19 +25,23 @@ public class PlayerJoinListener implements Listener {
     public void onEvent(PlayerJoinEvent e) {
 
         Player p = e.getPlayer();
+
+        //This method now caches their UUID, Name, Color and if applicable, DefaultID if SQL is enabled.
         FileUtils.updatePlayer(p);
 
-        String name = e.getPlayer().getName();
-        FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
+        if(!MainClass.get().getBackendType().equals("sql")) {
+            String name = e.getPlayer().getName();
+            FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
 
-        if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
-            ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"), false);
+            if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
+                ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"), false);
+            }
+
+            checkDefault();
         }
 
-        checkDefault();
-
         if (MainClass.get().getConfig().getBoolean("settings.join-message")) {
-            String color = ColorUtils.getColor(e.getPlayer().getName(), false, false);
+            String color = ColorUtils.getColor(e.getPlayer().getName(), false);
             if (color.contains("rainbow")) {
                 String mods = color.replace("rainbow", "");
                 String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
@@ -55,7 +59,7 @@ public class PlayerJoinListener implements Listener {
                 p.sendMessage(CCStrings.yourcol + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName(), false, false) + CCStrings.colthis);
+            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName(), false) + CCStrings.colthis);
         }
         ColorUtils.check(p);
     }

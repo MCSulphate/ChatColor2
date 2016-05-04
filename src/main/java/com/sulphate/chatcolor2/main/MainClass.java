@@ -11,6 +11,9 @@ import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.NewChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
+import com.sulphate.chatcolor2.listeners.PlayerQuitListener;
+import com.sulphate.chatcolor2.schedulers.SQLColorForceUpdater;
+import com.sulphate.chatcolor2.schedulers.SQLDefaultForceUpdater;
 import com.sulphate.chatcolor2.utils.Metrics;
 import com.sulphate.chatcolor2.utils.SQLUtils;
 import org.bukkit.Bukkit;
@@ -29,6 +32,8 @@ public class MainClass extends JavaPlugin {
     private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<Player,ConfirmScheduler>();
     private Logger log = Bukkit.getLogger();
     private SQLUtils sql = new SQLUtils();
+    private SQLDefaultForceUpdater defup = new SQLDefaultForceUpdater();
+    private SQLColorForceUpdater colup = new SQLColorForceUpdater();
 
     @Override
     public void onEnable() {
@@ -56,14 +61,22 @@ public class MainClass extends JavaPlugin {
                 ioex = true;
             }
         }
-        sqlenabled = getConfig().getString("backend.type").equals("sql");
+        sqlenabled = getBackendType().equals("sql");
         if (sqlenabled) {
             connected = sql.connectToDataBase();
+            if (connected) {
+                defup.startForceUpdater();
+                colup.startForceUpdater();
+                Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(), this);
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    sql.updatePlayer(p.getName(), p.getUniqueId().toString());
+                }
+            }
         }
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bMetrics Stats Enabled +Bug Fixes");
+        log.info(CCStrings.prefix + "Current update: §bMySQL Support Update!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
@@ -94,13 +107,18 @@ public class MainClass extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin = null;
+
         try {
+            defup.cancel();
+            colup.cancel();
             if (sql.getConnection() != null) {
                 sql.getConnection().close();
             }
         }
         catch (SQLException ex) {
             log.warning(ex.getMessage());
+        }
+        catch (NullPointerException ex) {
         }
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }

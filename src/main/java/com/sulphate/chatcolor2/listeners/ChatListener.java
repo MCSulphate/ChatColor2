@@ -23,26 +23,30 @@ public class ChatListener implements Listener {
 
         String name = e.getPlayer().getName();
 
-        File f = new File(MainClass.get().getDataFolder() + File.separator + "defcol.yml");
-        if (f.exists()) {
-            String defcol = YamlConfiguration.loadConfiguration(f).getString("default-color");
-            String defcode = YamlConfiguration.loadConfiguration(f).getString("default-code");
-            if (ColorUtils.getDefaultCode(name) == null) {
-                FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-                conf.set("default-code", defcode);
-                FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol, false);
-            }
-            else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
-                FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-                conf.set("default-code", defcode);
-                FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol, false);
-            }
+        if (MainClass.get().getBackendType().equals("sql")) {
+            MainClass.get().getSQL().checkDefaultSQLColor(name);
+        }
+        else {
+            File f = new File(MainClass.get().getDataFolder() + File.separator + "defcol.yml");
+            if (f.exists()) {
+                String defcol = YamlConfiguration.loadConfiguration(f).getString("default-color");
+                String defcode = YamlConfiguration.loadConfiguration(f).getString("default-code");
+                if (ColorUtils.getDefaultCode(name) == null) {
+                    FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
+                    conf.set("default-code", defcode);
+                    FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
+                    ColorUtils.setColor(name, defcol, false);
+                } else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
+                    FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
+                    conf.set("default-code", defcode);
+                    FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
+                    ColorUtils.setColor(name, defcol, false);
+                }
 
+            }
         }
 
-        String color = ColorUtils.getColor(e.getPlayer().getName(), false, false);
+        String color = ColorUtils.getColor(e.getPlayer().getName(), false);
         if (e.getMessage().contains("&") && !MainClass.get().getConfig().getBoolean("settings.color-override")) {
             e.setMessage(e.getMessage().replace("&", "§"));
             return;
@@ -77,7 +81,7 @@ public class ChatListener implements Listener {
             return;
         }
 
-        e.setMessage(ColorUtils.getColor(e.getPlayer().getName(), false, false) + e.getMessage().replace("&", ""));
+        e.setMessage(ColorUtils.getColor(e.getPlayer().getName(), false) + e.getMessage().replace("&", ""));
 
     }
 
