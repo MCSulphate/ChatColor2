@@ -78,14 +78,14 @@ public class NewChatColorCommand implements CommandExecutor {
                         sb2.append("&" + c + mods + c);
                     }
                     String end = colorString(sb2.toString());
-                    ColorUtils.setColor(args[0], colorString(color), false);
+                    ColorUtils.setColor(args[0], colorString(color));
                     s.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + end);
                     if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + end);
                     }
                     return true;
                 }
-                ColorUtils.setColor(args[0], colorString(color), false);
+                ColorUtils.setColor(args[0], colorString(color));
                 s.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
                 if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                     Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", s.getName()) + colorString(color) + CCStrings.colthis);
@@ -111,11 +111,11 @@ public class NewChatColorCommand implements CommandExecutor {
                     sb2.append("&" + c + mods + c);
                 }
                 String end = colorString(sb2.toString());
-                ColorUtils.setColor(s.getName(), colorString(color), false);
+                ColorUtils.setColor(s.getName(), colorString(color));
                 s.sendMessage(CCStrings.setownc + end);
                 return true;
             }
-            ColorUtils.setColor(s.getName(), colorString(color), false);
+            ColorUtils.setColor(s.getName(), colorString(color));
             s.sendMessage(CCStrings.setownc + colorString(color) + CCStrings.colthis);
             return true;
 
@@ -149,14 +149,14 @@ public class NewChatColorCommand implements CommandExecutor {
                         sb2.append("&" + c + mods + c);
                     }
                     String end = colorString(sb2.toString());
-                    ColorUtils.setColor(args[0], colorString(color), false);
+                    ColorUtils.setColor(args[0], colorString(color));
                     sender.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + end);
                     if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", "CONSOLE") + end);
                     }
                     return true;
                 }
-                ColorUtils.setColor(args[0], colorString(color), false);
+                ColorUtils.setColor(args[0], colorString(color));
                 sender.sendMessage(CCStrings.setothc.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
                 if (MainClass.get().getConfig().getBoolean("settings.notify-others") && Bukkit.getPlayer(args[0]) != null) {
                     Bukkit.getPlayer(args[0]).sendMessage(CCStrings.setyourc.replace("[player]", "CONSOLE") + colorString(color) + CCStrings.colthis);
@@ -176,7 +176,7 @@ public class NewChatColorCommand implements CommandExecutor {
         boolean other = false;
 
         if (args.length == 0) {
-            String color = ColorUtils.getColor(player.getName(), false);
+            String color = ColorUtils.getColor(player.getName());
             if (color.contains("rainbow")) {
                 verifyRainbowSequence(MainClass.get().getConfig().getString("settings.rainbow-sequence"), true);
                 char[] seq = MainClass.get().getConfig().getString("settings.rainbow-sequence").toCharArray();
@@ -510,10 +510,6 @@ public class NewChatColorCommand implements CommandExecutor {
                 if (!verifyRainbowSequence(seq, false)) {
                     player.sendMessage(CCStrings.prefix + "§e" + args[2] + " §cis an invalid color sequence!");
                     player.sendMessage(CCStrings.help);
-                    return;
-                }
-                if (seq.length() >= 49) {
-                    player.sendMessage(CCStrings.invcom);
                     return;
                 }
                 String[] ss = MainClass.get().getConfig().getString("settings.rainbow-sequence").split("");

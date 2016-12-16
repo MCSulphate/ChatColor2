@@ -53,10 +53,6 @@ public class FileUtils {
     }
 
     public static void updatePlayer(Player p) {
-        if (MainClass.get().getBackendType().equals("sql")) {
-            MainClass.get().getSQL().updatePlayer(p.getName(), p.getUniqueId().toString());
-            return;
-        }
         String name = p.getName();
         String uuid = p.getUniqueId().toString();
         File plist = getPlayerList();

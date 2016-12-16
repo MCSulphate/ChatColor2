@@ -25,23 +25,19 @@ public class PlayerJoinListener implements Listener {
     public void onEvent(PlayerJoinEvent e) {
 
         Player p = e.getPlayer();
-
-        //This method now caches their UUID, Name, Color and if applicable, DefaultID if SQL is enabled.
         FileUtils.updatePlayer(p);
 
-        if(!MainClass.get().getBackendType().equals("sql")) {
-            String name = e.getPlayer().getName();
-            FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
+        String name = e.getPlayer().getName();
+        FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
 
-            if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
-                ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"), false);
-            }
-
-            checkDefault();
+        if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
+            ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"));
         }
 
+        checkDefault();
+
         if (MainClass.get().getConfig().getBoolean("settings.join-message")) {
-            String color = ColorUtils.getColor(e.getPlayer().getName(), false);
+            String color = ColorUtils.getColor(e.getPlayer().getName());
             if (color.contains("rainbow")) {
                 String mods = color.replace("rainbow", "");
                 String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
@@ -59,7 +55,7 @@ public class PlayerJoinListener implements Listener {
                 p.sendMessage(CCStrings.yourcol + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName(), false) + CCStrings.colthis);
+            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName()) + CCStrings.colthis);
         }
         ColorUtils.check(p);
     }
@@ -76,13 +72,13 @@ public class PlayerJoinListener implements Listener {
             FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
             conf.set("default-code", defcode);
             FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol, false);
+            ColorUtils.setColor(name, defcol);
         }
         else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
             FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
             conf.set("default-code", defcode);
             FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol, false);
+            ColorUtils.setColor(name, defcol);
         }
     }
 

@@ -15,12 +15,7 @@ import org.bukkit.entity.Player;
 
 public class ColorUtils {
 
-    private static SQLUtils sql = MainClass.get().getSQL();
-
-    public static boolean setColor(String playername, String color, boolean removefromcache) {
-        if (MainClass.get().getBackendType().equals("sql")) {
-            sql.setSQLColor(playername, color);
-        }
+    public static boolean setColor(String playername, String color) {
         if (FileUtils.getPlayerFile(playername) == null) {
             return false;
         }
@@ -33,13 +28,11 @@ public class ColorUtils {
         return true;
     }
 
-    public static String getColor(String playername, boolean forceupdate) {
-        if (MainClass.get().getBackendType().equals("sql")) {
-            return sql.getSQLColor(playername, forceupdate);
-        }
+    public static String getColor(String playername) {
         if (FileUtils.getPlayerFile(playername) == null) {
             return null;
         }
+
         FileConfiguration fc = FileUtils.getPlayerFileConfig(playername);
         return fc.getString("color");
     }
@@ -51,9 +44,6 @@ public class ColorUtils {
     }
 
     public static String getDefaultCode(String playername) {
-        if (MainClass.get().getConfig().getString("backend.type").equals("sql")) {
-            return sql.getSQLPlayerDefaultColorCode(playername, false);
-        }
         if (FileUtils.getPlayerFile(playername) == null) {
             return null;
         }
@@ -68,12 +58,6 @@ public class ColorUtils {
     }
 
     public static void newDefaultColor(String newcolor) {
-        if (MainClass.get().getConfig().getString("backend.type").equals("sql")) {
-            Random r = new Random();
-            String code = String.valueOf(r.nextInt(999999));
-            sql.setSQLDefaultColorAndCode(code, newcolor);
-            return;
-        }
         MainClass.get().getConfig().set("settings.default-color", newcolor);
         MainClass.get().saveConfig();
         MainClass.get().reloadConfig();
