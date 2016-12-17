@@ -16,7 +16,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.Arrays;
 import java.util.List;
 
-public class NewChatColorCommand implements CommandExecutor {
+public class ChatColorCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
@@ -198,7 +198,7 @@ public class NewChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        List<String> cmds = Arrays.asList("set", "reload", "reset", "permhelp");
+        List<String> cmds = Arrays.asList("set", "reload", "reset", "permhelp", "cmdhelp");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("set") && args.length < 3) {
                 player.sendMessage(CCStrings.notargs);

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.sulphate.chatcolor2.commands.NewChatColorCommand;
+import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
@@ -65,7 +65,7 @@ public class MainClass extends JavaPlugin {
         }
         log.info("§b------------------------------------------------------------");
         //Commands & Listeners
-        getCommand("chatcolor").setExecutor(new NewChatColorCommand());
+        getCommand("chatcolor").setExecutor(new ChatColorCommand());
         getCommand("chatcolor").setAliases(Arrays.asList(getConfig().getString("settings.command-name")));
         getCommand("confirm").setExecutor(new ConfirmCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
