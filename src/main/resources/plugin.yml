@@ -6,7 +6,7 @@ author: Sulphate
 commands:
 
   chatcolor:
-    description: Main command for ChatColor 2.
+    description: main command for ChatColor 2.
     usage: /<command> [player] <color> [modifiers]
 
   confirm:
