@@ -68,13 +68,7 @@ public class PlayerJoinListener implements Listener {
         }
         String defcol = YamlConfiguration.loadConfiguration(f).getString("default-color");
         String defcode = YamlConfiguration.loadConfiguration(f).getString("default-code");
-        if (ColorUtils.getDefaultCode(name) == null) {
-            FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-            conf.set("default-code", defcode);
-            FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol);
-        }
-        else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
+        if (ColorUtils.getDefaultCode(name) == null || !ColorUtils.getDefaultCode(name).equals(defcode)) {
             FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
             conf.set("default-code", defcode);
             FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
