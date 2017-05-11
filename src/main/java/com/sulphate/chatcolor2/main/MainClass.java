@@ -23,7 +23,7 @@ import com.sulphate.chatcolor2.utils.CCStrings;
 public class MainClass extends JavaPlugin {
 
     private static MainClass plugin;
-    private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<Player,ConfirmScheduler>();
+    private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<>();
     private Logger log = Bukkit.getLogger();
 
     @Override
@@ -35,9 +35,7 @@ public class MainClass extends JavaPlugin {
         if (getConfig().getString("loaded") == null) {
             reload();
         }
-        //Setting msg list and checking config for errors!
-        List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "set-description", "is-currently", "to-change");
-        getConfig().set("message-list", messages);
+        //Checking config for errors!
         checkConfig();
         //Checking if Metrics is allowed for this plugin
         metrics = getConfig().getBoolean("stats");
@@ -52,8 +50,8 @@ public class MainClass extends JavaPlugin {
         }
         //Console startup messages
         log.info("§b------------------------------------------------------------");
-        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bMetrics Stats Enabled +Bug Fixes");
+        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
+        log.info(CCStrings.prefix + "Current update: §bMinor code improvements + §averified §bworking on 1.9 - 1.11!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
@@ -76,7 +74,7 @@ public class MainClass extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin = null;
-        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion() + " §ehas been §cDisabled§e!");
+        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + this.getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
     public static MainClass get() {
@@ -98,7 +96,7 @@ public class MainClass extends JavaPlugin {
 
     public void reload() {
         getConfig().set("loaded", "no");
-        getConfig().set("version", this.getDescription().getVersion());
+        getConfig().set("version", getDescription().getVersion());
         getConfig().set("stats", true);
         getConfig().set("settings.color-override", false);
         getConfig().set("settings.notify-others", true);
@@ -133,6 +131,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.reloaded-config", "Reloaded the config!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
         getConfig().set("messages.is-currently", " &eis currently: ");
+        getConfig().set("messages.to-change", "You are changing it to: ");
         getConfig().set("messages.command-exists", "&cThat command already exists!");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
@@ -146,7 +145,7 @@ public class MainClass extends JavaPlugin {
         //HashMap with all the defaults in it
         HashMap<String, Object> hmp = new HashMap<String, Object>();
         hmp.put("loaded", "yes");
-        hmp.put("version", this.getDescription().getVersion());
+        hmp.put("version", getDescription().getVersion());
         hmp.put("stats", true);
         hmp.put("settings.color-override", false);
         hmp.put("settings.notify-others", true);
@@ -154,7 +153,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.confirm-timeout", 10);
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
-        TODO: hmp.put("settings.command-name", "chatcolor");
+        hmp.put("settings.command-name", "chatcolor");
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.not-enough-args", "&cNot enough arguments!");
         hmp.put("messages.too-many-args", "&cToo many arguments!");
@@ -240,8 +239,8 @@ public class MainClass extends JavaPlugin {
                 saveConfig();
             }
         }
-        if (getConfig().getString("version") != Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion()) {
-            getConfig().set("version", Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
+        if (getConfig().getString("version") != getDescription().getVersion()) {
+            getConfig().set("version", getDescription().getVersion());
             saveConfig();
         }
 
