@@ -34,7 +34,7 @@ public class CCStrings {
     public static String iscur = MainClass.get().getMessage("is-currently").replace('&', ChatColor.COLOR_CHAR);
     public static String tochng = prefix + MainClass.get().getMessage("to-change").replace('&', ChatColor.COLOR_CHAR);
     public static String cmdexst = prefix + MainClass.get().getMessage("command-exists").replace('&', ChatColor.COLOR_CHAR);
-    public static String internalerror = prefix + "§cWARNING! §eThere has been an internal error! The plugin has been disabled.";
-    public static String errordetails = prefix + "The error that occurred was: §c{error}";
+    public static String interr = prefix + MainClass.get().getMessages("internal-error").replace('&', ChatColor.COLOR_CHAR);
+    public static String errdet = prefix + MainClass.get().getMessages("error-details").replace('&', ChatColor.COLOR_CHAR);
 
 }
