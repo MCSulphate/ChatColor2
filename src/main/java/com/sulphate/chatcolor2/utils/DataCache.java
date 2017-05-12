@@ -1,4 +1,4 @@
-package com.sulphate.chatcolor2.utils;
+package com.sulphate.chatcolor2.utils; //TODO: Remove ColorUtils completely when done, come up with a better name for this class.
 
 import com.sulphate.chatcolor2.main.MainClass;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,7 +9,7 @@ import java.util.*;
 public class DataCache {
 
     private HashMap<String, String> settings = new HashMap<>();
-    private HashMap<String, String> colours = new HashMap<>();
+    private HashMap<String, String> colors = new HashMap<>();
     private HashMap<String, String> messages = new HashMap<>();
     private HashMap<String, String> defcodes = new HashMap<>(); //TODO: Set default defcode of 0 on join.
     private FileConfiguration playerlist;
@@ -65,7 +65,11 @@ public class DataCache {
     }
     public boolean loadPlayerData() {
         for (string key : playerlist.getKeys()) {
-               
+            String uuid = playerlist.get(key);
+            String color = ColorUtils.getColor(uuid) == null || ColorUtils.getColor(uuid) == "" ? "§f" : ColorUtils.getColor(uuid);
+            String defcode = ColorUtils.getDefaultCode(uuid) == null || ColorUtils.getDefaultCode(uuid) == "" ? "0" : ColorUtils.getDefaultCode(uuid);
+            colors.put(uuid, color);
+            defcodes.put(uuid, defcode);
         }
     }
 
@@ -90,6 +94,36 @@ public class DataCache {
     
     private void reloadConfig() {
         MainClass.get().reloadConfig();   
+    }
+    
+    public String getColor(String uuid) {
+        return colors.get(uuid);
+    }
+    public void setColor(String uuid, String color) {
+        
+    }
+    private void loadColor(String uuid) {
+        
+    }
+    private void saveColor(String uuid) {
+    
+    }
+    
+    public String getDefaultCode(String uuid) {
+        return defcodes.get(uuid);
+    }
+    public void setDefaultCode(String uuid, String defcode) {
+        
+    }
+    private void loadDefaultCode(String uuid) {
+        
+    }
+    private void saveDefaultCode(String uuid) {
+        
+    }
+    
+    public String getMessage(String message) {
+        return messages.get("messages." + message);
     }
 
 }
