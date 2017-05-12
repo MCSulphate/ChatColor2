@@ -77,7 +77,7 @@ public class MainClass extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin = null;
-        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + this.getDescription().getVersion() + " §ehas been §cDisabled§e!");
+        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
     public static MainClass get() {
@@ -136,6 +136,8 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.is-currently", " &eis currently: ");
         getConfig().set("messages.to-change", "You are changing it to: ");
         getConfig().set("messages.command-exists", "&cThat command already exists!");
+        getConfig().set("messages.internal-error", "&cInternal error. Please check the console for details.");
+        getConfig().set("messages.error-details", "The plugin has been disabled. Error details: ");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", "yes");
@@ -185,6 +187,8 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.is-currently", " &eis currently: ");
         hmp.put("messages.to-change", "You are changing it to: ");
         hmp.put("messages.command-exists", "&cThat command already exists!");
+        hmp.put("messages.internal-error", "&cInternal error. Please check the console for details.");
+        hmp.put("messages.error-details", "The plugin has been disabled. Error details: ");
         
         //ArrayList with all keys
         List<String> keys = new ArrayList<String>();
@@ -227,6 +231,8 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.is-currently");
         keys.add("messages.to-change");
         keys.add("messages.command-exists");
+        keys.add("messages.internal-error");
+        keys.add("messages.error-details");
 
         for (String st : keys) {
             if (!getConfig().contains(st)) {
@@ -252,7 +258,7 @@ public class MainClass extends JavaPlugin {
     }
 
     public String getMessage(String message) {
-        return getConfig().getString("messages." + message);
+        return getConfig().getString("messages." + message); //TODO: Change this line.
     }
 
     public static boolean getPluginEnabled() {
