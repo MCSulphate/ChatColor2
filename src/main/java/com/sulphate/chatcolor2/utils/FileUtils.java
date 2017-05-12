@@ -52,7 +52,7 @@ public class FileUtils {
         }
     }
 
-    public static void updatePlayer(Player p) {
+    public static void updatePlayer(Player p) { //TODO: Change so it uses the cache instead.
         String name = p.getName();
         String uuid = p.getUniqueId().toString();
         File plist = getPlayerList();
@@ -78,6 +78,7 @@ public class FileUtils {
     }
 
     public static File getPlayerFile(String playername) {
+        checkPlayerFile(playername);
         String uuid = getPlayerListConfig().getString(playername);
         return new File(getPlayersFolder(), uuid + ".yml");
     }
