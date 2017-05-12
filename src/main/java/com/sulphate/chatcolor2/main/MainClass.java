@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
+import com.sulphate.chatcolor2.utils.DataCache;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,6 +26,8 @@ public class MainClass extends JavaPlugin {
     private static MainClass plugin;
     private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<>();
     private Logger log = Bukkit.getLogger();
+    private static boolean pluginEnabled = true;
+    private static DataCache cache = new DataCache();
 
     @Override
     public void onEnable() {
@@ -250,6 +253,17 @@ public class MainClass extends JavaPlugin {
 
     public String getMessage(String message) {
         return getConfig().getString("messages." + message);
+    }
+
+    public static boolean getPluginEnabled() {
+        return pluginEnabled;
+    }
+    public static void setPluginEnabled(boolean enabled) {
+        pluginEnabled = enabled;
+    }
+
+    public static DataCache getCache() {
+        return cache;
     }
 
 }
