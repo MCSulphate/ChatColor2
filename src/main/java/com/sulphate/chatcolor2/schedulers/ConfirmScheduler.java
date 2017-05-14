@@ -23,7 +23,7 @@ public class ConfirmScheduler {
                 p.sendMessage(CCStrings.didnotconfirm);
                 MainClass.get().removeConfirmee(p);
             }
-        },MainClass.get().getConfig().getInt("settings.confirm-timeout") * 20);
+        },(int)MainClass.getUtils().getSetting("confirm-timeout") * 20);
 
     }
 

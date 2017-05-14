@@ -38,7 +38,7 @@ public class CC2Utils {
     private void loadPlayerList() {
         playerlist = getPlayerListConfig();
     }
-    private boolean loadSettings() {
+    public boolean loadSettings() {
         settings = new HashMap<>();
         
         reloadConfig();
@@ -65,7 +65,7 @@ public class CC2Utils {
         settings.remove(setting);
         settings.put(setting, value);
     }
-    private boolean loadMessages() {
+    public boolean loadMessages() {
         messages = new HashMap<>();
         
         reloadConfig();
@@ -96,6 +96,14 @@ public class CC2Utils {
             Bukkit.getLogger().warning(CCStrings.errordetails + "§bError loading player data. Please check there is no invalid data.");
             return false;
         }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!playerlist.contains(player.getName())) {
+                String uuid = player.getUniqueId().toString();
+                colors.put(uuid, currentDefaultColor);
+                defcodes.put(uuid, currentDefaultCode);
+                playerlist.set(player.getName(), uuid);
+            }
+        }
 
         return true;
     }
@@ -113,7 +121,7 @@ public class CC2Utils {
         reloadConfig();
         FileConfiguration config = MainClass.get().getConfig();
         for (Map.Entry<String, Object> entry : settings.entrySet()) {
-            config.set(entry.getKey(), entry.getValue());
+            config.set("settings." + entry.getKey(), entry.getValue());
         }
         MainClass.get().saveConfig();
     }
@@ -206,9 +214,18 @@ public class CC2Utils {
     //File Utilities
     public void updatePlayer(Player player) {
         playerlist.set(player.getName(), player.getUniqueId().toString());
+        if (!colors.containsKey(player.getUniqueId().toString())) {
+            String uuid = player.getUniqueId().toString();
+            colors.put(uuid, currentDefaultColor);
+            defcodes.put(uuid, currentDefaultCode);
+        }
     }
     public String getUUID(String username) {
-        return (String)playerlist.get(username);
+        if (playerlist.contains(username)) {
+            return playerlist.getString("username");
+        } else {
+            return null;
+        }
     }
 
     private void saveConfig(FileConfiguration config, File file) {

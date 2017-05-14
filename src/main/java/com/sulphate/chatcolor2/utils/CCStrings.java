@@ -37,4 +37,7 @@ public class CCStrings {
     public static String internalerror = prefix + MainClass.getUtils().getMessage("internal-error").replace('&', ChatColor.COLOR_CHAR);
     public static String errordetails = prefix + MainClass.getUtils().getMessage("error-details").replace('&', ChatColor.COLOR_CHAR);
     public static String plugindisabled = prefix + MainClass.getUtils().getMessage("plugin-disabled").replace('&', ChatColor.COLOR_CHAR);
+    public static String failedtoenable = prefix + MainClass.getUtils().getMessage("failed-to-enable").replace('&', ChatColor.COLOR_CHAR);
+    public static String successfullyenabled = prefix + MainClass.getUtils().getMessage("successfully-enabled").replace('&', ChatColor.COLOR_CHAR);
+    public static String alreadyenabled = prefix + MainClass.getUtils().getMessage("already-enabled").replace('&', ChatColor.COLOR_CHAR);
 }

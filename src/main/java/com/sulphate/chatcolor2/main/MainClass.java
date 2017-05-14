@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
+import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ public class MainClass extends JavaPlugin {
     private Logger log = Bukkit.getLogger();
     private static boolean pluginEnabled = true;
     private static CC2Utils utils = new CC2Utils();
+    private AutoSaveScheduler autosaver;
 
     @Override
     public void onEnable() {
@@ -43,6 +45,9 @@ public class MainClass extends JavaPlugin {
         checkConfig();
         //Load all data.
         utils.loadAllData();
+        //Start autosaver.
+        autosaver = new AutoSaveScheduler();
+        autosaver.startTask();
         //Checking if Metrics is allowed for this plugin
         metrics = getConfig().getBoolean("stats");
         if (metrics) {
@@ -57,7 +62,7 @@ public class MainClass extends JavaPlugin {
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bData caching + massive code improvements!");
+        log.info(CCStrings.prefix + "Current update: §bData caching, new commands + §amassive §bcode improvements!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
@@ -70,7 +75,6 @@ public class MainClass extends JavaPlugin {
         log.info("§b------------------------------------------------------------");
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
-        getCommand("chatcolor").setAliases(Arrays.asList(getConfig().getString("settings.command-name")));
         getCommand("confirm").setExecutor(new ConfirmCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
@@ -105,6 +109,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("loaded", false);
         getConfig().set("version", getDescription().getVersion());
         getConfig().set("stats", true);
+        getConfig().set("settings.auto-save", true);
         getConfig().set("settings.color-override", false);
         getConfig().set("settings.notify-others", true);
         getConfig().set("settings.join-message", true);
@@ -143,6 +148,9 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.internal-error", "&cInternal error. Please check the console for details.");
         getConfig().set("messages.error-details", "Error details: ");
         getConfig().set("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
+        getConfig().set("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
+        getConfig().set("messages.successfully-enabled", "The plugin has been successfully enabled.");
+        getConfig().set("messages.already-enabled", "The plugin is already enabled.");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
         getConfig().set("loaded", true);
@@ -157,6 +165,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("loaded", true);
         hmp.put("version", getDescription().getVersion());
         hmp.put("stats", true);
+        hmp.put("settings.auto-save", true);
         hmp.put("settings.color-override", false);
         hmp.put("settings.notify-others", true);
         hmp.put("settings.join-message", true);
@@ -195,12 +204,16 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.internal-error", "&cInternal error. Please check the console for details.");
         hmp.put("messages.error-details", "Error details: ");
         hmp.put("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
+        hmp.put("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
+        hmp.put("messages.successfully-enabled", "The plugin has been successfully enabled.");
+        hmp.put("messages.already-enabled", "The plugin is already enabled.");
         
         //ArrayList with all keys
         List<String> keys = new ArrayList<String>();
         keys.add("loaded");
         keys.add("version");
         keys.add("stats");
+        keys.add("settings.auto-save");
         keys.add("settings.color-override");
         keys.add("settings.notify-others");
         keys.add("settings.join-message");
@@ -240,6 +253,9 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.internal-error");
         keys.add("messages.error-details");
         keys.add("messages.plugin-disabled");
+        keys.add("messages.failed-to-enable");
+        keys.add("messages.successfully-enabled");
+        keys.add("messages.already-enabled");
 
         for (String st : keys) {
             if (!getConfig().contains(st)) {
@@ -255,7 +271,7 @@ public class MainClass extends JavaPlugin {
                 saveConfig();
             }
         }
-        if (getConfig().getString("version") != getDescription().getVersion()) {
+        if (!getConfig().getString("version").equals(getDescription().getVersion())) {
             getConfig().set("version", getDescription().getVersion());
             saveConfig();
         }
@@ -268,7 +284,7 @@ public class MainClass extends JavaPlugin {
         return pluginEnabled;
     }
     public static void setPluginEnabled(boolean enabled) {
-        if (enabled == false) {
+        if (!enabled) {
             Bukkit.getLogger().info(CCStrings.plugindisabled);
         }
         pluginEnabled = enabled;

@@ -18,54 +18,39 @@ public class ChatListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEvent(AsyncPlayerChatEvent e) {
 
-        String name = e.getPlayer().getName();
-
-        File f = new File(MainClass.get().getDataFolder() + File.separator + "defcol.yml");
-        if (f.exists()) {
-            String defcol = YamlConfiguration.loadConfiguration(f).getString("default-color");
-            String defcode = YamlConfiguration.loadConfiguration(f).getString("default-code");
-            if (ColorUtils.getDefaultCode(name) == null) {
-                FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-                conf.set("default-code", defcode);
-                FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol);
-            }
-            else if (!ColorUtils.getDefaultCode(name).equals(defcode)) {
-                FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-                conf.set("default-code", defcode);
-                FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-                ColorUtils.setColor(name, defcol);
-            }
-
+        if (!MainClass.getPluginEnabled()) {
+            return;
         }
 
-        String color = ColorUtils.getColor(e.getPlayer().getName());
-        if (e.getMessage().contains("&") && !MainClass.get().getConfig().getBoolean("settings.color-override")) {
+        String uuid = e.getPlayer().getUniqueId().toString();
+        checkDefault(uuid);
+
+        String color = MainClass.getUtils().getColor(uuid);
+        if (e.getMessage().contains("&") && !(Boolean)MainClass.getUtils().getSetting("color-override")) {
             e.setMessage(e.getMessage().replace("&", "§"));
             return;
         }
         if (color.contains("rainbow")) {
-            String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+            String rseq = (String)MainClass.getUtils().getSetting("rainbow-sequence");
             if (!verifyRainbowSequence(rseq)) {
-                MainClass.get().getConfig().set("settings.rainbow-sequence", "abcde");
-                MainClass.get().saveConfig();
+                MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
+                rseq = "abcde";
             }
-            String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
             String msg = e.getMessage().replace("&", "");
             String mods = color.replace("rainbow","");
-            String[] rss = rs.split("");
-            String[] mss = msg.split("");
+            char[] cols = rseq.toCharArray();
+            char[] msgchars = msg.toCharArray();
             int rn = 0;
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mss.length; i++) {
-                if (rn == rss.length) {
+            for (int i = 0; i < msgchars.length; i++) {
+                if (rn == cols.length) {
                     rn = 0;
                 }
-                if (mss[i].equals(" ")) {
+                if (msgchars[i] == ' ') {
                     sb.append(" ");
                 }
                 else {
-                    sb.append("§" + rss[rn] + mods + mss[i]);
+                    sb.append("§" + cols[rn] + mods + msgchars[i]);
                     rn++;
                 }
             }
@@ -74,7 +59,7 @@ public class ChatListener implements Listener {
             return;
         }
 
-        e.setMessage(ColorUtils.getColor(e.getPlayer().getName()) + e.getMessage().replace("&", ""));
+        e.setMessage(MainClass.getUtils().getColor(uuid) + e.getMessage().replace("&", ""));
 
     }
 
@@ -89,6 +74,16 @@ public class ChatListener implements Listener {
             }
         }
         return verify;
+    }
+
+    public void checkDefault(String uuid) {
+        String defcol = MainClass.getUtils().getCurrentDefaultColor();
+        String defcode = MainClass.getUtils().getCurrentDefaultCode();
+
+        if (!MainClass.getUtils().getDefaultCode(uuid).equals(defcode)) {
+            MainClass.getUtils().setDefaultCode(uuid, defcode);
+            MainClass.getUtils().setColor(uuid, defcol);
+        }
     }
 
 }
