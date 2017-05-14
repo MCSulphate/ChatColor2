@@ -14,65 +14,49 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.utils.CCStrings;
-import com.sulphate.chatcolor2.utils.ColorUtils;
-import com.sulphate.chatcolor2.utils.FileUtils;
 
 public class PlayerJoinListener implements Listener {
-
-    String pname;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEvent(PlayerJoinEvent e) {
 
         Player p = e.getPlayer();
-        FileUtils.updatePlayer(p);
+        MainClass.getUtils().updatePlayer(p);
+        String uuid = p.getUniqueId().toString();
 
-        String name = e.getPlayer().getName();
-        FileConfiguration fc = FileUtils.getPlayerFileConfig(name);
+        checkDefault(uuid);
 
-        if (fc.getString("color") == null || fc.getString("color").equalsIgnoreCase("")) {
-            ColorUtils.setColor(name, MainClass.get().getConfig().getString("settings.default-color").replace("&", "§"));
-        }
+        if ((Boolean)MainClass.getUtils().getSetting("join-message")) {
+            String color = MainClass.getUtils().getColor(uuid);
 
-        checkDefault();
-
-        if (MainClass.get().getConfig().getBoolean("settings.join-message")) {
-            String color = ColorUtils.getColor(e.getPlayer().getName());
             if (color.contains("rainbow")) {
                 String mods = color.replace("rainbow", "");
-                String rseq = MainClass.get().getConfig().getString("settings.rainbow-sequence");
+                String rseq = (String)MainClass.getUtils().getSetting("rainbow-sequence");
                 if (!verifyRainbowSequence(rseq)) {
-                    MainClass.get().getConfig().set("rainbow-sequence", "abcde");
-                    MainClass.get().saveConfig();
+                    MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
                 }
-                String rs = MainClass.get().getConfig().getString("settings.rainbow-sequence");
-                String[] rss = rs.split("");
+
+                String[] rss = rseq.split("");
                 StringBuilder sb = new StringBuilder();
                 for (String s : rss) {
                     sb.append("§" + s + mods + s);
                 }
                 String end = sb.toString();
-                p.sendMessage(CCStrings.yourcol + end);
+                p.sendMessage(CCStrings.currentcolor + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.yourcol + ColorUtils.getColor(e.getPlayer().getName()) + CCStrings.colthis);
+            e.getPlayer().sendMessage(CCStrings.currentcolor + color + CCStrings.colthis);
         }
-        ColorUtils.check(p);
+        MainClass.getUtils().check(p);
     }
 
-    public void checkDefault() {
-        String name = pname;
-        File f = new File(MainClass.get().getDataFolder() + "defcol.yml");
-        if (!f.exists()) {
-            return;
-        }
-        String defcol = YamlConfiguration.loadConfiguration(f).getString("default-color");
-        String defcode = YamlConfiguration.loadConfiguration(f).getString("default-code");
-        if (ColorUtils.getDefaultCode(name) == null || !ColorUtils.getDefaultCode(name).equals(defcode)) {
-            FileConfiguration conf = FileUtils.getPlayerFileConfig(name);
-            conf.set("default-code", defcode);
-            FileUtils.saveConfig(conf, FileUtils.getPlayerFile(name));
-            ColorUtils.setColor(name, defcol);
+    public void checkDefault(String uuid) {
+        String defcol = MainClass.getUtils().getCurrentDefaultColor();
+        String defcode = MainClass.getUtils().getCurrentDefaultCode();
+
+        if (!MainClass.getUtils().getDefaultCode(uuid).equals(defcode)) {
+            MainClass.getUtils().setDefaultCode(uuid, defcode);
+            MainClass.getUtils().setColor(uuid, defcol);
         }
     }
 

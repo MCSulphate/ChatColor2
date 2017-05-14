@@ -20,7 +20,7 @@ public class ConfirmScheduler {
         p = player;
         id = Bukkit.getScheduler().scheduleSyncDelayedTask(MainClass.get(), new Runnable() {
             public void run() {
-                p.sendMessage(CCStrings.notconfirm);
+                p.sendMessage(CCStrings.didnotconfirm);
                 MainClass.get().removeConfirmee(p);
             }
         },MainClass.get().getConfig().getInt("settings.confirm-timeout") * 20);

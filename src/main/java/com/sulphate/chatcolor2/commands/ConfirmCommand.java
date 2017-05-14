@@ -9,21 +9,20 @@ import org.bukkit.entity.Player;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.utils.CCStrings;
-import com.sulphate.chatcolor2.utils.ColorUtils;
 
 public class ConfirmCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(CCStrings.notplayer);
+            sender.sendMessage(CCStrings.playersonly);
             return true;
         }
 
         Player s = (Player) sender;
 
         if (!MainClass.get().getConfirmees().containsKey(s)) {
-            s.sendMessage(CCStrings.noconfirm);
+            s.sendMessage(CCStrings.nothingtoconfirm);
             return true;
         }
 
@@ -36,7 +35,7 @@ public class ConfirmCommand implements CommandExecutor {
 
             case "color-override": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 boolean val = (boolean) cs.val;
@@ -52,7 +51,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "reset": {
                 if (!s.hasPermission("chatcolor.admin.reset") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*" ) && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 s.sendMessage(CCStrings.prefix + "Config reset!");
@@ -62,7 +61,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "notify-others": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 boolean val = (boolean) cs.val;
@@ -78,7 +77,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "join-message": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 boolean val = (boolean) cs.val;
@@ -94,7 +93,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "confirm-timeout": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 int val = (int) cs.val;
@@ -106,7 +105,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "default-color": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                     return true;
                 }
                 String color = (String) cs.val;
@@ -119,7 +118,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "rainbow-sequence": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                 }
                 String seq = (String) cs.val;
                 MainClass.get().getConfig().set("settings.rainbow-sequence", seq);
@@ -136,7 +135,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
             case "command-name": {
                 if (!s.hasPermission("chatcolor.admin.set") && !s.hasPermission("chatcolor.admin.*") && !s.hasPermission("chatcolor.*") && !s.isOp()) {
-                    s.sendMessage(CCStrings.noperms);
+                    s.sendMessage(CCStrings.nopermissions);
                 }
                 String cmnd = (String) cs.val;
                 MainClass.get().getConfig().set("settings.command-name", cmnd);

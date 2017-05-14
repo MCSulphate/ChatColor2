@@ -1,7 +1,6 @@
 package com.sulphate.chatcolor2.listeners;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,12 +9,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.sulphate.chatcolor2.main.MainClass;
-import com.sulphate.chatcolor2.utils.ColorUtils;
-import com.sulphate.chatcolor2.utils.FileUtils;
 
 public class ChatListener implements Listener {
 

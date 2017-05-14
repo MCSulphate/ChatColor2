@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
-import com.sulphate.chatcolor2.utils.DataCache;
+import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class MainClass extends JavaPlugin {
     private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<>();
     private Logger log = Bukkit.getLogger();
     private static boolean pluginEnabled = true;
-    private static DataCache cache = new DataCache();
+    private static CC2Utils utils = new CC2Utils();
 
     @Override
     public void onEnable() {
@@ -35,11 +36,13 @@ public class MainClass extends JavaPlugin {
         boolean metrics;
         boolean ioex = false;
         //Checking if first time setup needed (Config reload)
-        if (getConfig().getString("loaded") == null) {
+        if (!new File(getDataFolder(), "config.yml").exists() || !getConfig().getBoolean("loaded") || !getConfig().contains("loaded")) {
             reload();
         }
         //Checking config for errors!
         checkConfig();
+        //Load all data.
+        utils.loadAllData();
         //Checking if Metrics is allowed for this plugin
         metrics = getConfig().getBoolean("stats");
         if (metrics) {
@@ -54,7 +57,7 @@ public class MainClass extends JavaPlugin {
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bMinor code improvements + §averified §bworking on 1.9 - 1.11!");
+        log.info(CCStrings.prefix + "Current update: §bData caching + massive code improvements!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
@@ -77,6 +80,7 @@ public class MainClass extends JavaPlugin {
     @Override
     public void onDisable() {
         plugin = null;
+        utils.saveAllData();
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
@@ -98,7 +102,7 @@ public class MainClass extends JavaPlugin {
 
 
     public void reload() {
-        getConfig().set("loaded", "no");
+        getConfig().set("loaded", false);
         getConfig().set("version", getDescription().getVersion());
         getConfig().set("stats", true);
         getConfig().set("settings.color-override", false);
@@ -137,10 +141,11 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.to-change", "You are changing it to: ");
         getConfig().set("messages.command-exists", "&cThat command already exists!");
         getConfig().set("messages.internal-error", "&cInternal error. Please check the console for details.");
-        getConfig().set("messages.error-details", "The plugin has been disabled. Error details: ");
+        getConfig().set("messages.error-details", "Error details: ");
+        getConfig().set("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
         List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
         getConfig().set("messages.message-list", messages);
-        getConfig().set("loaded", "yes");
+        getConfig().set("loaded", true);
         saveConfig();
         reloadConfig();
     }
@@ -149,7 +154,7 @@ public class MainClass extends JavaPlugin {
         
         //HashMap with all the defaults in it
         HashMap<String, Object> hmp = new HashMap<String, Object>();
-        hmp.put("loaded", "yes");
+        hmp.put("loaded", true);
         hmp.put("version", getDescription().getVersion());
         hmp.put("stats", true);
         hmp.put("settings.color-override", false);
@@ -188,7 +193,8 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.to-change", "You are changing it to: ");
         hmp.put("messages.command-exists", "&cThat command already exists!");
         hmp.put("messages.internal-error", "&cInternal error. Please check the console for details.");
-        hmp.put("messages.error-details", "The plugin has been disabled. Error details: ");
+        hmp.put("messages.error-details", "Error details: ");
+        hmp.put("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
         
         //ArrayList with all keys
         List<String> keys = new ArrayList<String>();
@@ -233,6 +239,7 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.command-exists");
         keys.add("messages.internal-error");
         keys.add("messages.error-details");
+        keys.add("messages.plugin-disabled");
 
         for (String st : keys) {
             if (!getConfig().contains(st)) {
@@ -257,19 +264,18 @@ public class MainClass extends JavaPlugin {
         
     }
 
-    public String getMessage(String message) {
-        return getConfig().getString("messages." + message); //TODO: Change this line.
-    }
-
     public static boolean getPluginEnabled() {
         return pluginEnabled;
     }
     public static void setPluginEnabled(boolean enabled) {
+        if (enabled == false) {
+            Bukkit.getLogger().info(CCStrings.plugindisabled);
+        }
         pluginEnabled = enabled;
     }
 
-    public static DataCache getCache() {
-        return cache;
+    public static CC2Utils getUtils() {
+        return utils;
     }
 
 }
