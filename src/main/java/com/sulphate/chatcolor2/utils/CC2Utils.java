@@ -23,14 +23,14 @@ public class CC2Utils {
 
     public boolean loadAllData() {
         loadPlayerList();
-        loadDefaultInfo();
+        loadDefaultData();
         return (loadMessages() && loadSettings() && loadAllPlayerData());
     }
-    private void loadDefaultInfo() {
+    private void loadDefaultData() {
+        FileConfiguration defconfig = getDefaultFileConfig();
         if (neednewdefault) {
             newDefaultColor("&f");
         } else {
-            FileConfiguration defconfig = getDefaultFileConfig();
             currentDefaultColor = defconfig.getString("default-color");
             currentDefaultCode = defconfig.getString("default-code");
         }
@@ -74,7 +74,9 @@ public class CC2Utils {
         
         for(Map.Entry<String, Object> entry : messages.entrySet()) {
             try {
-                this.messages.put(entry.getKey(), (String)entry.getValue());
+                if (!entry.getKey().equals("message-list")) {
+                    this.messages.put(entry.getKey(), (String)entry.getValue());
+                }
             } catch(Exception e) {
                 e.printStackTrace();
                 MainClass.setPluginEnabled(false);
@@ -199,6 +201,7 @@ public class CC2Utils {
         FileConfiguration defconfig = getDefaultFileConfig();
         defconfig.set("default-color", currentDefaultColor);
         defconfig.set("default-code", currentDefaultCode);
+        saveConfig(defconfig, getDefaultFile());
     }
     public String getCurrentDefaultCode() {
         return currentDefaultCode;
@@ -265,7 +268,7 @@ public class CC2Utils {
     }
 
     private File getPlayerFile(String uuid) {
-        File pfile = new File(getPlayersFolder() + uuid + ".yml");
+        File pfile = new File(getPlayersFolder(), uuid + ".yml");
         if (!pfile.exists()) {
             try {
                 pfile.createNewFile();
@@ -283,7 +286,7 @@ public class CC2Utils {
     }
 
     private File getDefaultFile() {
-        File deffile = new File(MainClass.get().getDataFolder() + "defcol.yml");
+        File deffile = new File(MainClass.get().getDataFolder(), "defcol.yml");
         if (!deffile.exists()) {
             try {
                 deffile.createNewFile();

@@ -33,9 +33,10 @@ public class ChatColorCommand implements CommandExecutor {
 
             List<String> cmds = Arrays.asList("commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "enable", "available");
             if (cmds.contains(args[0].toLowerCase())) {
-                switch(args[0].toLowerCase()) {
+                switch (args[0].toLowerCase()) {
                     case "commandshelp": {
-                        handleCommandsHelp(s);;
+                        handleCommandsHelp(s);
+                        ;
                         return true;
                     }
                     case "permissionshelp": {
@@ -59,7 +60,8 @@ public class ChatColorCommand implements CommandExecutor {
                     }
                     case "reloadmessages": {
                         MainClass.getUtils().loadMessages();
-                        s.sendMessage(CCStrings.reloadedconfig);
+                        CCStrings.reloadMessages();
+                        s.sendMessage(CCStrings.reloadedmessages);
                         return true;
                     }
                     case "enable": {
@@ -90,8 +92,8 @@ public class ChatColorCommand implements CommandExecutor {
                         StringBuilder colbuilder = new StringBuilder();
                         for (int i = 0; i < cols.length; i++) {
                             if (hasPermission("chatcolor.color." + cols[i], s)) {
-                                colbuilder.append("§" + cols[i] + cols[i]);
-                                if (i != cols.length - 2) {
+                                colbuilder.append(ChatColor.COLOR_CHAR + cols[i] + cols[i]);
+                                if (i != cols.length - 1) {
                                     colbuilder.append(comma);
                                 }
                             }
@@ -101,8 +103,8 @@ public class ChatColorCommand implements CommandExecutor {
                         StringBuilder modbuilder = new StringBuilder();
                         for (int i = 0; i < mods.length; i++) {
                             if (hasPermission("chatcolor.modifier." + mods[i], s)) {
-                                modbuilder.append("§" + mods[i] + mods[i]);
-                                if (i != mods.length - 2) {
+                                modbuilder.append(ChatColor.COLOR_CHAR + "b" + ChatColor.COLOR_CHAR + mods[i] + mods[i]);
+                                if (i != mods.length - 1) {
                                     modbuilder.append(comma);
                                 }
                             }
@@ -110,8 +112,8 @@ public class ChatColorCommand implements CommandExecutor {
                         modstring = modbuilder.toString();
 
                         s.sendMessage(CCStrings.prefix + "Here are your available colors and modifiers:");
-                        s.sendMessage(" &7- &bColors: " + colstring);
-                        s.sendMessage(" &7- &bModifiers: " + modstring);
+                        s.sendMessage(" §7- §eColors: " + colstring);
+                        s.sendMessage(" §7- §eModifiers: " + modstring);
                         return true;
                     }
                 }
@@ -138,14 +140,14 @@ public class ChatColorCommand implements CommandExecutor {
                     String end = colorString(sb2.toString());
                     MainClass.getUtils().setColor(uuid, colorString(color));
                     s.sendMessage(CCStrings.setotherscolor.replace("[player]", args[0]) + end);
-                    if ((boolean)MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    if ((boolean) MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.playersetyourcolor.replace("[player]", s.getName()) + end);
                     }
                     return true;
                 }
                 MainClass.getUtils().setColor(uuid, colorString(color));
                 s.sendMessage(CCStrings.setotherscolor.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
-                if ((boolean)MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                if ((boolean) MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
                     Bukkit.getPlayer(args[0]).sendMessage(CCStrings.playersetyourcolor.replace("[player]", s.getName()) + colorString(color) + CCStrings.colthis);
                 }
                 return true;
@@ -177,9 +179,7 @@ public class ChatColorCommand implements CommandExecutor {
             s.sendMessage(CCStrings.setowncolor + colorString(color) + CCStrings.colthis);
             return true;
 
-        }
-
-        else {
+        } else {
             if (argsno < 2) {
                 sender.sendMessage(CCStrings.notenoughargs);
                 return true;
@@ -209,19 +209,18 @@ public class ChatColorCommand implements CommandExecutor {
                     String end = colorString(sb2.toString());
                     MainClass.getUtils().setColor(uuid, colorString(color));
                     sender.sendMessage(CCStrings.setotherscolor.replace("[player]", args[0]) + end);
-                    if ((boolean)MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                    if ((boolean) MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
                         Bukkit.getPlayer(args[0]).sendMessage(CCStrings.playersetyourcolor.replace("[player]", "CONSOLE") + end);
                     }
                     return true;
                 }
                 MainClass.getUtils().setColor(uuid, colorString(color));
                 sender.sendMessage(CCStrings.setotherscolor.replace("[player]", args[0]) + colorString(color) + CCStrings.colthis);
-                if ((boolean)MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
+                if ((boolean) MainClass.getUtils().getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
                     Bukkit.getPlayer(args[0]).sendMessage(CCStrings.playersetyourcolor.replace("[player]", "CONSOLE") + colorString(color) + CCStrings.colthis);
                 }
                 return true;
-            }
-            else {
+            } else {
                 sender.sendMessage(CCStrings.playernotjoined);
             }
         }
@@ -428,47 +427,47 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(colorString(" &7- &eAll Admin Perms: &cchatcolor.admin.*"));
         player.sendMessage("");
         player.sendMessage(colorString("&eColor Permissions:"));
-        player.sendMessage(colorString(" &7- Permission: &cchatcolor.color.<color>"));
-        player.sendMessage(colorString(" &7- Example: &cchatcolor.color.a"));
+        player.sendMessage(colorString(" &7- &ePermission: &cchatcolor.color.<color>"));
+        player.sendMessage(colorString(" &7- &eExample: &cchatcolor.color.a"));
         player.sendMessage(colorString("&eNote: &cchatcolor.color.rainbow &ecan be used, but no other words."));
         player.sendMessage("");
         player.sendMessage(colorString("&eModifier Permissions:"));
-        player.sendMessage(colorString(" &7- Permission: &cchatcolor.modifier.<modifier>"));
-        player.sendMessage(colorString(" &7- Example: &cchatcolor.modifier.k"));
+        player.sendMessage(colorString(" &7- &ePermission: &cchatcolor.modifier.<modifier>"));
+        player.sendMessage(colorString(" &7- &eExample: &cchatcolor.modifier.k"));
         player.sendMessage(colorString("&eNote: No words may be used."));
         player.sendMessage("");
         player.sendMessage(colorString("&eOther Permissions:"));
-        player.sendMessage(colorString(" &7- Change Own Color: &cchatcolor.change.self"));
-        player.sendMessage(colorString(" &7- Change Other's Color: &cchatcolor.change.others"));
+        player.sendMessage(colorString(" &7- &eChange Own Color: &cchatcolor.change.self"));
+        player.sendMessage(colorString(" &7- &eChange Other's Color: &cchatcolor.change.others"));
     }
 
     public void handleSettingsHelp(Player player) {
         player.sendMessage(CCStrings.prefix + "Displaying settings help!");
-        player.sendMessage(colorString(" &7- auto-save: &cChanges whether data is automatically saved every 5 minutes."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set auto-save [true/false]"));
+        player.sendMessage(colorString(" &7- &eauto-save: &cAuto save data every 5 minutes."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set auto-save <true/false>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- color-override: &cChanges whether ChatColor overrides '&' symbols in chat."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set color-override [true/false]"));
+        player.sendMessage(colorString(" &7- &ecolor-override: &cOverride '&' symbols in chat."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set color-override <true/false>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- confirm-timeout: &cChanges the amount of time players get to confirm a change."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set confirm-timeout [seconds]"));
+        player.sendMessage(colorString(" &7- &econfirm-timeout: &cSet time for confirming settings."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set confirm-timeout <seconds>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- default-color: &cChanges the color all players get when joining."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set default-color [color] [modifiers..]"));
+        player.sendMessage(colorString(" &7- &edefault-color: &cChange the default color."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set default-color <color> <modifiers..>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- join-message: &cChanges whether players are notified of their color when joining."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set join-message [true/false]"));
+        player.sendMessage(colorString(" &7- &ejoin-message: &cTell players their color on join."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set join-message <true/false>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- notify-others: &cChanges whether players are notified if their color is changed."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set notify-others [true/false]"));
+        player.sendMessage(colorString(" &7- &enotify-others: &cTell others if you change their color."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set notify-others <true/false>"));
         player.sendMessage("");
-        player.sendMessage(colorString(" &7- rainbow-sequence: &cChanges the sequence of colors in the rainbow chatcolor."));
-        player.sendMessage(colorString("   &eUsage: &b/chatcolor set rainbow-sequence [sequence]"));
+        player.sendMessage(colorString(" &7- &erainbow-sequence: &cChange the rainbow chatcolor sequence."));
+        player.sendMessage(colorString("   &eUsage: &b/chatcolor set rainbow-sequence <sequence>"));
         player.sendMessage("");
     }
 
     public void handleSet(String[] args, Player player) {
-        switch(args[1]) {
+        switch (args[1]) {
 
             case "auto-save": {
                 boolean val;
@@ -478,7 +477,7 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.needsboolean);
                     return;
                 }
-                boolean autosave = (boolean)MainClass.getUtils().getSetting("auto-save");
+                boolean autosave = (boolean) MainClass.getUtils().getSetting("auto-save");
                 if (val == autosave) {
                     player.sendMessage(CCStrings.alreadyset);
                     return;
@@ -502,7 +501,7 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.needsboolean);
                     return;
                 }
-                boolean override = (boolean)MainClass.getUtils().getSetting("color-override");
+                boolean override = (boolean) MainClass.getUtils().getSetting("color-override");
                 if (val == override) {
                     player.sendMessage(CCStrings.alreadyset);
                     return;
@@ -526,7 +525,7 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.needsboolean);
                     return;
                 }
-                boolean notify = (boolean)MainClass.getUtils().getSetting("notify-others");
+                boolean notify = (boolean) MainClass.getUtils().getSetting("notify-others");
                 if (val == notify) {
                     player.sendMessage(CCStrings.alreadyset);
                     return;
@@ -550,7 +549,7 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.needsboolean);
                     return;
                 }
-                boolean notify = (boolean)MainClass.getUtils().getSetting("join-message");
+                boolean notify = (boolean) MainClass.getUtils().getSetting("join-message");
                 if (val == notify) {
                     player.sendMessage(CCStrings.alreadyset);
                     return;
@@ -574,7 +573,7 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.needsinteger);
                     return;
                 }
-                player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscurrently + "§c" + (String)MainClass.getUtils().getSetting("confirm-timeout") + " seconds");
+                player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscurrently + "§c" + (int) MainClass.getUtils().getSetting("confirm-timeout") + " seconds");
                 player.sendMessage(CCStrings.tochange + "§c" + val);
                 player.sendMessage(CCStrings.confirm);
                 ConfirmScheduler cs = new ConfirmScheduler();
@@ -588,20 +587,18 @@ public class ChatColorCommand implements CommandExecutor {
                     player.sendMessage(CCStrings.invalidcolor);
                     return;
                 }
-                for (int i = 3; i < 8; i++) {
-                    if (args[i] != null) {
-                        String mod = getModifier(args[i]);
-                        if (mod == null) {
-                            player.sendMessage(CCStrings.invalidmodifier);
-                            return;
-                        } else {
-                            color = color + mod;
-                        }
+                for (int i = 3; i < args.length; i++) {
+                    String mod = getModifier(args[i]);
+                    if (mod == null) {
+                        player.sendMessage(CCStrings.invalidmodifier);
+                        return;
+                    } else {
+                        color = color + mod;
                     }
                 }
-                String defcol = (String)MainClass.getUtils().getSetting("default-color");
-                player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscurrently + defcol.replace("&", "§") + CCStrings.colthis);
-                player.sendMessage(CCStrings.tochange + color);
+                String defcol = (String) MainClass.getUtils().getSetting("default-color");
+                player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscurrently + defcol.replace('&', ChatColor.COLOR_CHAR) + CCStrings.colthis);
+                player.sendMessage(CCStrings.tochange + color.replace('&', ChatColor.COLOR_CHAR) + CCStrings.colthis);
                 player.sendMessage(CCStrings.confirm);
                 ConfirmScheduler cs = new ConfirmScheduler();
                 MainClass.get().addConfirmee(player, cs);
@@ -621,14 +618,14 @@ public class ChatColorCommand implements CommandExecutor {
                 for (char chr : rseq) {
                     sb.append("&" + chr + chr);
                 }
-                String curseq = sb.toString();
+                String curseq = colorString(sb.toString());
 
                 char[] newseq = args[2].toCharArray();
                 StringBuilder sq = new StringBuilder();
                 for (char chr : newseq) {
                     sq.append("&" + chr + chr);
                 }
-                String rcs = sq.toString();
+                String rcs = colorString(sq.toString());
                 player.sendMessage(CCStrings.prefix + "§c" + args[1] + CCStrings.iscurrently + curseq);
                 player.sendMessage(CCStrings.tochange + rcs);
                 player.sendMessage(CCStrings.confirm);
@@ -648,7 +645,7 @@ public class ChatColorCommand implements CommandExecutor {
                         }
                     }
                 }
-                player.sendMessage(CCStrings.prefix + colorString("&c" + args[1]) + CCStrings.iscurrently + colorString("&c/") + (String)MainClass.getUtils().getSetting("command-name"));
+                player.sendMessage(CCStrings.prefix + colorString("&c" + args[1]) + CCStrings.iscurrently + colorString("&c/") + (String) MainClass.getUtils().getSetting("command-name"));
                 player.sendMessage(CCStrings.tochange + colorString("&c/" + cmd));
                 player.sendMessage(CCStrings.confirm);
                 ConfirmScheduler cs = new ConfirmScheduler();
@@ -697,28 +694,22 @@ public class ChatColorCommand implements CommandExecutor {
             }
             if (s.equalsIgnoreCase("light.green")) {
                 return "&a";
-            }
-            else if (s.equalsIgnoreCase("aqua")) {
+            } else if (s.equalsIgnoreCase("aqua")) {
                 return "&b";
-            }
-            else if (s.equalsIgnoreCase("light.red")) {
+            } else if (s.equalsIgnoreCase("light.red")) {
                 return "&c";
-            }
-            else if (s.equalsIgnoreCase("magenta")) {
+            } else if (s.equalsIgnoreCase("magenta")) {
                 return "&d";
-            }
-            else if (s.equalsIgnoreCase("yellow")) {
+            } else if (s.equalsIgnoreCase("yellow")) {
                 return "&e";
-            }
-            else if (s.equalsIgnoreCase("white")) {
+            } else if (s.equalsIgnoreCase("white")) {
                 return "&f";
             }
         }
         List<String> other = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
         if (other.contains(s)) {
             return "&" + s;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -727,20 +718,15 @@ public class ChatColorCommand implements CommandExecutor {
         String s = str.toLowerCase();
         if (s.equalsIgnoreCase("obfuscated")) {
             return "&k";
-        }
-        else if (s.equalsIgnoreCase("bold")) {
+        } else if (s.equalsIgnoreCase("bold")) {
             return "&l";
-        }
-        else if (s.equalsIgnoreCase("strikethrough")) {
+        } else if (s.equalsIgnoreCase("strikethrough")) {
             return "&m";
-        }
-        else if (s.equalsIgnoreCase("underlined")) {
+        } else if (s.equalsIgnoreCase("underlined")) {
             return "&n";
-        }
-        else if (s.equalsIgnoreCase("italic")) {
+        } else if (s.equalsIgnoreCase("italic")) {
             return "&o";
-        }
-        else {
+        } else {
             List<String> other = Arrays.asList("k", "l", "m", "n", "o");
             if (other.contains(s)) {
                 return "&" + s;
@@ -750,8 +736,8 @@ public class ChatColorCommand implements CommandExecutor {
     }
 
     private char[] getCurrentRainbowSequence() {
-        verifyRainbowSequence((String)MainClass.getUtils().getSetting("rainbow-sequence"), true);
-        String seqstr = (String)MainClass.getUtils().getSetting("rainbow-sequence");
+        verifyRainbowSequence((String) MainClass.getUtils().getSetting("rainbow-sequence"), true);
+        String seqstr = (String) MainClass.getUtils().getSetting("rainbow-sequence");
         return seqstr.toCharArray();
     }
 

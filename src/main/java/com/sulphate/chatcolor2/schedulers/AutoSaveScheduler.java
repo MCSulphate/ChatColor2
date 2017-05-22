@@ -20,7 +20,7 @@ public class AutoSaveScheduler {
                     Bukkit.getLogger().info(CCStrings.prefix + "Saved all data.");
                 }
             }
-        }, 5*60*20L, 5*6*20L);
+        }, 5*60*20L, 5*60*20L);
 
     }
 

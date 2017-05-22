@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -23,14 +24,11 @@ public class ChatListener implements Listener {
         }
 
         String uuid = e.getPlayer().getUniqueId().toString();
+        boolean override = (boolean)MainClass.getUtils().getSetting("color-override");
         checkDefault(uuid);
-
         String color = MainClass.getUtils().getColor(uuid);
-        if (e.getMessage().contains("&") && !(Boolean)MainClass.getUtils().getSetting("color-override")) {
-            e.setMessage(e.getMessage().replace("&", "§"));
-            return;
-        }
-        if (color.contains("rainbow")) {
+
+        if (color.contains("rainbow") && override) {
             String rseq = (String)MainClass.getUtils().getSetting("rainbow-sequence");
             if (!verifyRainbowSequence(rseq)) {
                 MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
@@ -50,7 +48,7 @@ public class ChatListener implements Listener {
                     sb.append(" ");
                 }
                 else {
-                    sb.append("§" + cols[rn] + mods + msgchars[i]);
+                    sb.append(ChatColor.COLOR_CHAR + cols[rn] + mods + msgchars[i]);
                     rn++;
                 }
             }
@@ -59,7 +57,8 @@ public class ChatListener implements Listener {
             return;
         }
 
-        e.setMessage(MainClass.getUtils().getColor(uuid) + e.getMessage().replace("&", ""));
+        String replacestr = override ? "" : "§";
+        e.setMessage(MainClass.getUtils().getColor(uuid).replace('&', ChatColor.COLOR_CHAR) + e.getMessage().replace("&", replacestr));
 
     }
 

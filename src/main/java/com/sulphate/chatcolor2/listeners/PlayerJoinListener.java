@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class PlayerJoinListener implements Listener {
                 p.sendMessage(CCStrings.currentcolor + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.currentcolor + color + CCStrings.colthis);
+            e.getPlayer().sendMessage(CCStrings.currentcolor + color.replace('&', ChatColor.COLOR_CHAR) + CCStrings.colthis);
         }
         MainClass.getUtils().check(p);
     }

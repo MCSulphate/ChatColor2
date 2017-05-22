@@ -51,26 +51,17 @@ public class MainClass extends JavaPlugin {
         //Checking if Metrics is allowed for this plugin
         metrics = getConfig().getBoolean("stats");
         if (metrics) {
-            try {
-                Metrics met = new Metrics(this);
-                met.start();
-            }
-            catch (IOException e) {
-                ioex = true;
-            }
+            Metrics met = new Metrics(this);
         }
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bData caching, new commands + §amassive §bcode improvements!");
+        log.info(CCStrings.prefix + "Current update: §bStats switched over to bStats!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
-        else if (ioex) {
-            log.info(CCStrings.prefix + "§cMetrics failed to start stats submission!");
-        }
         else {
-            log.info(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttp://mcstats.org");
+            log.info(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttps://bstats.org");
         }
         log.info("§b------------------------------------------------------------");
         //Commands & Listeners
@@ -83,8 +74,9 @@ public class MainClass extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        plugin = null;
+        autosaver.cancel();
         utils.saveAllData();
+        plugin = null;
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
@@ -140,7 +132,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
         getConfig().set("messages.already-confirming", "&cYou cannot do that until you have confirmed or waited.");
         getConfig().set("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
-        getConfig().set("messages.reloaded-config", "Reloaded the config!");
+        getConfig().set("messages.reloaded-messages", "Reloaded messages!");
         getConfig().set("messages.already-set", "&cThat value is already set!");
         getConfig().set("messages.is-currently", " &eis currently: ");
         getConfig().set("messages.to-change", "You are changing it to: ");
@@ -196,7 +188,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
         hmp.put("messages.already-confirming", "&cYou cannot do that until you have confirmed or waited.");
         hmp.put("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
-        hmp.put("messages.reloaded-config", "Reloaded the config!");
+        hmp.put("messages.reloaded-messages", "Reloaded messages!");
         hmp.put("messages.already-set", "&cThat value is already set!");
         hmp.put("messages.is-currently", " &eis currently: ");
         hmp.put("messages.to-change", "You are changing it to: ");
@@ -245,7 +237,7 @@ public class MainClass extends JavaPlugin {
         keys.add("messages.did-not-confirm");
         keys.add("messages.already-confirming");
         keys.add("messages.nothing-to-confirm");
-        keys.add("messages.reloaded-config");
+        keys.add("messages.reloaded-messages");
         keys.add("messages.already-set");
         keys.add("messages.is-currently");
         keys.add("messages.to-change");
