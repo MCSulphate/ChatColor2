@@ -1,10 +1,7 @@
 package com.sulphate.chatcolor2.main;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
@@ -13,6 +10,7 @@ import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,12 +27,16 @@ public class MainClass extends JavaPlugin {
     private Logger log = Bukkit.getLogger();
     private static boolean pluginEnabled = true;
     private static CC2Utils utils = new CC2Utils();
+    private HashMap<String, Object> defaultConfig = new HashMap<>();
     private AutoSaveScheduler autosaver;
 
     @Override
     public void onEnable() {
         plugin = this;
         boolean metrics;
+
+        // Set up the default config.
+        setupDefaultConfig();
 
         //Checking if first time setup needed (Config reload)
         if (!new File(getDataFolder(), "config.yml").exists() || !getConfig().getBoolean("loaded") || !getConfig().contains("loaded")) {
@@ -99,182 +101,93 @@ public class MainClass extends JavaPlugin {
         toconfirm.remove(p);
     }
 
+    private void setupDefaultConfig() {
+        defaultConfig.put("loaded", true);
+        defaultConfig.put("version", getDescription().getVersion());
+        defaultConfig.put("stats", true);
+        defaultConfig.put("settings.auto-save", true);
+        defaultConfig.put("settings.color-override", false);
+        defaultConfig.put("settings.notify-others", true);
+        defaultConfig.put("settings.join-message", true);
+        defaultConfig.put("settings.confirm-timeout", 10);
+        defaultConfig.put("settings.default-color", "&f");
+        defaultConfig.put("settings.rainbow-sequence", "abcde");
+        defaultConfig.put("settings.command-name", "chatcolor");
+        defaultConfig.put("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
+        defaultConfig.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
+        defaultConfig.put("messages.not-enough-args", "&cNot enough arguments!");
+        defaultConfig.put("messages.too-many-args", "&cToo many arguments!");
+        defaultConfig.put("messages.player-not-joined", "&cThat player has not joined yet!");
+        defaultConfig.put("messages.players-only", "&cThis command can only be run by players.");
+        defaultConfig.put("messages.no-permissions", "&cYou do not have permission to use that command.");
+        defaultConfig.put("messages.no-color-perms", "&cYou do not have permission to use the color: &");
+        defaultConfig.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
+        defaultConfig.put("messages.invalid-color", "&cInvalid color: &e");
+        defaultConfig.put("messages.invalid-command", "&cThat is an invalid command!");
+        defaultConfig.put("messages.invalid-modifier", "&cInvalid modifier: &e");
+        defaultConfig.put("messages.invalid-setting", "&cInvalid setting: &e");
+        defaultConfig.put("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
+        defaultConfig.put("messages.needs-number", "&cThat setting requires a number!");
+        defaultConfig.put("messages.current-color", "Your color is currently: ");
+        defaultConfig.put("messages.set-own-color", "Successfully set your color to: ");
+        defaultConfig.put("messages.set-others-color", "Successfully set &c[player]'s &ecolor to: ");
+        defaultConfig.put("messages.player-set-your-color", "&c[player] &eset your color to: ");
+        defaultConfig.put("messages.this", "this");
+        defaultConfig.put("messages.confirm", "Are you sure you want to do that? Type &c/confirm &eif you are sure.");
+        defaultConfig.put("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
+        defaultConfig.put("messages.already-confirming", "&cYou cannot do that until you have confirmed or waited.");
+        defaultConfig.put("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
+        defaultConfig.put("messages.reloaded-messages", "Reloaded messages!");
+        defaultConfig.put("messages.already-set", "&cThat value is already set!");
+        defaultConfig.put("messages.is-currently", " &eis currently: ");
+        defaultConfig.put("messages.to-change", "You are changing it to: ");
+        defaultConfig.put("messages.command-exists", "&cThat command already exists!");
+        defaultConfig.put("messages.internal-error", "&cInternal error. Please check the console for details.");
+        defaultConfig.put("messages.error-details", "Error details: ");
+        defaultConfig.put("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
+        defaultConfig.put("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
+        defaultConfig.put("messages.successfully-enabled", "The plugin has been successfully enabled.");
+        defaultConfig.put("messages.already-enabled", "The plugin is already enabled.");
+    }
+
     public void reload() {
-        getConfig().set("loaded", false);
-        getConfig().set("version", getDescription().getVersion());
-        getConfig().set("stats", true);
-        getConfig().set("settings.auto-save", true);
-        getConfig().set("settings.color-override", true);
-        getConfig().set("settings.notify-others", true);
-        getConfig().set("settings.join-message", true);
-        getConfig().set("settings.confirm-timeout", 10);
-        getConfig().set("settings.default-color", "&f");
-        getConfig().set("settings.rainbow-sequence", "abcde");
-        getConfig().set("settings.command-name", "chatcolor");
-        getConfig().set("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
-        getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
-        getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
-        getConfig().set("messages.too-many-args", "&cToo many arguments!");
-        getConfig().set("messages.player-not-joined", "&cThat player has not joined yet!");
-        getConfig().set("messages.players-only", "&cThis command can only be run by players.");
-        getConfig().set("messages.no-permissions", "&cYou do not have permission to use that command.");
-        getConfig().set("messages.no-color-perms", "&cYou do not have permission to use the color: &");
-        getConfig().set("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
-        getConfig().set("messages.invalid-color", "&cInvalid color: &e");
-        getConfig().set("messages.invalid-command", "&cThat is an invalid command!");
-        getConfig().set("messages.invalid-modifier", "&cInvalid modifier: &e");
-        getConfig().set("messages.invalid-setting", "&cInvalid setting: &e");
-        getConfig().set("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
-        getConfig().set("messages.needs-number", "&cThat setting requires a number!");
-        getConfig().set("messages.current-color", "Your color is currently: ");
-        getConfig().set("messages.set-own-color", "Successfully set your color to: ");
-        getConfig().set("messages.set-others-color", "Successfully set &c[player]'s &ecolor to: ");
-        getConfig().set("messages.player-set-your-color", "&c[player] &eset your color to: ");
-        getConfig().set("messages.this", "this");
-        getConfig().set("messages.confirm", "Are you sure you want to do that? Type &c/confirm &eif you are sure.");
-        getConfig().set("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
-        getConfig().set("messages.already-confirming", "&cYou cannot do that until you have confirmed or waited.");
-        getConfig().set("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
-        getConfig().set("messages.reloaded-messages", "Reloaded messages!");
-        getConfig().set("messages.already-set", "&cThat value is already set!");
-        getConfig().set("messages.is-currently", " &eis currently: ");
-        getConfig().set("messages.to-change", "You are changing it to: ");
-        getConfig().set("messages.command-exists", "&cThat command already exists!");
-        getConfig().set("messages.internal-error", "&cInternal error. Please check the console for details.");
-        getConfig().set("messages.error-details", "Error details: ");
-        getConfig().set("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
-        getConfig().set("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
-        getConfig().set("messages.successfully-enabled", "The plugin has been successfully enabled.");
-        getConfig().set("messages.already-enabled", "The plugin is already enabled.");
-        List<String> messages = Arrays.asList("help", "not-enough-args", "too-many-args", "player-not-joined", "players-only", "no-permissions", "no-color-perms", "no-col-mod-perms", "invalid-color", "invalid-command", "invalid-setting", "needs-boolean", "needs-number", "current-color", "set-own-color", "set-others-color", "player-set-your-color", "this", "confirm", "did-not-confirm", "already-confirming", "nothing-to-confirm", "reloaded-config", "already-set", "is-currently", "to-change");
-        getConfig().set("messages.message-list", messages);
-        getConfig().set("loaded", true);
+        FileConfiguration config = getConfig();
+        for (String key : defaultConfig.keySet()) {
+            config.set(key, defaultConfig.get(key));
+        }
+
         saveConfig();
         reloadConfig();
     }
 
     public void checkConfig() {
-        
-        //HashMap with all the defaults in it
-        HashMap<String, Object> hmp = new HashMap<String, Object>();
-        hmp.put("loaded", true);
-        hmp.put("version", getDescription().getVersion());
-        hmp.put("stats", true);
-        hmp.put("settings.auto-save", true);
-        hmp.put("settings.color-override", false);
-        hmp.put("settings.notify-others", true);
-        hmp.put("settings.join-message", true);
-        hmp.put("settings.confirm-timeout", 10);
-        hmp.put("settings.default-color", "&f");
-        hmp.put("settings.rainbow-sequence", "abcde");
-        hmp.put("settings.command-name", "chatcolor");
-        hmp.put("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
-        hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
-        hmp.put("messages.not-enough-args", "&cNot enough arguments!");
-        hmp.put("messages.too-many-args", "&cToo many arguments!");
-        hmp.put("messages.player-not-joined", "&cThat player has not joined yet!");
-        hmp.put("messages.players-only", "&cThis command can only be run by players.");
-        hmp.put("messages.no-permissions", "&cYou do not have permission to use that command.");
-        hmp.put("messages.no-color-perms", "&cYou do not have permission to use the color: &");
-        hmp.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
-        hmp.put("messages.invalid-color", "&cInvalid color: &e");
-        hmp.put("messages.invalid-command", "&cThat is an invalid command!");
-        hmp.put("messages.invalid-modifier", "&cInvalid modifier: &e");
-        hmp.put("messages.invalid-setting", "&cInvalid setting: &e");
-        hmp.put("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
-        hmp.put("messages.needs-number", "&cThat setting requires a number!");
-        hmp.put("messages.current-color", "Your color is currently: ");
-        hmp.put("messages.set-own-color", "Successfully set your color to: ");
-        hmp.put("messages.set-others-color", "Successfully set &c[player]'s &ecolor to: ");
-        hmp.put("messages.player-set-your-color", "&c[player] &eset your color to: ");
-        hmp.put("messages.this", "this");
-        hmp.put("messages.confirm", "Are you sure you want to do that? Type &c/confirm &eif you are sure.");
-        hmp.put("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
-        hmp.put("messages.already-confirming", "&cYou cannot do that until you have confirmed or waited.");
-        hmp.put("messages.nothing-to-confirm", "&cYou have nothing to confirm!");
-        hmp.put("messages.reloaded-messages", "Reloaded messages!");
-        hmp.put("messages.already-set", "&cThat value is already set!");
-        hmp.put("messages.is-currently", " &eis currently: ");
-        hmp.put("messages.to-change", "You are changing it to: ");
-        hmp.put("messages.command-exists", "&cThat command already exists!");
-        hmp.put("messages.internal-error", "&cInternal error. Please check the console for details.");
-        hmp.put("messages.error-details", "Error details: ");
-        hmp.put("messages.plugin-disabled", "The plugin has been disabled. Please type §b/chatcolor enable §eto attempt to re-enable.");
-        hmp.put("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
-        hmp.put("messages.successfully-enabled", "The plugin has been successfully enabled.");
-        hmp.put("messages.already-enabled", "The plugin is already enabled.");
-        
-        //ArrayList with all keys
-        List<String> keys = new ArrayList<String>();
-        keys.add("loaded");
-        keys.add("version");
-        keys.add("stats");
-        keys.add("settings.auto-save");
-        keys.add("settings.color-override");
-        keys.add("settings.notify-others");
-        keys.add("settings.join-message");
-        keys.add("settings.confirm-timeout");
-        keys.add("settings.default-color");
-        keys.add("settings.rainbow-sequence");
-        keys.add("settings.command-name");
-        keys.add("messages.prefix");
-        keys.add("messages.help");
-        keys.add("messages.not-enough-args");
-        keys.add("messages.too-many-args");
-        keys.add("messages.player-not-joined");
-        keys.add("messages.players-only");
-        keys.add("messages.player-not-online");
-        keys.add("messages.no-permissions");
-        keys.add("messages.no-color-perms");
-        keys.add("messages.no-col-mod-perms");
-        keys.add("messages.invalid-color");
-        keys.add("messages.invalid-command");
-        keys.add("messages.invalid-modifier");
-        keys.add("messages.invalid-setting");
-        keys.add("messages.needs-boolean");
-        keys.add("messages.needs-number");
-        keys.add("messages.current-color");
-        keys.add("messages.set-own-color");
-        keys.add("messages.set-others-color");
-        keys.add("messages.player-set-your-color");
-        keys.add("messages.this");
-        keys.add("messages.confirm");
-        keys.add("messages.did-not-confirm");
-        keys.add("messages.already-confirming");
-        keys.add("messages.nothing-to-confirm");
-        keys.add("messages.reloaded-messages");
-        keys.add("messages.already-set");
-        keys.add("messages.is-currently");
-        keys.add("messages.to-change");
-        keys.add("messages.command-exists");
-        keys.add("messages.internal-error");
-        keys.add("messages.error-details");
-        keys.add("messages.plugin-disabled");
-        keys.add("messages.failed-to-enable");
-        keys.add("messages.successfully-enabled");
-        keys.add("messages.already-enabled");
+        // Loop through the default config keys, make sure that every value is set, and that each value does not throw an error.
+        Set<String> keys = defaultConfig.keySet();
+        FileConfiguration config = getConfig();
+
+        // The message-list 'message' can now cause issues, so let's remove it.
+        config.set("message-list", "");
 
         for (String st : keys) {
-            if (!getConfig().contains(st)) {
-                getConfig().set(st, hmp.get(st));
+            if (!config.contains(st)) {
+                config.set(st, defaultConfig.get(st));
             }
         }
         for (String st : keys) {
             try {
-                getConfig().get(st);
+                config.get(st);
             }
             catch(Exception e) {
-                getConfig().set(st, hmp.get(st));
+                config.set(st, defaultConfig.get(st));
                 saveConfig();
             }
         }
-        if (!getConfig().getString("version").equals(getDescription().getVersion())) {
-            getConfig().set("version", getDescription().getVersion());
+        if (!config.getString("version").equals(getDescription().getVersion())) {
+            config.set("version", getDescription().getVersion());
             saveConfig();
         }
 
         reloadConfig();
-        
     }
 
     public static boolean getPluginEnabled() {

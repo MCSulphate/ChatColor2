@@ -74,9 +74,7 @@ public class CC2Utils {
         
         for (Map.Entry<String, Object> entry : messages.entrySet()) {
             try {
-                if (!entry.getKey().equals("message-list")) {
-                    this.messages.put(entry.getKey(), (String)entry.getValue());
-                }
+                this.messages.put(entry.getKey(), (String) entry.getValue());
             } catch(Exception e) {
                 e.printStackTrace();
                 MainClass.setPluginEnabled(false);
