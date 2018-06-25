@@ -3,6 +3,7 @@ package com.sulphate.chatcolor2.listeners;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sulphate.chatcolor2.utils.CC2Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,7 +26,16 @@ public class ChatListener implements Listener {
         checkDefault(uuid);
         String color = MainClass.getUtils().getColor(uuid);
 
-        if (color.contains("rainbow") && override) {
+        if (e.getMessage().contains("&")) {
+            if (override) {
+                color = color.replace("&", "");
+            }
+            else {
+                e.setMessage(CC2Utils.colourise(e.getMessage()));
+            }
+        }
+
+        if (color.contains("rainbow")) {
             String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
 
             if (!verifyRainbowSequence(rseq)) {
@@ -33,10 +43,9 @@ public class ChatListener implements Listener {
                 rseq = "abcde";
             }
 
-            String msg = e.getMessage().replace("&", "");
             String mods = color.replace("rainbow", "");
             char[] colors = rseq.toCharArray();
-            char[] msgchars = msg.toCharArray();
+            char[] msgchars = e.getMessage().toCharArray();
             int currentColorIndex = 0;
 
             StringBuilder sb = new StringBuilder();
@@ -57,14 +66,8 @@ public class ChatListener implements Listener {
             e.setMessage(end);
             return;
         }
-        // Set their color to nothing if there is no override set.
-        else if (color.contains("rainbow")) {
-            color = "";
-        }
 
-        String replacestr = override ? "" : "§";
-        e.setMessage(color + e.getMessage().replace("&", replacestr));
-
+        e.setMessage(CC2Utils.colourise(color + e.getMessage()));
     }
 
     public boolean verifyRainbowSequence(String seq) {

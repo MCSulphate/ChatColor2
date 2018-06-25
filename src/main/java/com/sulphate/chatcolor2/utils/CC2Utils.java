@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.MainClass;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +21,11 @@ public class CC2Utils {
     private String currentDefaultCode;
     private String currentDefaultColor;
     private boolean neednewdefault = false;
+
+    // Small utility method to colourise messages.
+    public static String colourise(String message) {
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
 
     public boolean loadAllData() {
         loadPlayerList();
@@ -139,7 +145,7 @@ public class CC2Utils {
     private void loadPlayerData(String uuid) {
         FileConfiguration config = getPlayerFileConfig(uuid);
         try {
-            colors.put(uuid, config.getString("color")/*.replace('§', '&')*/);
+            colors.put(uuid, config.getString("color"));
             defcodes.put(uuid, config.getString("default-code"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,20 +165,6 @@ public class CC2Utils {
         colors.remove(uuid);
         colors.put(uuid, color);
     }
-    private void loadColor(String uuid) {
-        try {
-            colors.put(uuid, getPlayerFileConfig(uuid).getString("color").replace('§', '&'));
-        } catch (Exception e) {
-            e.printStackTrace();
-            MainClass.setPluginEnabled(false);
-            Bukkit.getLogger().warning(CCStrings.errordetails + "§bError retrieving player color. Player ensure the folders are not locked.");
-        }
-    }
-    private void saveColor(String uuid) {
-        FileConfiguration config = getPlayerFileConfig(uuid);
-        config.set("color", colors.get(uuid));
-        saveConfig(config, getPlayerFile(uuid));
-    }
     
     public String getDefaultCode(String uuid) {
         return defcodes.get(uuid);
@@ -180,20 +172,6 @@ public class CC2Utils {
     public void setDefaultCode(String uuid, String defcode) {
         defcodes.remove(uuid);
         defcodes.put(uuid, defcode);
-    }
-    private void loadDefaultCode(String uuid) {
-        try {
-            defcodes.put(uuid, getPlayerFileConfig(uuid).getString("default-code"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            MainClass.setPluginEnabled(false);
-            Bukkit.getLogger().warning(CCStrings.errordetails + "§bError retrieving player default code. Player ensure the folders are not locked.");
-        }
-    }
-    private void saveDefaultCode(String uuid) {
-        FileConfiguration config = getPlayerFileConfig(uuid);
-        config.set("default-code", defcodes.get(uuid));
-        saveConfig(config, getPlayerFile(uuid));
     }
     private void saveDefaultData() {
         FileConfiguration defconfig = getDefaultFileConfig();

@@ -1,7 +1,9 @@
 package com.sulphate.chatcolor2.commands;
 
+import com.sulphate.chatcolor2.listeners.ColorGUIListener;
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
+import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.CCStrings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +32,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "enable", "available");
+            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "enable", "available", "gui");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
                     case "help":
@@ -116,6 +118,9 @@ public class ChatColorCommand implements CommandExecutor {
                         s.sendMessage(" §7- §eColors: " + colstring);
                         s.sendMessage(" §7- §eModifiers: " + modstring);
                         return true;
+                    }
+                    case "gui": {
+                        ColorGUIListener.openGUI(s);
                     }
                 }
             }
@@ -241,13 +246,13 @@ public class ChatColorCommand implements CommandExecutor {
                 StringBuilder sb = new StringBuilder();
                 String mods = color.replace("rainbow", "");
                 for (char c : seq) {
-                    sb.append("&" + c + mods + c);
+                    sb.append("&").append(c).append(mods).append(c);
                 }
-                String end = sb.toString();
+                String end = CC2Utils.colourise(sb.toString());
                 player.sendMessage(CCStrings.currentcolor + end);
                 return false;
             }
-            player.sendMessage(CCStrings.currentcolor + color + CCStrings.colthis);
+            player.sendMessage(CCStrings.currentcolor + CC2Utils.colourise(color) + CCStrings.colthis);
             return false;
         }
 
@@ -279,6 +284,12 @@ public class ChatColorCommand implements CommandExecutor {
             }
 
             return true;
+        }
+
+        // Check if they have permission to use the GUI.
+        if (args[0].equals("gui") && !hasPermission("chatcolor.gui", player)) {
+            player.sendMessage(CCStrings.nopermissions);
+            return false;
         }
 
         if (MainClass.getUtils().getUUID(args[0]) != null) {

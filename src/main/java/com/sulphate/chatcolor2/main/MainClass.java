@@ -2,14 +2,15 @@ package com.sulphate.chatcolor2.main;
 
 import java.io.File;
 import java.util.*;
-import java.util.logging.Logger;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
+import com.sulphate.chatcolor2.listeners.ColorGUIListener;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,7 +25,7 @@ public class MainClass extends JavaPlugin {
 
     private static MainClass plugin;
     private HashMap<Player,ConfirmScheduler> toconfirm = new HashMap<>();
-    private Logger log = Bukkit.getLogger();
+    private ConsoleCommandSender console = Bukkit.getConsoleSender();
     private static boolean pluginEnabled = true;
     private static CC2Utils utils = new CC2Utils();
     private HashMap<String, Object> defaultConfig = new HashMap<>();
@@ -38,16 +39,18 @@ public class MainClass extends JavaPlugin {
         // Set up the default config.
         setupDefaultConfig();
 
-        //Checking if first time setup needed (Config reload)
+        // Checking if first time setup needed (Config reload)
         if (!new File(getDataFolder(), "config.yml").exists() || !getConfig().getBoolean("loaded") || !getConfig().contains("loaded")) {
             reload();
         }
 
-        //Checking config for errors!
+        // Checking config for errors!
         checkConfig();
-        //Load all data.
+        // Load all data.
         utils.loadAllData();
-        //Start autosaver.
+        // Load the messages.
+        CCStrings.reloadMessages();
+        // Start autosaver.
         autosaver = new AutoSaveScheduler();
         autosaver.startTask();
 
@@ -58,16 +61,16 @@ public class MainClass extends JavaPlugin {
         }
 
         //Console startup messages
-        log.info("§b------------------------------------------------------------");
-        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bConfigurable prefix!");
+        console.sendMessage("§b------------------------------------------------------------");
+        console.sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
+        console.sendMessage(CCStrings.prefix + "Current update: §bColor selection GUI!");
         if (!metrics) {
-            log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
+            console.sendMessage(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
         else {
-            log.info(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttps://bstats.org");
+            console.sendMessage(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttps://bstats.org");
         }
-        log.info("§b------------------------------------------------------------");
+        console.sendMessage("§b------------------------------------------------------------");
 
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
@@ -75,6 +78,7 @@ public class MainClass extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new CustomCommandListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ColorGUIListener(), this);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class MainClass extends JavaPlugin {
         autosaver.cancel();
         utils.saveAllData();
         plugin = null;
-        log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §cDisabled§e!");
+        console.sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §cDisabled§e!");
     }
 
     public static MainClass get() {
@@ -166,7 +170,7 @@ public class MainClass extends JavaPlugin {
         FileConfiguration config = getConfig();
 
         // The message-list 'message' can now cause issues, so let's remove it.
-        config.set("message-list", "");
+        config.set("messages.message-list", "");
 
         for (String st : keys) {
             if (!config.contains(st)) {
@@ -179,14 +183,13 @@ public class MainClass extends JavaPlugin {
             }
             catch(Exception e) {
                 config.set(st, defaultConfig.get(st));
-                saveConfig();
             }
         }
         if (!config.getString("version").equals(getDescription().getVersion())) {
             config.set("version", getDescription().getVersion());
-            saveConfig();
         }
 
+        saveConfig();
         reloadConfig();
     }
 
