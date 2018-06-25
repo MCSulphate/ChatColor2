@@ -72,7 +72,7 @@ public class CC2Utils {
         ConfigurationSection messagesSection = MainClass.get().getConfig().getConfigurationSection("messages");
         Map<String, Object> messages = messagesSection.getValues(false);
         
-        for(Map.Entry<String, Object> entry : messages.entrySet()) {
+        for (Map.Entry<String, Object> entry : messages.entrySet()) {
             try {
                 if (!entry.getKey().equals("message-list")) {
                     this.messages.put(entry.getKey(), (String)entry.getValue());
@@ -141,7 +141,7 @@ public class CC2Utils {
     private void loadPlayerData(String uuid) {
         FileConfiguration config = getPlayerFileConfig(uuid);
         try {
-            colors.put(uuid, config.getString("color").replace('§', '&'));
+            colors.put(uuid, config.getString("color")/*.replace('§', '&')*/);
             defcodes.put(uuid, config.getString("default-code"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -225,7 +225,7 @@ public class CC2Utils {
     }
     public String getUUID(String username) {
         if (playerlist.contains(username)) {
-            return playerlist.getString("username");
+            return playerlist.getString(username);
         } else {
             return null;
         }

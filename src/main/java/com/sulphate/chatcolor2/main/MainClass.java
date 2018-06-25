@@ -1,7 +1,6 @@
 package com.sulphate.chatcolor2.main;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,11 +35,12 @@ public class MainClass extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         boolean metrics;
-        boolean ioex = false;
+
         //Checking if first time setup needed (Config reload)
         if (!new File(getDataFolder(), "config.yml").exists() || !getConfig().getBoolean("loaded") || !getConfig().contains("loaded")) {
             reload();
         }
+
         //Checking config for errors!
         checkConfig();
         //Load all data.
@@ -48,15 +48,17 @@ public class MainClass extends JavaPlugin {
         //Start autosaver.
         autosaver = new AutoSaveScheduler();
         autosaver.startTask();
+
         //Checking if Metrics is allowed for this plugin
         metrics = getConfig().getBoolean("stats");
         if (metrics) {
-            Metrics met = new Metrics(this);
+            new Metrics(this);
         }
+
         //Console startup messages
         log.info("§b------------------------------------------------------------");
         log.info(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        log.info(CCStrings.prefix + "Current update: §bStats switched over to bStats!");
+        log.info(CCStrings.prefix + "Current update: §bConfigurable prefix!");
         if (!metrics) {
             log.info(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
@@ -64,6 +66,7 @@ public class MainClass extends JavaPlugin {
             log.info(CCStrings.prefix + "§bMetrics §eis §aenabled §efor this plugin. Stats sent to §bhttps://bstats.org");
         }
         log.info("§b------------------------------------------------------------");
+
         //Commands & Listeners
         getCommand("chatcolor").setExecutor(new ChatColorCommand());
         getCommand("confirm").setExecutor(new ConfirmCommand());
@@ -84,7 +87,7 @@ public class MainClass extends JavaPlugin {
         return plugin;
     }
 
-    public HashMap<Player,ConfirmScheduler> getConfirmees() {
+    public HashMap<Player, ConfirmScheduler> getConfirmees() {
         return toconfirm;
     }
 
@@ -96,19 +99,19 @@ public class MainClass extends JavaPlugin {
         toconfirm.remove(p);
     }
 
-
     public void reload() {
         getConfig().set("loaded", false);
         getConfig().set("version", getDescription().getVersion());
         getConfig().set("stats", true);
         getConfig().set("settings.auto-save", true);
-        getConfig().set("settings.color-override", false);
+        getConfig().set("settings.color-override", true);
         getConfig().set("settings.notify-others", true);
         getConfig().set("settings.join-message", true);
         getConfig().set("settings.confirm-timeout", 10);
         getConfig().set("settings.default-color", "&f");
         getConfig().set("settings.rainbow-sequence", "abcde");
         getConfig().set("settings.command-name", "chatcolor");
+        getConfig().set("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
         getConfig().set("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         getConfig().set("messages.not-enough-args", "&cNot enough arguments!");
         getConfig().set("messages.too-many-args", "&cToo many arguments!");
@@ -120,7 +123,7 @@ public class MainClass extends JavaPlugin {
         getConfig().set("messages.invalid-color", "&cInvalid color: &e");
         getConfig().set("messages.invalid-command", "&cThat is an invalid command!");
         getConfig().set("messages.invalid-modifier", "&cInvalid modifier: &e");
-        getConfig().set("messages.invalid-setting", "&cInvalid Setting: &e");
+        getConfig().set("messages.invalid-setting", "&cInvalid setting: &e");
         getConfig().set("messages.needs-boolean", "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE");
         getConfig().set("messages.needs-number", "&cThat setting requires a number!");
         getConfig().set("messages.current-color", "Your color is currently: ");
@@ -165,6 +168,7 @@ public class MainClass extends JavaPlugin {
         hmp.put("settings.default-color", "&f");
         hmp.put("settings.rainbow-sequence", "abcde");
         hmp.put("settings.command-name", "chatcolor");
+        hmp.put("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
         hmp.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         hmp.put("messages.not-enough-args", "&cNot enough arguments!");
         hmp.put("messages.too-many-args", "&cToo many arguments!");
@@ -213,6 +217,7 @@ public class MainClass extends JavaPlugin {
         keys.add("settings.default-color");
         keys.add("settings.rainbow-sequence");
         keys.add("settings.command-name");
+        keys.add("messages.prefix");
         keys.add("messages.help");
         keys.add("messages.not-enough-args");
         keys.add("messages.too-many-args");
@@ -256,7 +261,7 @@ public class MainClass extends JavaPlugin {
         }
         for (String st : keys) {
             try {
-                Object o = getConfig().get(st);
+                getConfig().get(st);
             }
             catch(Exception e) {
                 getConfig().set(st, hmp.get(st));

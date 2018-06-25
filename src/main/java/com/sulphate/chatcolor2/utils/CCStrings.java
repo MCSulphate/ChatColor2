@@ -5,7 +5,9 @@ import org.bukkit.ChatColor;
 
 public class CCStrings {
 
-    public static String prefix = "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e".replace('&', ChatColor.COLOR_CHAR);
+    public static String prefix = MainClass.getUtils().getMessage("prefix").replace('&', ChatColor.COLOR_CHAR);
+    public static String authormessage1 = "&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:".replace('&', ChatColor.COLOR_CHAR);
+    public static String authormessage2 = "&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<".replace('&', ChatColor.COLOR_CHAR);
     public static String help = prefix + MainClass.getUtils().getMessage("help").replace('&', ChatColor.COLOR_CHAR);
     public static String notenoughargs = prefix + MainClass.getUtils().getMessage("not-enough-args").replace('&', ChatColor.COLOR_CHAR);
     public static String toomanyargs = prefix + MainClass.getUtils().getMessage("too-many-args").replace('&', ChatColor.COLOR_CHAR);
@@ -42,6 +44,7 @@ public class CCStrings {
     public static String alreadyenabled = prefix + MainClass.getUtils().getMessage("already-enabled").replace('&', ChatColor.COLOR_CHAR);
     
     public static void reloadMessages() {
+        prefix = MainClass.getUtils().getMessage("prefix").replace('&', ChatColor.COLOR_CHAR);
         help = prefix + MainClass.getUtils().getMessage("help").replace('&', ChatColor.COLOR_CHAR);
         notenoughargs = prefix + MainClass.getUtils().getMessage("not-enough-args").replace('&', ChatColor.COLOR_CHAR);
         toomanyargs = prefix + MainClass.getUtils().getMessage("too-many-args").replace('&', ChatColor.COLOR_CHAR);

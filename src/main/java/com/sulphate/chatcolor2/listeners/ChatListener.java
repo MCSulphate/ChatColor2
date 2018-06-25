@@ -1,12 +1,9 @@
 package com.sulphate.chatcolor2.listeners;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,7 +13,7 @@ import com.sulphate.chatcolor2.main.MainClass;
 
 public class ChatListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEvent(AsyncPlayerChatEvent e) {
 
         if (!MainClass.getPluginEnabled()) {
@@ -29,36 +26,44 @@ public class ChatListener implements Listener {
         String color = MainClass.getUtils().getColor(uuid);
 
         if (color.contains("rainbow") && override) {
-            String rseq = (String)MainClass.getUtils().getSetting("rainbow-sequence");
+            String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
+
             if (!verifyRainbowSequence(rseq)) {
                 MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
                 rseq = "abcde";
             }
+
             String msg = e.getMessage().replace("&", "");
-            String mods = color.replace("rainbow","");
-            char[] cols = rseq.toCharArray();
+            String mods = color.replace("rainbow", "");
+            char[] colors = rseq.toCharArray();
             char[] msgchars = msg.toCharArray();
-            int rn = 0;
+            int currentColorIndex = 0;
+
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < msgchars.length; i++) {
-                if (rn == cols.length) {
-                    rn = 0;
+                if (currentColorIndex == colors.length) {
+                    currentColorIndex = 0;
                 }
                 if (msgchars[i] == ' ') {
                     sb.append(" ");
                 }
                 else {
-                    sb.append(ChatColor.COLOR_CHAR + cols[rn] + mods + msgchars[i]);
-                    rn++;
+                    sb.append(ChatColor.COLOR_CHAR).append(colors[currentColorIndex]).append(mods).append(msgchars[i]);
+                    currentColorIndex++;
                 }
             }
+
             String end = sb.toString();
             e.setMessage(end);
             return;
         }
+        // Set their color to nothing if there is no override set.
+        else if (color.contains("rainbow")) {
+            color = "";
+        }
 
         String replacestr = override ? "" : "§";
-        e.setMessage(MainClass.getUtils().getColor(uuid).replace('&', ChatColor.COLOR_CHAR) + e.getMessage().replace("&", replacestr));
+        e.setMessage(color + e.getMessage().replace("&", replacestr));
 
     }
 

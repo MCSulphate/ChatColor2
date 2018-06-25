@@ -10,7 +10,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,12 +30,12 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "enable", "available");
+            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "enable", "available");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
+                    case "help":
                     case "commandshelp": {
                         handleCommandsHelp(s);
-                        ;
                         return true;
                     }
                     case "permissionshelp": {
@@ -92,7 +91,8 @@ public class ChatColorCommand implements CommandExecutor {
                         StringBuilder colbuilder = new StringBuilder();
                         for (int i = 0; i < cols.length; i++) {
                             if (hasPermission("chatcolor.color." + cols[i], s)) {
-                                colbuilder.append(ChatColor.COLOR_CHAR + cols[i] + cols[i]);
+                                colbuilder.append(ChatColor.COLOR_CHAR).append(cols[i]).append(cols[i]);
+
                                 if (i != cols.length - 1) {
                                     colbuilder.append(comma);
                                 }
@@ -103,7 +103,8 @@ public class ChatColorCommand implements CommandExecutor {
                         StringBuilder modbuilder = new StringBuilder();
                         for (int i = 0; i < mods.length; i++) {
                             if (hasPermission("chatcolor.modifier." + mods[i], s)) {
-                                modbuilder.append(ChatColor.COLOR_CHAR + "b" + ChatColor.COLOR_CHAR + mods[i] + mods[i]);
+                                modbuilder.append(ChatColor.COLOR_CHAR).append("b").append(ChatColor.COLOR_CHAR).append(mods[i]).append(mods[i]);
+
                                 if (i != mods.length - 1) {
                                     modbuilder.append(comma);
                                 }
@@ -228,9 +229,9 @@ public class ChatColorCommand implements CommandExecutor {
 
     }
 
+    // Checks the command given, including any permissions / invalid commands.
     public boolean checkCommand(String[] args, Player player) {
 
-        boolean other = false;
         String uuid = player.getUniqueId().toString();
 
         if (args.length == 0) {
@@ -255,12 +256,14 @@ public class ChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        List<String> cmds = Arrays.asList("set", "reloadmessages", "reset", "enable", "permissionshelp", "commandshelp", "settingshelp", "available");
+        // args is at least 1 in length.
+        List<String> cmds = Arrays.asList("set", "reloadmessages", "reset", "enable", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("set") && args.length < 3) {
                 player.sendMessage(CCStrings.notenoughargs);
                 return false;
             }
+
             List<String> settings = Arrays.asList("auto-save", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name");
             if (args[0].equalsIgnoreCase("set") && !settings.contains(args[1])) {
                 player.sendMessage(CCStrings.invalidsetting + colorString("&e" + args[1]));
@@ -274,11 +277,11 @@ public class ChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.nopermissions);
                 return false;
             }
+
             return true;
         }
 
         if (MainClass.getUtils().getUUID(args[0]) != null) {
-            other = true;
             if (!hasPermission("chatcolor.change.others", player)) {
                 player.sendMessage(CCStrings.nopermissions);
                 return false;
@@ -350,9 +353,7 @@ public class ChatColorCommand implements CommandExecutor {
             player.sendMessage(CCStrings.invalidcolor + args[0]);
             return false;
         }
-        if (other) {
-            player.sendMessage(CCStrings.invalidcolor + args[1]);
-        }
+
         player.sendMessage(CCStrings.invalidcommand);
         return false;
 
@@ -411,6 +412,11 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage("");
         player.sendMessage(colorString("&eAlternatively:"));
         player.sendMessage(colorString("&cobfuscated, &c&lbold&r, &c&mstrikethrough&r, &c&nunderlined&r, &c&oitalic"));
+
+        // Send the author messages.
+        player.sendMessage("");
+        player.sendMessage(CCStrings.authormessage1);
+        player.sendMessage(CCStrings.authormessage2);
     }
 
     public void handlePermissionsHelp(Player player) {
@@ -439,6 +445,11 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(colorString("&eOther Permissions:"));
         player.sendMessage(colorString(" &7- &eChange Own Color: &cchatcolor.change.self"));
         player.sendMessage(colorString(" &7- &eChange Other's Color: &cchatcolor.change.others"));
+
+        // Send the author messages.
+        player.sendMessage("");
+        player.sendMessage(CCStrings.authormessage1);
+        player.sendMessage(CCStrings.authormessage2);
     }
 
     public void handleSettingsHelp(Player player) {
@@ -464,6 +475,11 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(colorString(" &7- &erainbow-sequence: &cChange the rainbow chatcolor sequence."));
         player.sendMessage(colorString("   &eUsage: &b/chatcolor set rainbow-sequence <sequence>"));
         player.sendMessage("");
+
+        // Send the author messages.
+        player.sendMessage("");
+        player.sendMessage(CCStrings.authormessage1);
+        player.sendMessage(CCStrings.authormessage2);
     }
 
     public void handleSet(String[] args, Player player) {
