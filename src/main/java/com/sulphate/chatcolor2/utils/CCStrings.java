@@ -5,8 +5,8 @@ import com.sulphate.chatcolor2.main.MainClass;
 public class CCStrings {
 
     public static String prefix;
-    public static String authormessage1 = "&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:";
-    public static String authormessage2 = "&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<";
+    public static String authormessage1 = CC2Utils.colourise("&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:");
+    public static String authormessage2 = CC2Utils.colourise("&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<");
     public static String help;
     public static String notenoughargs;
     public static String toomanyargs;

@@ -133,7 +133,7 @@ public class CC2Utils {
     }
     private void saveAllPlayerData() {
         for (String key : playerlist.getKeys(false)) {
-            savePlayerData((String)playerlist.get(key));
+            savePlayerData((String) playerlist.get(key));
         }
     }
     private void savePlayerData(String uuid) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sulphate.chatcolor2.utils.CC2Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -40,18 +41,19 @@ public class PlayerJoinListener implements Listener {
                 String[] rss = rseq.split("");
                 StringBuilder sb = new StringBuilder();
                 for (String s : rss) {
-                    sb.append("§" + s + mods + s);
+                    sb.append("&").append(s).append(mods).append(s);
                 }
-                String end = sb.toString();
+
+                String end = CC2Utils.colourise(sb.toString());
                 p.sendMessage(CCStrings.currentcolor + end);
                 return;
             }
-            e.getPlayer().sendMessage(CCStrings.currentcolor + color.replace('&', ChatColor.COLOR_CHAR) + CCStrings.colthis);
+            e.getPlayer().sendMessage(CC2Utils.colourise(CCStrings.currentcolor + color + CCStrings.colthis));
         }
         MainClass.getUtils().check(p);
     }
 
-    public void checkDefault(String uuid) {
+    private void checkDefault(String uuid) {
         String defcol = MainClass.getUtils().getCurrentDefaultColor();
         String defcode = MainClass.getUtils().getCurrentDefaultCode();
 
@@ -61,16 +63,17 @@ public class PlayerJoinListener implements Listener {
         }
     }
 
-    public boolean verifyRainbowSequence(String seq) {
-
+    private boolean verifyRainbowSequence(String seq) {
         boolean verify = true;
         List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
         String[] chars = seq.split("");
+
         for (String s : chars) {
             if (!cols.contains(s)) {
                 verify = false;
             }
         }
+
         return verify;
     }
 

@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.schedulers;
 
 import com.sulphate.chatcolor2.main.MainClass;
+import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.CCStrings;
 import org.bukkit.Bukkit;
 
@@ -17,7 +18,7 @@ public class AutoSaveScheduler {
                 active = (boolean)MainClass.getUtils().getSetting("auto-save");
                 if (active) {
                     MainClass.getUtils().saveAllData();
-                    Bukkit.getLogger().info(CCStrings.prefix + "Saved all data.");
+                    Bukkit.getConsoleSender().sendMessage(CC2Utils.colourise(CCStrings.prefix + "Saved all data."));
                 }
             }
         }, 5*60*20L, 5*60*20L);
