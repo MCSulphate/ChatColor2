@@ -12,14 +12,11 @@ public class AutoSaveScheduler {
 
     public void startTask() {
 
-        id = Bukkit.getScheduler().scheduleSyncRepeatingTask(MainClass.get(), new Runnable() {
-            @Override
-            public void run() {
-                active = (boolean)MainClass.getUtils().getSetting("auto-save");
-                if (active) {
-                    MainClass.getUtils().saveAllData();
-                    Bukkit.getConsoleSender().sendMessage(CC2Utils.colourise(CCStrings.prefix + "Saved all data."));
-                }
+        id = Bukkit.getScheduler().scheduleSyncRepeatingTask(MainClass.get(), () -> {
+            active = (boolean)MainClass.getUtils().getSetting("auto-save");
+
+            if (active) {
+                MainClass.getUtils().saveAllData();
             }
         }, 5*60*20L, 5*60*20L);
 

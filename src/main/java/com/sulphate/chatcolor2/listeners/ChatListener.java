@@ -22,17 +22,13 @@ public class ChatListener implements Listener {
         }
 
         String uuid = e.getPlayer().getUniqueId().toString();
-        boolean override = (boolean)MainClass.getUtils().getSetting("color-override");
+        boolean override = (boolean) MainClass.getUtils().getSetting("color-override");
         checkDefault(uuid);
         String color = MainClass.getUtils().getColor(uuid);
 
-        if (e.getMessage().contains("&")) {
-            if (override) {
-                color = color.replace("&", "");
-            }
-            else {
-                e.setMessage(CC2Utils.colourise(e.getMessage()));
-            }
+        if (e.getMessage().contains("&") && override) {
+            String colourised = CC2Utils.colourise(e.getMessage());
+            e.setMessage(ChatColor.stripColor(colourised)); // Gets rid of all colour.
         }
 
         if (color.contains("rainbow")) {

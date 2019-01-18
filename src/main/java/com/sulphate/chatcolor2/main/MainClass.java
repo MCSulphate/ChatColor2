@@ -136,6 +136,11 @@ public class MainClass extends JavaPlugin {
         defaultConfig.put("messages.set-own-color", "Successfully set your color to: ");
         defaultConfig.put("messages.set-others-color", "Successfully set &c[player]'s &ecolor to: ");
         defaultConfig.put("messages.player-set-your-color", "&c[player] &eset your color to: ");
+        defaultConfig.put("messages.colour-already-set", "&cColour already selected!");
+        defaultConfig.put("messages.gui-color-set", "&aColour set to ");
+        defaultConfig.put("messages.gui-modifier-enabled", "&aEnabled &e");
+        defaultConfig.put("messages.gui-modifier-disabled", "&cDisabled &e");
+        defaultConfig.put("messages.gui-unavailable", "&cUnavailable");
         defaultConfig.put("messages.this", "this");
         defaultConfig.put("messages.confirm", "Are you sure you want to do that? Type &c/confirm &eif you are sure.");
         defaultConfig.put("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
@@ -170,7 +175,7 @@ public class MainClass extends JavaPlugin {
         FileConfiguration config = getConfig();
 
         // The message-list 'message' can now cause issues, so let's remove it.
-        config.set("messages.message-list", "");
+        config.set("messages.message-list", null);
 
         for (String st : keys) {
             if (!config.contains(st)) {

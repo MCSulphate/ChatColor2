@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.utils.CC2Utils;
+import com.sulphate.chatcolor2.utils.CCStrings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import sun.applet.Main;
 
 import java.util.*;
 
@@ -26,7 +28,93 @@ public class ColorGUIListener implements Listener {
         }
 
         if (inventory.getTitle().equals(CC2Utils.colourise("&9Color Picker GUI"))) {
-            event.getWhoClicked().sendMessage(CC2Utils.colourise("&aYou clicked inside the color picker GUI!"));
+            event.setCancelled(true);
+
+            ItemStack clickedItem = event.getCurrentItem();
+
+            // Check if they clicked an empty space.
+            if (clickedItem == null || clickedItem.getType() == null || clickedItem.getType().equals(Material.AIR)) {
+                return;
+            }
+
+            // Determine whether it was a colour or a modifier they clicked.
+            int clickedSlot = event.getSlot();
+            boolean isColour = clickedSlot <= 16;
+
+            // Get their colour.
+            Player player = (Player) event.getWhoClicked();
+            String colourString = MainClass.getUtils().getColor(player.getUniqueId().toString());
+
+            String colour = colourString.substring(1, 2);
+            String modPart = colourString.substring(2);
+            String[] modifiers = modPart.split("&");
+
+            String displayName = clickedItem.getItemMeta().getDisplayName();
+
+            if (isColour) {
+                String colChar = Character.toString(displayName.charAt(1));
+
+                // For some reason, the white colour code doesn't display.
+                if (colChar.equals("h")) {
+                    colChar = "f";
+                }
+
+                // Make sure it's not unavailable.
+                if (displayName.equals(CC2Utils.colourise("&cUnavailable"))) {
+                    player.sendMessage(CCStrings.nocolorperms);
+                }
+                // Make sure it's not their current colour.
+                else if (!colChar.equals(colour)) {
+                    StringBuilder sb = new StringBuilder("&").append(colChar);
+
+                    for (String modifier : modifiers) {
+                        if (modifier.equals("")) continue;
+
+                        Bukkit.broadcastMessage("Appending Modifier: " + modifier);
+                        sb.append('&').append(modifier);
+                    }
+
+                    // Set their colour, re-open the GUI.
+                    String newColour = sb.toString();
+                    MainClass.getUtils().setColor(player.getUniqueId().toString(), newColour);
+
+                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colourise(newColour) + CCStrings.colthis);
+                    openGUI(player); // Refreshes the GUI.
+                }
+            }
+            else {
+                String modChar = Character.toString(displayName.charAt(3));
+
+                // Make sure it's not unavailable.
+                if (displayName.equals(CC2Utils.colourise("&cUnavailable"))) {
+                    player.sendMessage(CCStrings.nomodperms);
+                }
+                else {
+                    String firstLoreLine = clickedItem.getItemMeta().getLore().get(0);
+                    boolean ignoreClickedModifier = firstLoreLine.contains("Active");
+
+                    StringBuilder sb = new StringBuilder("&").append(colour);
+
+                    for (String modifier : modifiers) {
+                        if (modifier.equals("")) continue;
+                        else if (ignoreClickedModifier && modifier.equals(modChar)) continue;
+
+                        sb.append('&').append(modifier);
+                    }
+
+                    // Add the new modifier, if necessary.
+                    if (!ignoreClickedModifier) {
+                        sb.append('&').append(modChar);
+                    }
+
+                    // Set their colour, refresh GUI.
+                    String newColour = sb.toString();
+                    MainClass.getUtils().setColor(player.getUniqueId().toString(), newColour);
+
+                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colourise(newColour) + CCStrings.colthis);
+                    openGUI(player);
+                }
+            }
         }
     }
 
@@ -36,7 +124,6 @@ public class ColorGUIListener implements Listener {
         // Get the player's colour.
         String colour = MainClass.getUtils().getColor(player.getUniqueId().toString());
         List<String> colourParts = Arrays.asList(colour.split("&"));
-        player.sendMessage(colour);
 
         // Colour and modifier codes.
         char[] colourCodes = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -100,7 +187,10 @@ public class ColorGUIListener implements Listener {
 
             im.setDisplayName(CC2Utils.colourise("&" + colourCodes[i] + colourNames[i]));
             itemToAdd.setItemMeta(im);
-            inventory.setItem(i, itemToAdd);
+
+            // For display purposes, ignore tenth inventory slot.
+            int inventoryIndex = i >= 9 ? i + 1 : i;
+            inventory.setItem(inventoryIndex, itemToAdd);
         }
 
         // Add the modifiers to the inventory (bottom row).
@@ -120,7 +210,9 @@ public class ColorGUIListener implements Listener {
             im.setDisplayName(displayName);
             itemToAdd.setItemMeta(im);
 
-            inventory.setItem(i + 27, itemToAdd);
+            // For display purposes, ignore first two slots on the row.
+            int inventoryIndex = i + 27 + 2;
+            inventory.setItem(inventoryIndex, itemToAdd);
         }
 
         player.openInventory(inventory);
