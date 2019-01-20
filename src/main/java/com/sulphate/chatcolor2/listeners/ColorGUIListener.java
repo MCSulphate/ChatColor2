@@ -22,13 +22,20 @@ public class ColorGUIListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onEvent(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();
+        Inventory topInventory = event.getView().getTopInventory();
 
-        if (inventory == null) {
+        if (inventory == null || topInventory == null) {
             return;
         }
 
-        if (inventory.getTitle().equals(CC2Utils.colourise("&9Color Picker GUI"))) {
+        String guiTitle = CC2Utils.colourise("&9Color Picker GUI");
+        if (inventory.getTitle().equals(guiTitle) || topInventory.getTitle().equals(guiTitle)) {
             event.setCancelled(true);
+
+            // Make sure they are clicking the picker GUI.
+            if (!inventory.getTitle().equals(guiTitle)) {
+                return;
+            }
 
             ItemStack clickedItem = event.getCurrentItem();
 
@@ -50,6 +57,7 @@ public class ColorGUIListener implements Listener {
             String[] modifiers = modPart.split("&");
 
             String displayName = clickedItem.getItemMeta().getDisplayName();
+            String firstLoreLine = clickedItem.getItemMeta().getLore().get(0);
 
             if (isColour) {
                 String colChar = Character.toString(displayName.charAt(1));
@@ -60,8 +68,8 @@ public class ColorGUIListener implements Listener {
                 }
 
                 // Make sure it's not unavailable.
-                if (displayName.equals(CC2Utils.colourise("&cUnavailable"))) {
-                    player.sendMessage(CCStrings.nocolorperms);
+                if (firstLoreLine.equals(CC2Utils.colourise("&cUnavailable"))) {
+                    player.sendMessage(CC2Utils.colourise(CCStrings.nocolorperms + colChar + colChar));
                 }
                 // Make sure it's not their current colour.
                 else if (!colChar.equals(colour)) {
@@ -86,13 +94,11 @@ public class ColorGUIListener implements Listener {
                 String modChar = Character.toString(displayName.charAt(3));
 
                 // Make sure it's not unavailable.
-                if (displayName.equals(CC2Utils.colourise("&cUnavailable"))) {
-                    player.sendMessage(CCStrings.nomodperms);
+                if (firstLoreLine.equals(CC2Utils.colourise("&cUnavailable"))) {
+                    player.sendMessage(CC2Utils.colourise(CCStrings.nomodperms + modChar + modChar));
                 }
                 else {
-                    String firstLoreLine = clickedItem.getItemMeta().getLore().get(0);
                     boolean ignoreClickedModifier = firstLoreLine.contains("Active");
-
                     StringBuilder sb = new StringBuilder("&").append(colour);
 
                     for (String modifier : modifiers) {
@@ -139,7 +145,7 @@ public class ColorGUIListener implements Listener {
         ItemStack activeModifier = new ItemStack(Material.INK_SACK, 1, (short) 10);
 
         // Unavailable ItemStack, Unavailable Mod ItemStack
-        ItemStack greyedOut = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+        ItemStack greyedOut = new ItemStack(Material.BARRIER);
         ItemStack unavailableMod = new ItemStack(Material.INK_SACK, 1, (short) 1);
 
         // Greyed-out lore
@@ -244,17 +250,19 @@ public class ColorGUIListener implements Listener {
         String[] parts = permission.split("\\.");
 
         StringBuilder currentPermission = new StringBuilder(parts[0]);
-        for (int i = 1; i < parts.length; i++) {
+        for (int i = 0; i < parts.length; i++) {
             String permissionToTest = i == parts.length - 1 ? currentPermission.toString() : currentPermission.toString() + ".*";
 
-            if (!player.hasPermission(permissionToTest)) {
-                return false;
+            if (player.hasPermission(permissionToTest)) {
+                return true;
             }
 
-            currentPermission.append(".").append(parts[i]);
+            if (i != parts.length - 1) {
+                currentPermission.append(".").append(parts[i + 1]);
+            }
         }
 
-        return true;
+        return false;
     }
 
 }

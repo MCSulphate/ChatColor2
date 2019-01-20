@@ -22,8 +22,9 @@ public class ChatListener implements Listener {
         }
 
         String uuid = e.getPlayer().getUniqueId().toString();
-        boolean override = (boolean) MainClass.getUtils().getSetting("color-override");
         checkDefault(uuid);
+
+        boolean override = (boolean) MainClass.getUtils().getSetting("color-override");
         String color = MainClass.getUtils().getColor(uuid);
 
         if (e.getMessage().contains("&") && override) {
@@ -31,7 +32,7 @@ public class ChatListener implements Listener {
             e.setMessage(ChatColor.stripColor(colourised)); // Gets rid of all colour.
         }
 
-        if (color.contains("rainbow")) {
+        if (color.contains("rainbow") && !e.getMessage().contains("&")) {
             String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
 
             if (!verifyRainbowSequence(rseq)) {
@@ -63,7 +64,7 @@ public class ChatListener implements Listener {
             return;
         }
 
-        e.setMessage(CC2Utils.colourise(color + e.getMessage()));
+        e.setMessage(CC2Utils.colourise(color) + e.getMessage());
     }
 
     public boolean verifyRainbowSequence(String seq) {

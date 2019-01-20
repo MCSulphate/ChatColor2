@@ -370,7 +370,7 @@ public class ChatColorCommand implements CommandExecutor {
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
                     if (!hasPermission("chatcolor.color." + args[0], player)) {
-                        player.sendMessage(CCStrings.nocolorperms + args[0] + args[0]);
+                        player.sendMessage(CC2Utils.colourise(CCStrings.nocolorperms + args[0] + args[0]));
                         return false;
                     }
                     continue;
@@ -380,7 +380,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return false;
                 }
                 if (!hasPermission("chatcolor.modifier." + args[i], player)) {
-                    player.sendMessage(CCStrings.nomodperms + args[i] + args[i]);
+                    player.sendMessage(CC2Utils.colourise(CCStrings.nomodperms + args[i] + args[i]));
                     return false;
                 }
             }

@@ -63,7 +63,7 @@ public class MainClass extends JavaPlugin {
         //Console startup messages
         console.sendMessage("§b------------------------------------------------------------");
         console.sendMessage(CCStrings.prefix + "ChatColor 2 Version §b" + getDescription().getVersion() + " §ehas been §aLoaded§e!");
-        console.sendMessage(CCStrings.prefix + "Current update: §bColor selection GUI!");
+        console.sendMessage(CCStrings.prefix + "Current update: §bColor selection GUI! (+Bug Fixes)");
         if (!metrics) {
             console.sendMessage(CCStrings.prefix + "§bMetrics §eis §cdisabled §efor this plugin.");
         }
