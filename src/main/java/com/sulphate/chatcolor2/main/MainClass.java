@@ -118,6 +118,7 @@ public class MainClass extends JavaPlugin {
         defaultConfig.put("settings.rainbow-sequence", "abcde");
         defaultConfig.put("settings.command-name", "chatcolor");
         defaultConfig.put("messages.prefix", "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e");
+        defaultConfig.put("messages.gui-title", "&9Color Picker GUI");
         defaultConfig.put("messages.help", "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!");
         defaultConfig.put("messages.not-enough-args", "&cNot enough arguments!");
         defaultConfig.put("messages.too-many-args", "&cToo many arguments!");

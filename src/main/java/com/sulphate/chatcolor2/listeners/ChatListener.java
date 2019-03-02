@@ -27,41 +27,55 @@ public class ChatListener implements Listener {
         boolean override = (boolean) MainClass.getUtils().getSetting("color-override");
         String color = MainClass.getUtils().getColor(uuid);
 
-        if (e.getMessage().contains("&") && override) {
+        if (e.getMessage().contains("&")) {
             String colourised = CC2Utils.colourise(e.getMessage());
-            e.setMessage(ChatColor.stripColor(colourised)); // Gets rid of all colour.
+
+            if (override) {
+                e.setMessage(ChatColor.stripColor(colourised)); // Gets rid of all colour.
+            }
+            else {
+                // If not overriding, then colourise the message and stop here.
+                e.setMessage(colourised);
+                return;
+            }
         }
 
-        if (color.contains("rainbow") && !e.getMessage().contains("&")) {
-            String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
-
-            if (!verifyRainbowSequence(rseq)) {
-                MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
-                rseq = "abcde";
+        if (color.contains("rainbow")) {
+            if (e.getMessage().contains("&")) {
+                // If there is color symbols, we don't want to put 'rainbow' at the start.
+                color = "";
             }
+            else {
+                String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
 
-            String mods = color.replace("rainbow", "");
-            char[] colors = rseq.toCharArray();
-            char[] msgchars = e.getMessage().toCharArray();
-            int currentColorIndex = 0;
+                if (!verifyRainbowSequence(rseq)) {
+                    MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
+                    rseq = "abcde";
+                }
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < msgchars.length; i++) {
-                if (currentColorIndex == colors.length) {
-                    currentColorIndex = 0;
+                String mods = color.replace("rainbow", "");
+                char[] colors = rseq.toCharArray();
+                char[] msgchars = e.getMessage().toCharArray();
+                int currentColorIndex = 0;
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < msgchars.length; i++) {
+                    if (currentColorIndex == colors.length) {
+                        currentColorIndex = 0;
+                    }
+                    if (msgchars[i] == ' ') {
+                        sb.append(" ");
+                    }
+                    else {
+                        sb.append('&').append(colors[currentColorIndex]).append(mods).append(msgchars[i]);
+                        currentColorIndex++;
+                    }
                 }
-                if (msgchars[i] == ' ') {
-                    sb.append(" ");
-                }
-                else {
-                    sb.append(ChatColor.COLOR_CHAR).append(colors[currentColorIndex]).append(mods).append(msgchars[i]);
-                    currentColorIndex++;
-                }
+
+                String end = CC2Utils.colourise(sb.toString());
+                e.setMessage(end);
+                return;
             }
-
-            String end = sb.toString();
-            e.setMessage(end);
-            return;
         }
 
         e.setMessage(CC2Utils.colourise(color) + e.getMessage());

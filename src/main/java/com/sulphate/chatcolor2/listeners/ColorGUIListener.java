@@ -28,7 +28,7 @@ public class ColorGUIListener implements Listener {
             return;
         }
 
-        String guiTitle = CC2Utils.colourise("&9Color Picker GUI");
+        String guiTitle = CC2Utils.colourise(CCStrings.guititle);
         if (inventory.getTitle().equals(guiTitle) || topInventory.getTitle().equals(guiTitle)) {
             event.setCancelled(true);
 
@@ -125,7 +125,7 @@ public class ColorGUIListener implements Listener {
     }
 
     public static void openGUI(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 36, CC2Utils.colourise("&9Color Picker GUI"));
+        Inventory inventory = Bukkit.createInventory(null, 36, CC2Utils.colourise(CCStrings.guititle));
 
         // Get the player's colour.
         String colour = MainClass.getUtils().getColor(player.getUniqueId().toString());

@@ -5,6 +5,7 @@ import com.sulphate.chatcolor2.main.MainClass;
 public class CCStrings {
 
     public static String prefix;
+    public static String guititle;
     public static String authormessage1 = CC2Utils.colourise("&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:");
     public static String authormessage2 = CC2Utils.colourise("&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<");
     public static String help;
@@ -46,6 +47,7 @@ public class CCStrings {
         CC2Utils utils = MainClass.getUtils();
 
         prefix = CC2Utils.colourise(utils.getMessage("prefix"));
+        guititle = CC2Utils.colourise(utils.getMessage("gui-title"));
         help = prefix + CC2Utils.colourise(utils.getMessage("help"));
         notenoughargs = prefix + CC2Utils.colourise(utils.getMessage("not-enough-args"));
         toomanyargs = prefix + CC2Utils.colourise(utils.getMessage("too-many-args"));
