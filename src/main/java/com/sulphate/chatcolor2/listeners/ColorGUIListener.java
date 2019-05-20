@@ -11,31 +11,27 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import sun.applet.Main;
 
 import java.util.*;
 
 public class ColorGUIListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEvent(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();
-        Inventory topInventory = event.getView().getTopInventory();
+        InventoryView inventoryView = event.getView();
+        int rawSlot = event.getRawSlot();
 
-        if (inventory == null || topInventory == null) {
+        if (inventory == null) {
             return;
         }
 
         String guiTitle = CC2Utils.colourise(CCStrings.guititle);
-        if (inventory.getTitle().equals(guiTitle) || topInventory.getTitle().equals(guiTitle)) {
+        if (inventoryView.getTitle().equals(guiTitle) && inventoryView.convertSlot(rawSlot) == rawSlot) {
             event.setCancelled(true);
-
-            // Make sure they are clicking the picker GUI.
-            if (!inventory.getTitle().equals(guiTitle)) {
-                return;
-            }
 
             ItemStack clickedItem = event.getCurrentItem();
 
@@ -78,7 +74,6 @@ public class ColorGUIListener implements Listener {
                     for (String modifier : modifiers) {
                         if (modifier.equals("")) continue;
 
-                        Bukkit.broadcastMessage("Appending Modifier: " + modifier);
                         sb.append('&').append(modifier);
                     }
 

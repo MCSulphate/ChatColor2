@@ -8,7 +8,7 @@ import com.sulphate.chatcolor2.listeners.ColorGUIListener;
 import com.sulphate.chatcolor2.listeners.CustomCommandListener;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.CC2Utils;
-import com.sulphate.chatcolor2.utils.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;

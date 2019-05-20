@@ -1,8 +1,6 @@
 package com.sulphate.chatcolor2.schedulers;
 
 import com.sulphate.chatcolor2.main.MainClass;
-import com.sulphate.chatcolor2.utils.CC2Utils;
-import com.sulphate.chatcolor2.utils.CCStrings;
 import org.bukkit.Bukkit;
 
 public class AutoSaveScheduler {
