@@ -1,8 +1,10 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.main.MainClass;
 import com.sulphate.chatcolor2.utils.CC2Utils;
 import com.sulphate.chatcolor2.utils.CCStrings;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +12,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +22,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 public class ColorGUIListener implements Listener {
+
+    private static final Set<Player> playersUsingGui = new LinkedHashSet<>(Bukkit.getMaxPlayers(), 0.8f);
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEvent(InventoryClickEvent event) {
@@ -30,8 +36,12 @@ public class ColorGUIListener implements Listener {
         }
 
         String guiTitle = CC2Utils.colourise(CCStrings.guititle);
-        if (inventoryView.getTitle().equals(guiTitle) && inventoryView.convertSlot(rawSlot) == rawSlot) {
+        if (inventoryView.getTitle().equals(guiTitle)) {
             event.setCancelled(true);
+
+            if (inventoryView.convertSlot(rawSlot) != rawSlot) {
+                return;
+            }
 
             ItemStack clickedItem = event.getCurrentItem();
 
@@ -42,80 +52,84 @@ public class ColorGUIListener implements Listener {
 
             // Determine whether it was a colour or a modifier they clicked.
             int clickedSlot = event.getSlot();
-            boolean isColour = clickedSlot <= 16;
+            boolean isColour = clickedSlot <= 23;
 
-            // Get their colour.
+            // Get the currently selected colour and modifier.
+            String selectedColor = "";
+            String activeModifier = "";
+            for (ItemStack item : inventory.getContents()) {
+                if (item != null && !item.getType().equals(Material.AIR)) {
+                    // Is it a selected colour?
+                    if (item.getItemMeta().getLore().get(0).equals(CCStrings.guiselected)) {
+                        String displayName = item.getItemMeta().getDisplayName();
+                        if (displayName.equals(CC2Utils.colouriseMessage("rainbow", CCStrings.rainbow, false))) {
+                            selectedColor = "rainbow";
+                        }
+                        else {
+                            selectedColor = Character.toString(displayName.charAt(1));
+                            // For some reason, the white colour code doesn't display.
+                            // So we default to white if another color couldn't be assigned
+                            if (ChatColorCommand.getColor(selectedColor) == null) {
+                                selectedColor = "f";
+                            }
+                        }
+                    } // Is it an active modifier?
+                    else if (item.getItemMeta().getLore().get(0).equals(CCStrings.guiactive)) {
+                        activeModifier = Character.toString(item.getItemMeta().getDisplayName().charAt(3));
+                    }
+                }
+            }
+
             Player player = (Player) event.getWhoClicked();
-            String colourString = MainClass.getUtils().getColor(player.getUniqueId().toString());
-
-            String colour = colourString.substring(1, 2);
-            String modPart = colourString.substring(2);
-            String[] modifiers = modPart.split("&");
-
+            String playerUuid = player.getUniqueId().toString();
             String displayName = clickedItem.getItemMeta().getDisplayName();
             String firstLoreLine = clickedItem.getItemMeta().getLore().get(0);
 
             if (isColour) {
-                String colChar = Character.toString(displayName.charAt(1));
+                String newColor;
+                if (displayName.equals(CC2Utils.colouriseMessage("rainbow", CCStrings.rainbow, false))) {
+                    newColor = "rainbow";
+                }
+                else {
+                    newColor = Character.toString(displayName.charAt(1));
 
-                // For some reason, the white colour code doesn't display.
-                if (colChar.equals("h")) {
-                    colChar = "f";
+                    // For some reason, the white colour code doesn't display.
+                    // So we default to white if another color couldn't be assigned
+                    if (ChatColorCommand.getColor(newColor) == null) {
+                        newColor = "f";
+                    }
                 }
 
                 // Make sure it's not unavailable.
-                if (firstLoreLine.equals(CC2Utils.colourise("&cUnavailable"))) {
-                    player.sendMessage(CC2Utils.colourise(CCStrings.nocolorperms + colChar + colChar));
+                if (firstLoreLine.equals(CCStrings.guiunavailable)) {
+                    player.sendMessage(CCStrings.nocolorperms + displayName);
                 }
-                // Make sure it's not their current colour.
-                else if (!colChar.equals(colour)) {
-                    StringBuilder sb = new StringBuilder("&").append(colChar);
-
-                    for (String modifier : modifiers) {
-                        if (modifier.equals("")) continue;
-
-                        sb.append('&').append(modifier);
-                    }
-
-                    // Set their colour, re-open the GUI.
-                    String newColour = sb.toString();
-                    MainClass.getUtils().setColor(player.getUniqueId().toString(), newColour);
-
-                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colourise(newColour) + CCStrings.colthis);
-                    openGUI(player); // Refreshes the GUI.
+                else {
+                    ChatColorCommand.setColorFromArgs(playerUuid, new String[]{ newColor, activeModifier });
+                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(playerUuid), CCStrings.colthis, false));
                 }
             }
             else {
-                String modChar = Character.toString(displayName.charAt(3));
+                char modChar = displayName.charAt(3);
 
                 // Make sure it's not unavailable.
-                if (firstLoreLine.equals(CC2Utils.colourise("&cUnavailable"))) {
-                    player.sendMessage(CC2Utils.colourise(CCStrings.nomodperms + modChar + modChar));
+                if (firstLoreLine.equals(CCStrings.guiunavailable)) {
+                    player.sendMessage(CCStrings.nomodperms + displayName.substring(2));
                 }
                 else {
-                    boolean ignoreClickedModifier = firstLoreLine.contains("Active");
-                    StringBuilder sb = new StringBuilder("&").append(colour);
-
-                    for (String modifier : modifiers) {
-                        if (modifier.equals("")) continue;
-                        else if (ignoreClickedModifier && modifier.equals(modChar)) continue;
-
-                        sb.append('&').append(modifier);
+                    if (firstLoreLine.equals(CCStrings.guiactive)) {
+                        activeModifier = "";
+                    }
+                    else {
+                        activeModifier = Character.toString(modChar);
                     }
 
-                    // Add the new modifier, if necessary.
-                    if (!ignoreClickedModifier) {
-                        sb.append('&').append(modChar);
-                    }
-
-                    // Set their colour, refresh GUI.
-                    String newColour = sb.toString();
-                    MainClass.getUtils().setColor(player.getUniqueId().toString(), newColour);
-
-                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colourise(newColour) + CCStrings.colthis);
-                    openGUI(player);
+                    ChatColorCommand.setColorFromArgs(playerUuid, new String[]{ selectedColor, activeModifier });
+                    player.sendMessage(CCStrings.setowncolor + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(playerUuid), CCStrings.colthis, false));
                 }
             }
+
+            openGUI(player); // Refreshes the GUI.
         }
     }
 
@@ -127,13 +141,14 @@ public class ColorGUIListener implements Listener {
         List<String> colourParts = Arrays.asList(colour.split("&"));
 
         // Colour and modifier codes.
-        char[] colourCodes = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        String[] colourNames = {"Black", "Dark Blue", "Dark Green", "Dark Aqua", "Dark Red", "Dark Purple", "Gold", "Gray", "Dark Grey", "Blue", "Green", "Aqua", "Red", "Light Purple", "Yellow", "White"};
+        String[] colourCodes = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "rainbow"};
+        String[] colourNames = {CCStrings.black, CCStrings.darkblue, CCStrings.darkgreen, CCStrings.darkaqua, CCStrings.darkred, CCStrings.darkpurple, CCStrings.gold, CCStrings.gray, CCStrings.darkgray, CCStrings.blue, CCStrings.green, CCStrings.aqua, CCStrings.red, CCStrings.lightpurple, CCStrings.yellow, CCStrings.white, CCStrings.rainbow};
         char[] modifierCodes = {'k', 'l', 'm', 'n', 'o'};
-        String[] modifierNames = {"Obfuscated", "Bold", "Strikethrough", "Underlined", "Italic"};
+        String[] modifierNames = {CCStrings.obfuscated, CCStrings.bold, CCStrings.strikethrough, CCStrings.underlined, CCStrings.italic};
 
         // Colours Array - each of these maps to the colour of a stained glass pane.
-        short[] colours = {15, 11, 13, 9, 14, 10, 1, 8, 7, 11, 5, 3, 6, 2, 4, 0};
+        // If the value in a position is -1, we'll use thin glass instead.
+        short[] colours = {15, 11, 13, 9, 14, 10, 1, 8, 7, 11, 5, 3, 6, 2, 4, 0, -1};
 
         // Modifier ItemStacks
         ItemStack inactiveModifier = new ItemStack(Material.INK_SACK, 1, (short) 8);
@@ -145,30 +160,30 @@ public class ColorGUIListener implements Listener {
 
         // Greyed-out lore
         ItemMeta goItemMeta = greyedOut.getItemMeta();
-        goItemMeta.setLore(Collections.singletonList(CC2Utils.colourise("&cUnavailable")));
+        goItemMeta.setLore(Collections.singletonList(CCStrings.guiunavailable));
         greyedOut.setItemMeta(goItemMeta);
 
         // Unavailable lore
         ItemMeta unItemMeta = unavailableMod.getItemMeta();
-        unItemMeta.setLore(Collections.singletonList(CC2Utils.colourise("&cUnavailable")));
+        unItemMeta.setLore(Collections.singletonList(CCStrings.guiunavailable));
         unavailableMod.setItemMeta(unItemMeta);
 
         // Active Modifier lore
         ItemMeta actMeta = activeModifier.getItemMeta();
-        actMeta.setLore(Arrays.asList(CC2Utils.colourise("&aActive"), CC2Utils.colourise("&eClick to Toggle")));
+        actMeta.setLore(Arrays.asList(CCStrings.guiactive, CCStrings.guiclicktotoggle));
         activeModifier.setItemMeta(actMeta);
 
         // Inactive Modifier lore
         ItemMeta inactMeta = inactiveModifier.getItemMeta();
-        inactMeta.setLore(Arrays.asList(CC2Utils.colourise("&7Inactive"), CC2Utils.colourise("&eClick to Toggle")));
+        inactMeta.setLore(Arrays.asList(CCStrings.guiinactive, CCStrings.guiclicktotoggle));
         inactiveModifier.setItemMeta(inactMeta);
 
         // Get their available colours and modifiers.
-        List<Character> available = getAvailable(player);
+        List<String> available = getAvailable(player);
 
         // Different lores
-        List<String> selectedLore = Collections.singletonList(CC2Utils.colourise("&aSelected"));
-        List<String> clickToSelectLore = Collections.singletonList(CC2Utils.colourise("&eClick to Select"));
+        List<String> selectedLore = Collections.singletonList(CCStrings.guiselected);
+        List<String> clickToSelectLore = Collections.singletonList(CCStrings.guiclicktoselect);
 
         // Add the colours to the inventory.
         for (int i = 0; i < colourCodes.length; i++) {
@@ -176,9 +191,9 @@ public class ColorGUIListener implements Listener {
             ItemMeta im;
 
             if (available.contains(colourCodes[i])) {
-                itemToAdd = new ItemStack(Material.STAINED_GLASS_PANE, 1, colours[i]);
+                itemToAdd = colours[i] == -1 ? new ItemStack(Material.THIN_GLASS, 1) : new ItemStack(Material.STAINED_GLASS_PANE, 1, colours[i]);
                 im = itemToAdd.getItemMeta();
-                List<String> lore = colourParts.contains(Character.toString(colourCodes[i])) ? selectedLore : clickToSelectLore;
+                List<String> lore = colourParts.contains(colourCodes[i]) ? selectedLore : clickToSelectLore;
                 im.setLore(lore);
             }
             else {
@@ -186,11 +201,12 @@ public class ColorGUIListener implements Listener {
                 im = itemToAdd.getItemMeta();
             }
 
-            im.setDisplayName(CC2Utils.colourise("&" + colourCodes[i] + colourNames[i]));
+            im.setDisplayName(CC2Utils.colouriseMessage((colourCodes[i].equals("rainbow") ? "" : "&") + colourCodes[i], colourNames[i], false));
             itemToAdd.setItemMeta(im);
 
-            // For display purposes, ignore tenth inventory slot.
-            int inventoryIndex = i >= 9 ? i + 1 : i;
+            // For display purposes, ignore tenth inventory slot if we're on the second
+            // row, and ignore 4 slots if we're on the third.
+            int inventoryIndex = i >= 9 ? (i >= 16 ? i + 6 : i + 1) : i;
             inventory.setItem(inventoryIndex, itemToAdd);
         }
 
@@ -199,14 +215,14 @@ public class ColorGUIListener implements Listener {
             ItemStack itemToAdd;
             ItemMeta im;
 
-            if (available.contains(modifierCodes[i])) {
+            if (available.contains(Character.toString(modifierCodes[i]))) {
                 itemToAdd = colourParts.contains(Character.toString(modifierCodes[i])) ? activeModifier.clone() : inactiveModifier.clone();
             }
             else {
                 itemToAdd = unavailableMod.clone();
             }
 
-            String displayName = modifierCodes[i] == 'k' ? CC2Utils.colourise("&e&kM&r&eObfuscated&kM") : CC2Utils.colourise("&e&" + modifierCodes[i] + modifierNames[i]);
+            String displayName = modifierCodes[i] == 'k' ? CC2Utils.colourise("&e&kM&r&e" + modifierNames[i] + "&kM") : CC2Utils.colourise("&e&" + modifierCodes[i] + modifierNames[i]);
             im = itemToAdd.getItemMeta();
             im.setDisplayName(displayName);
             itemToAdd.setItemMeta(im);
@@ -216,17 +232,34 @@ public class ColorGUIListener implements Listener {
             inventory.setItem(inventoryIndex, itemToAdd);
         }
 
+        playersUsingGui.add(player);
         player.openInventory(inventory);
     }
 
-    private static List<Character> getAvailable(Player player) {
-        char[] possibilities = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'k', 'l', 'm', 'n', 'o' };
-        List<Character> allowed = new ArrayList<>();
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEvent(InventoryCloseEvent event) {
+        InventoryView inventoryView = event.getView();
+        if (inventoryView != null && inventoryView.getTitle().equals(CCStrings.guititle) && inventoryView.getType().equals(InventoryType.CHEST)) {
+            playersUsingGui.remove(inventoryView.getPlayer());
+        }
+    }
+
+    public static void reloadGUI() {
+        // Refresh the GUI after message reload, so players see the latest text
+        // and events are handled consistently.
+        for (Player player : playersUsingGui) {
+            openGUI(player);
+        }
+    }
+
+    private static List<String> getAvailable(Player player) {
+        final String[] possibilities = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "rainbow", "k", "l", "m", "n", "o" };
+        List<String> allowed = new ArrayList<>(possibilities.length);
 
         for (int i = 0; i < possibilities.length; i++) {
             String basePermission;
 
-            if (i <= 15) {
+            if (i <= 16) {
                 basePermission = "chatcolor.color.";
             }
             else {

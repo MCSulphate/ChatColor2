@@ -125,8 +125,8 @@ public class MainClass extends JavaPlugin {
         defaultConfig.put("messages.player-not-joined", "&cThat player has not joined yet!");
         defaultConfig.put("messages.players-only", "&cThis command can only be run by players.");
         defaultConfig.put("messages.no-permissions", "&cYou do not have permission to use that command.");
-        defaultConfig.put("messages.no-color-perms", "&cYou do not have permission to use the color: &");
-        defaultConfig.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e&");
+        defaultConfig.put("messages.no-color-perms", "&cYou do not have permission to use the color: ");
+        defaultConfig.put("messages.no-mod-perms", "&cYou do not have permission to use the modifier: &e");
         defaultConfig.put("messages.invalid-color", "&cInvalid color: &e");
         defaultConfig.put("messages.invalid-command", "&cThat is an invalid command!");
         defaultConfig.put("messages.invalid-modifier", "&cInvalid modifier: &e");
@@ -139,9 +139,8 @@ public class MainClass extends JavaPlugin {
         defaultConfig.put("messages.player-set-your-color", "&c[player] &eset your color to: ");
         defaultConfig.put("messages.colour-already-set", "&cColour already selected!");
         defaultConfig.put("messages.gui-color-set", "&aColour set to ");
-        defaultConfig.put("messages.gui-modifier-enabled", "&aEnabled &e");
-        defaultConfig.put("messages.gui-modifier-disabled", "&cDisabled &e");
         defaultConfig.put("messages.gui-unavailable", "&cUnavailable");
+        defaultConfig.put("messages.gui-active", "&aActive");
         defaultConfig.put("messages.this", "this");
         defaultConfig.put("messages.confirm", "Are you sure you want to do that? Type &c/confirm &eif you are sure.");
         defaultConfig.put("messages.did-not-confirm", "&cYou did not confirm in time. &eNothing has been changed.");
@@ -158,6 +157,35 @@ public class MainClass extends JavaPlugin {
         defaultConfig.put("messages.failed-to-enable", "Failed to enable the plugin. Please try again, making sure all folders are not locked.");
         defaultConfig.put("messages.successfully-enabled", "The plugin has been successfully enabled.");
         defaultConfig.put("messages.already-enabled", "The plugin is already enabled.");
+        defaultConfig.put("messages.black", "Black");
+        defaultConfig.put("messages.darkblue", "Dark Blue");
+        defaultConfig.put("messages.darkgreen", "Dark Green");
+        defaultConfig.put("messages.darkaqua", "Dark Aqua");
+        defaultConfig.put("messages.darkred", "Dark Red");
+        defaultConfig.put("messages.darkpurple", "Dark Purple");
+        defaultConfig.put("messages.gold", "Gold");
+        defaultConfig.put("messages.gray", "Gray");
+        defaultConfig.put("messages.darkgray", "Dark Gray");
+        defaultConfig.put("messages.blue", "Blue");
+        defaultConfig.put("messages.green", "Green");
+        defaultConfig.put("messages.aqua", "Aqua");
+        defaultConfig.put("messages.red", "Red");
+        defaultConfig.put("messages.lightpurple", "Light Purple");
+        defaultConfig.put("messages.yellow", "Yellow");
+        defaultConfig.put("messages.white", "White");
+        defaultConfig.put("messages.gui-click-to-toggle", "&eClick to Toggle");
+        defaultConfig.put("messages.gui-selected", "&aSelected");
+        defaultConfig.put("messages.gui-click-to-select", "&eClick to Select");
+        defaultConfig.put("messages.gui-inactive", "&7Inactive");
+        defaultConfig.put("messages.obfuscated", "Obfuscated");
+        defaultConfig.put("messages.bold", "Bold");
+        defaultConfig.put("messages.strikethrough", "Strikethrough");
+        defaultConfig.put("messages.underlined", "Underlined");
+        defaultConfig.put("messages.italic", "Italic");
+        defaultConfig.put("messages.available-colors-and-modifiers", "Here are your available colors and modifiers:");
+        defaultConfig.put("messages.colors", "Colors");
+        defaultConfig.put("messages.modifiers", "Modifiers");
+        defaultConfig.put("messages.rainbow", "Rainbow");
     }
 
     public void reload() {
