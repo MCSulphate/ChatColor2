@@ -30,8 +30,12 @@ public class ColorGUIListener implements Listener {
         }
 
         String guiTitle = CC2Utils.colourise(CCStrings.guititle);
-        if (inventoryView.getTitle().equals(guiTitle) && inventoryView.convertSlot(rawSlot) == rawSlot) {
+        if (inventoryView.getTitle().equals(guiTitle)) {
             event.setCancelled(true);
+
+            if (inventoryView.convertSlot(rawSlot) != rawSlot) {
+                return;
+            }
 
             ItemStack clickedItem = event.getCurrentItem();
 
