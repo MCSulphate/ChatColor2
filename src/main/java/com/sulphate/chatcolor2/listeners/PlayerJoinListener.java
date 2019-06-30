@@ -1,13 +1,6 @@
 package com.sulphate.chatcolor2.listeners;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 import com.sulphate.chatcolor2.utils.CC2Utils;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,26 +22,11 @@ public class PlayerJoinListener implements Listener {
         checkDefault(uuid);
 
         if ((Boolean)MainClass.getUtils().getSetting("join-message")) {
-            String color = MainClass.getUtils().getColor(uuid);
-
-            if (color.contains("rainbow")) {
-                String mods = color.replace("rainbow", "");
-                String rseq = (String)MainClass.getUtils().getSetting("rainbow-sequence");
-                if (!verifyRainbowSequence(rseq)) {
-                    MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
-                }
-
-                String[] rss = rseq.split("");
-                StringBuilder sb = new StringBuilder();
-                for (String s : rss) {
-                    sb.append("&").append(s).append(mods).append(s);
-                }
-
-                String end = CC2Utils.colourise(sb.toString());
-                p.sendMessage(CCStrings.currentcolor + end);
-                return;
+            if (MainClass.getUtils().getColor(uuid).contains("rainbow")) {
+                String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
+                CC2Utils.verifyRainbowSequence(rseq, true);
             }
-            e.getPlayer().sendMessage(CC2Utils.colourise(CCStrings.currentcolor + color + CCStrings.colthis));
+            e.getPlayer().sendMessage(CC2Utils.colourise(CCStrings.currentcolor) + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(uuid), CCStrings.colthis, false));
         }
         MainClass.getUtils().check(p);
     }
@@ -62,19 +40,4 @@ public class PlayerJoinListener implements Listener {
             MainClass.getUtils().setColor(uuid, defcol);
         }
     }
-
-    private boolean verifyRainbowSequence(String seq) {
-        boolean verify = true;
-        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
-        String[] chars = seq.split("");
-
-        for (String s : chars) {
-            if (!cols.contains(s)) {
-                verify = false;
-            }
-        }
-
-        return verify;
-    }
-
 }

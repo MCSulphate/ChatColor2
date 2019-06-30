@@ -27,6 +27,84 @@ public class CC2Utils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    public static boolean verifyRainbowSequence(String seq) {
+        return verifyRainbowSequence(seq, false);
+    }
+
+    public static boolean verifyRainbowSequence(String seq, boolean replace) {
+        boolean verify = true;
+        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+        String[] chars = seq.split("");
+        for (String s : chars) {
+            if (!cols.contains(s)) {
+                verify = false;
+            }
+        }
+        if (replace && !verify) {
+            MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
+        }
+        return verify;
+    }
+
+    // Applies a color string (like the one the MainClass.getUtils().getColor(uuid) method returns) to a message,
+    // optionally taking into account the color override setting.
+    public static String colouriseMessage(String color, String message, boolean checkOverride) {
+        String colourisedMessage = message;
+        boolean override = ((boolean) MainClass.getUtils().getSetting("color-override")) && checkOverride;
+
+        if (message.contains("&")) {
+            String colourised = CC2Utils.colourise(message);
+
+            if (override) {
+                colourisedMessage = ChatColor.stripColor(colourised); // Gets rid of all colour.
+            }
+            else {
+                // If not overriding, then colourise the message and stop here.
+                colourisedMessage = colourised;
+                return colourisedMessage;
+            }
+        }
+
+        if (color.contains("rainbow")) {
+            if (message.contains("&")) {
+                // If there is color symbols, we don't want to put 'rainbow' at the start.
+                color = "";
+            }
+            else {
+                String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
+
+                if (!verifyRainbowSequence(rseq)) {
+                    MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
+                    rseq = "abcde";
+                }
+
+                String mods = color.replace("rainbow", "");
+                char[] colors = rseq.toCharArray();
+                char[] msgchars = message.toCharArray();
+                int currentColorIndex = 0;
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < msgchars.length; i++) {
+                    if (currentColorIndex == colors.length) {
+                        currentColorIndex = 0;
+                    }
+                    if (msgchars[i] == ' ') {
+                        sb.append(" ");
+                    }
+                    else {
+                        sb.append('&').append(colors[currentColorIndex]).append(mods).append(msgchars[i]);
+                        currentColorIndex++;
+                    }
+                }
+
+                colourisedMessage = CC2Utils.colourise(sb.toString());
+                return colourisedMessage;
+            }
+        }
+
+        return CC2Utils.colourise(color) + colourisedMessage;
+    }
+
     public boolean loadAllData() {
         loadPlayerList();
         loadDefaultData();
@@ -293,5 +371,4 @@ public class CC2Utils {
             player.sendMessage(CCStrings.prefix + "Server is running ChatColor 2 §cv" + Bukkit.getPluginManager().getPlugin("ChatColor2").getDescription().getVersion());
         }
     }
-
 }
