@@ -170,7 +170,7 @@ public class ChatColorCommand implements CommandExecutor {
         for (int i = 0; i < args.length; i++) {
             if (args[i] != null && args[i].length() > 0) {
                 if (i == 0) {
-                    sb.append(getColor(args[i]));
+                    sb.append(getColour(args[i]));
                     continue;
                 }
                 sb.append(getModifier(args[i]));
@@ -259,11 +259,11 @@ public class ChatColorCommand implements CommandExecutor {
                 player.sendMessage(CCStrings.notenoughargs);
                 return false;
             }
-            if (getColor(args[1]) != null) {
+            if (getColour(args[1]) != null) {
                 for (int i = 1; i < args.length; i++) {
                     if (i == 1) {
                         if (!hasPermission("chatcolor.color." + args[1], player)) {
-                            player.sendMessage(CCStrings.nocolorperms + CC2Utils.colouriseMessage(getColor(args[1]), args[1], false));
+                            player.sendMessage(CCStrings.nocolorperms + CC2Utils.colouriseMessage(getColour(args[1]), args[1], false));
                             return false;
                         }
                         continue;
@@ -286,7 +286,7 @@ public class ChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        if (getColor(args[0]) != null) {
+        if (getColour(args[0]) != null) {
             if (!hasPermission("chatcolor.change.self", player)) {
                 player.sendMessage(CCStrings.nopermissions);
                 return false;
@@ -298,7 +298,7 @@ public class ChatColorCommand implements CommandExecutor {
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
                     if (!hasPermission("chatcolor.color." + args[0], player)) {
-                        player.sendMessage(CCStrings.nocolorperms + CC2Utils.colouriseMessage(getColor(args[0]), args[0], false));
+                        player.sendMessage(CCStrings.nocolorperms + CC2Utils.colouriseMessage(getColour(args[0]), args[0], false));
                         return false;
                     }
                     continue;
@@ -582,7 +582,7 @@ public class ChatColorCommand implements CommandExecutor {
             }
 
             case "default-color": {
-                String color = getColor(args[2]);
+                String color = getColour(args[2]);
                 if (color == null) {
                     player.sendMessage(CCStrings.invalidcolor);
                     return;
@@ -662,7 +662,7 @@ public class ChatColorCommand implements CommandExecutor {
         }
     }
 
-    public static String getColor(String str) {
+    public static String getColour(String str) {
         String s = str.toLowerCase();
         if (s.equalsIgnoreCase("rainbow")) {
             return s;

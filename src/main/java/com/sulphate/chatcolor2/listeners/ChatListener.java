@@ -22,7 +22,7 @@ public class ChatListener implements Listener {
         e.setMessage(CC2Utils.colouriseMessage(MainClass.getUtils().getColor(uuid), e.getMessage(), true));
     }
 
-    private static void checkDefault(String uuid) {
+    private void checkDefault(String uuid) {
         String defcol = MainClass.getUtils().getCurrentDefaultColor();
         String defcode = MainClass.getUtils().getCurrentDefaultCode();
 

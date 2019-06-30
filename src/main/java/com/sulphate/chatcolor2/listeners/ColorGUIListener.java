@@ -54,28 +54,29 @@ public class ColorGUIListener implements Listener {
             int clickedSlot = event.getSlot();
             boolean isColour = clickedSlot <= 23;
 
-            // Get the currently selected colour and modifier.
-            String selectedColor = "";
-            String activeModifier = "";
+            // Get the currently selected colour and modifiers.
+            String selectedColour = "";
+            ArrayList<Character> activeModifiers = new ArrayList<>();
+
             for (ItemStack item : inventory.getContents()) {
                 if (item != null && !item.getType().equals(Material.AIR)) {
                     // Is it a selected colour?
                     if (item.getItemMeta().getLore().get(0).equals(CCStrings.guiselected)) {
                         String displayName = item.getItemMeta().getDisplayName();
                         if (displayName.equals(CC2Utils.colouriseMessage("rainbow", CCStrings.rainbow, false))) {
-                            selectedColor = "rainbow";
+                            selectedColour = "rainbow";
                         }
                         else {
-                            selectedColor = Character.toString(displayName.charAt(1));
+                            selectedColour = Character.toString(displayName.charAt(1));
                             // For some reason, the white colour code doesn't display.
-                            // So we default to white if another color couldn't be assigned
-                            if (ChatColorCommand.getColor(selectedColor) == null) {
-                                selectedColor = "f";
+                            // So we default to white if another colour couldn't be assigned.
+                            if (ChatColorCommand.getColour(selectedColour) == null) {
+                                selectedColour = "f";
                             }
                         }
                     } // Is it an active modifier?
                     else if (item.getItemMeta().getLore().get(0).equals(CCStrings.guiactive)) {
-                        activeModifier = Character.toString(item.getItemMeta().getDisplayName().charAt(3));
+                        activeModifiers.add(item.getItemMeta().getDisplayName().charAt(3));
                     }
                 }
             }
@@ -94,8 +95,8 @@ public class ColorGUIListener implements Listener {
                     newColor = Character.toString(displayName.charAt(1));
 
                     // For some reason, the white colour code doesn't display.
-                    // So we default to white if another color couldn't be assigned
-                    if (ChatColorCommand.getColor(newColor) == null) {
+                    // So we default to white if another colour couldn't be assigned.
+                    if (ChatColorCommand.getColour(newColor) == null) {
                         newColor = "f";
                     }
                 }
@@ -105,7 +106,9 @@ public class ColorGUIListener implements Listener {
                     player.sendMessage(CCStrings.nocolorperms + displayName);
                 }
                 else {
-                    ChatColorCommand.setColorFromArgs(playerUuid, new String[]{ newColor, activeModifier });
+                    String[] args = createArgs(newColor, activeModifiers);
+                    ChatColorCommand.setColorFromArgs(playerUuid, args);
+
                     player.sendMessage(CCStrings.setowncolor + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(playerUuid), CCStrings.colthis, false));
                 }
             }
@@ -117,20 +120,41 @@ public class ColorGUIListener implements Listener {
                     player.sendMessage(CCStrings.nomodperms + displayName.substring(2));
                 }
                 else {
+                    // If it's active, toggle it off.
                     if (firstLoreLine.equals(CCStrings.guiactive)) {
-                        activeModifier = "";
+
+                        for (int i = 0; i < activeModifiers.size(); i++) {
+                            if (activeModifiers.get(i) == modChar) {
+                                activeModifiers.remove(i);
+                                break;
+                            }
+                        }
                     }
+                    // Otherwise, toggle it on.
                     else {
-                        activeModifier = Character.toString(modChar);
+                        activeModifiers.add(modChar);
                     }
 
-                    ChatColorCommand.setColorFromArgs(playerUuid, new String[]{ selectedColor, activeModifier });
+                    String[] args = createArgs(selectedColour, activeModifiers);
+                    ChatColorCommand.setColorFromArgs(playerUuid, args);
+
                     player.sendMessage(CCStrings.setowncolor + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(playerUuid), CCStrings.colthis, false));
                 }
             }
 
             openGUI(player); // Refreshes the GUI.
         }
+    }
+
+    private String[] createArgs(String colour, List<Character> modifiers) {
+        String[] args = new String[1 + modifiers.size()];
+        args[0] = colour;
+
+        for (int i = 0; i < modifiers.size(); i++) {
+            args[i + 1] = modifiers.get(i) + "";
+        }
+
+        return args;
     }
 
     public static void openGUI(Player player) {

@@ -53,53 +53,47 @@ public class CC2Utils {
         boolean override = ((boolean) MainClass.getUtils().getSetting("color-override")) && checkOverride;
 
         if (message.contains("&")) {
-            String colourised = CC2Utils.colourise(message);
+            String colourised = colourise(message);
 
             if (override) {
-                colourisedMessage = ChatColor.stripColor(colourised); // Gets rid of all colour.
+                // Remove the colour (override it).
+                colourisedMessage = ChatColor.stripColor(colourised);
             }
             else {
-                // If not overriding, then colourise the message and stop here.
-                colourisedMessage = colourised;
-                return colourisedMessage;
+                // If not overriding, return the colourised message.
+                return colourised;
             }
         }
 
         if (color.contains("rainbow")) {
-            if (message.contains("&")) {
-                // If there is color symbols, we don't want to put 'rainbow' at the start.
-                color = "";
-            }
-            else {
-                String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
+            String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
 
-                if (!verifyRainbowSequence(rseq)) {
-                    MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
-                    rseq = "abcde";
+            if (!verifyRainbowSequence(rseq)) {
+                MainClass.getUtils().setSetting("rainbow-sequence", "abcde");
+                rseq = "abcde";
+            }
+
+            String mods = color.replace("rainbow", "");
+            char[] colors = rseq.toCharArray();
+            char[] msgchars = message.toCharArray();
+            int currentColorIndex = 0;
+
+            StringBuilder sb = new StringBuilder();
+            for (char msgchar : msgchars) {
+                if (currentColorIndex == colors.length) {
+                    currentColorIndex = 0;
                 }
 
-                String mods = color.replace("rainbow", "");
-                char[] colors = rseq.toCharArray();
-                char[] msgchars = message.toCharArray();
-                int currentColorIndex = 0;
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < msgchars.length; i++) {
-                    if (currentColorIndex == colors.length) {
-                        currentColorIndex = 0;
-                    }
-                    if (msgchars[i] == ' ') {
-                        sb.append(" ");
-                    }
-                    else {
-                        sb.append('&').append(colors[currentColorIndex]).append(mods).append(msgchars[i]);
-                        currentColorIndex++;
-                    }
+                if (msgchar == ' ') {
+                    sb.append(" ");
+                } else {
+                    sb.append('&').append(colors[currentColorIndex]).append(mods).append(msgchar);
+                    currentColorIndex++;
                 }
-
-                colourisedMessage = CC2Utils.colourise(sb.toString());
-                return colourisedMessage;
             }
+
+            colourisedMessage = CC2Utils.colourise(sb.toString());
+            return colourisedMessage;
         }
 
         return CC2Utils.colourise(color) + colourisedMessage;
@@ -110,6 +104,7 @@ public class CC2Utils {
         loadDefaultData();
         return (loadMessages() && loadSettings() && loadAllPlayerData());
     }
+
     private void loadDefaultData() {
         FileConfiguration defconfig = getDefaultFileConfig();
         if (neednewdefault) {
@@ -119,9 +114,11 @@ public class CC2Utils {
             currentDefaultCode = defconfig.getString("default-code");
         }
     }
+
     private void loadPlayerList() {
         playerlist = getPlayerListConfig();
     }
+
     public boolean loadSettings() {
         settings = new HashMap<>();
         
@@ -142,13 +139,16 @@ public class CC2Utils {
         
         return true;
     }
+
     public Object getSetting(String setting) {
         return settings.get(setting);
     }
+
     public void setSetting(String setting, Object value) {
         settings.remove(setting);
         settings.put(setting, value);
     }
+
     public boolean loadMessages() {
         messages = new HashMap<>();
         
@@ -169,6 +169,7 @@ public class CC2Utils {
         
         return true;
     }
+
     private boolean loadAllPlayerData() {
         try {
             for (String key : playerlist.getKeys(false)) {
@@ -198,9 +199,11 @@ public class CC2Utils {
         saveAllPlayerData();
         saveDefaultData();
     }
+
     private void savePlayerList() {
         saveConfig(playerlist, getPlayerListFile());
     }
+
     private void saveSettings() {
         reloadConfig();
         FileConfiguration config = MainClass.get().getConfig();
@@ -209,17 +212,20 @@ public class CC2Utils {
         }
         MainClass.get().saveConfig();
     }
+
     private void saveAllPlayerData() {
         for (String key : playerlist.getKeys(false)) {
             savePlayerData((String) playerlist.get(key));
         }
     }
+
     private void savePlayerData(String uuid) {
         FileConfiguration config = getPlayerFileConfig(uuid);
         config.set("color", colors.get(uuid));
         config.set("default-code", defcodes.get(uuid));
         saveConfig(config, getPlayerFile(uuid));
     }
+
     private void loadPlayerData(String uuid) {
         FileConfiguration config = getPlayerFileConfig(uuid);
         try {
@@ -239,6 +245,7 @@ public class CC2Utils {
     public String getColor(String uuid) {
         return colors.get(uuid);
     }
+
     public void setColor(String uuid, String color) {
         colors.remove(uuid);
         colors.put(uuid, color);
@@ -247,19 +254,23 @@ public class CC2Utils {
     public String getDefaultCode(String uuid) {
         return defcodes.get(uuid);
     }
+
     public void setDefaultCode(String uuid, String defcode) {
         defcodes.remove(uuid);
         defcodes.put(uuid, defcode);
     }
+
     private void saveDefaultData() {
         FileConfiguration defconfig = getDefaultFileConfig();
         defconfig.set("default-color", currentDefaultColor);
         defconfig.set("default-code", currentDefaultCode);
         saveConfig(defconfig, getDefaultFile());
     }
+
     public String getCurrentDefaultCode() {
         return currentDefaultCode;
     }
+
     public String getCurrentDefaultColor() {
         return currentDefaultColor;
     }
@@ -277,6 +288,7 @@ public class CC2Utils {
             defcodes.put(uuid, currentDefaultCode);
         }
     }
+
     public String getUUID(String username) {
         if (playerlist.contains(username)) {
             return playerlist.getString(username);
@@ -309,6 +321,7 @@ public class CC2Utils {
         }
         return plist;
     }
+
     private FileConfiguration getPlayerListConfig() {
         return YamlConfiguration.loadConfiguration(getPlayerListFile());
     }
@@ -335,6 +348,7 @@ public class CC2Utils {
         }
         return pfile;
     }
+
     public FileConfiguration getPlayerFileConfig(String uuid) {
         return YamlConfiguration.loadConfiguration(getPlayerFile(uuid));
     }
@@ -354,9 +368,11 @@ public class CC2Utils {
         }
         return deffile;
     }
+
     private FileConfiguration getDefaultFileConfig() {
         return YamlConfiguration.loadConfiguration(getDefaultFile());
     }
+
     public void newDefaultColor(String color) {
         settings.remove("default-color");
         settings.put("default-color", color);
