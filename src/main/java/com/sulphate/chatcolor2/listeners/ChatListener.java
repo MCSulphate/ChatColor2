@@ -1,34 +1,54 @@
 package com.sulphate.chatcolor2.listeners;
 
-import com.sulphate.chatcolor2.utils.CC2Utils;
+import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import com.sulphate.chatcolor2.main.MainClass;
+import com.sulphate.chatcolor2.main.ChatColor;
+
+import java.util.UUID;
 
 public class ChatListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEvent(AsyncPlayerChatEvent e) {
+    private ConfigUtils configUtils;
 
-        if (!MainClass.getPluginEnabled()) {
-            return;
-        }
-
-        String uuid = e.getPlayer().getUniqueId().toString();
-        checkDefault(uuid);
-        e.setMessage(CC2Utils.colouriseMessage(MainClass.getUtils().getColor(uuid), e.getMessage(), true));
+    public ChatListener(ConfigUtils configUtils) {
+        this.configUtils = configUtils;
     }
 
-    private void checkDefault(String uuid) {
-        String defcol = MainClass.getUtils().getCurrentDefaultColor();
-        String defcode = MainClass.getUtils().getCurrentDefaultCode();
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEvent(AsyncPlayerChatEvent e) {
+        Player player = e.getPlayer();
+        String message = e.getMessage();
+        UUID uuid = player.getUniqueId();
+        checkDefault(uuid);
 
-        if (!MainClass.getUtils().getDefaultCode(uuid).equals(defcode)) {
-            MainClass.getUtils().setDefaultCode(uuid, defcode);
-            MainClass.getUtils().setColor(uuid, defcol);
+        // If their message contains &, check they have permissions for it, or strip the colour.
+        if (e.getMessage().contains("&")) {
+            String colourised = GeneralUtils.colourise(message);
+            String stripped = org.bukkit.ChatColor.stripColor(colourised);
+
+            // If the two messages are different, there was a colour code in it.
+            if (!colourised.equals(stripped) && !player.hasPermission("chatcolor.use-colour-codes")) {
+                e.setMessage(stripped);
+            }
+        }
+
+        e.setMessage(GeneralUtils.colouriseMessage(configUtils.getColour(uuid), e.getMessage(), true, configUtils));
+    }
+
+    // Checks if a player's colour has been set to the default since a default was last set.
+    private void checkDefault(UUID uuid) {
+        long currentCode = configUtils.getCurrentDefaultCode();
+        long playerCode = configUtils.getDefaultCode(uuid);
+
+        if (playerCode != currentCode) {
+            configUtils.setDefaultCode(uuid, currentCode);
+            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
         }
     }
 

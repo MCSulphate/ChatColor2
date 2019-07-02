@@ -1,43 +1,68 @@
 package com.sulphate.chatcolor2.listeners;
 
-import com.sulphate.chatcolor2.utils.CC2Utils;
+import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import com.sulphate.chatcolor2.main.MainClass;
-import com.sulphate.chatcolor2.utils.CCStrings;
+import com.sulphate.chatcolor2.utils.Messages;
+
+import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onEvent(PlayerJoinEvent e) {
+    private Messages M;
+    private ConfigUtils configUtils;
+    private ConfigsManager configsManager;
 
-        Player p = e.getPlayer();
-        MainClass.getUtils().updatePlayer(p);
-        String uuid = p.getUniqueId().toString();
-
-        checkDefault(uuid);
-
-        if ((Boolean)MainClass.getUtils().getSetting("join-message")) {
-            if (MainClass.getUtils().getColor(uuid).contains("rainbow")) {
-                String rseq = (String) MainClass.getUtils().getSetting("rainbow-sequence");
-                CC2Utils.verifyRainbowSequence(rseq, true);
-            }
-            e.getPlayer().sendMessage(CC2Utils.colourise(CCStrings.currentcolor) + CC2Utils.colouriseMessage(MainClass.getUtils().getColor(uuid), CCStrings.colthis, false));
-        }
-        MainClass.getUtils().check(p);
+    public PlayerJoinListener(Messages M, ConfigUtils configUtils, ConfigsManager configsManager) {
+        this.M = M;
+        this.configUtils = configUtils;
+        this.configsManager = configsManager;
     }
 
-    private void checkDefault(String uuid) {
-        String defcol = MainClass.getUtils().getCurrentDefaultColor();
-        String defcode = MainClass.getUtils().getCurrentDefaultCode();
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEvent(PlayerJoinEvent event) {
 
-        if (!MainClass.getUtils().getDefaultCode(uuid).equals(defcode)) {
-            MainClass.getUtils().setDefaultCode(uuid, defcode);
-            MainClass.getUtils().setColor(uuid, defcol);
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+
+        // Load the player's config.
+        configsManager.loadPlayerConfig(uuid);
+
+        // Update the player list and check their default colour.
+        configUtils.updatePlayerListEntry(player.getName(), uuid);
+        checkDefault(uuid);
+
+        if ((boolean) configUtils.getSetting("join-message")) {
+            if (configUtils.getColour(uuid).contains("rainbow")) {
+                // Make sure the sequence is valid.
+                String rseq = (String) configUtils.getSetting("rainbow-sequence");
+                GeneralUtils.verifyRainbowSequence(rseq, true, configUtils);
+            }
+
+            player.sendMessage(M.PREFIX + M.CURRENT_COLOR + GeneralUtils.colouriseMessage(configUtils.getColour(uuid), M.THIS, false, configUtils));
+        }
+
+        if (GeneralUtils.check(player)) {
+            player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
+        }
+    }
+
+    // Checks if a player's colour has been set to the default since a default was last set.
+    private void checkDefault(UUID uuid) {
+        long currentCode = configUtils.getCurrentDefaultCode();
+        long playerCode = configUtils.getDefaultCode(uuid);
+
+        if (playerCode != currentCode) {
+            configUtils.setDefaultCode(uuid, currentCode);
+            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
         }
     }
 }

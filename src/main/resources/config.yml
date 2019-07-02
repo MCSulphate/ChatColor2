@@ -1,0 +1,15 @@
+version: 1.7.9
+stats: true
+settings:
+  auto-save: true
+  save-interval: 10
+  color-override: false
+  notify-others: true
+  join-message: true
+  confirm-timeout: 10
+  default-color: '&f'
+  rainbow-sequence: 'abcde'
+  command-name: 'chatcolor'
+default:
+  code: 1
+  color: '&f'

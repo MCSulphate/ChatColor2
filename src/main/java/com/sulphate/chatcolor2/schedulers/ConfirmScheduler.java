@@ -1,34 +1,54 @@
 package com.sulphate.chatcolor2.schedulers;
 
+import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.utils.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.sulphate.chatcolor2.main.MainClass;
-import com.sulphate.chatcolor2.utils.CCStrings;
+import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.utils.Messages;
 
 public class ConfirmScheduler {
 
-    private Player p = null;
-    private int id = 0;
-    public String type;
-    public Object val;
+    private Messages M;
+    private ConfirmationsManager confirmationsManager;
+    private ConfigUtils configUtils;
 
-    public void confirm(Player player, String confirmation, Object value) {
+    private Player player;
+    private int id;
+    private String type;
+    private Object value;
 
-        type = confirmation;
-        val = value;
-        p = player;
-        id = Bukkit.getScheduler().scheduleSyncDelayedTask(MainClass.get(), new Runnable() {
-            public void run() {
-                p.sendMessage(CCStrings.didnotconfirm);
-                MainClass.get().removeConfirmee(p);
-            }
-        },(int)MainClass.getUtils().getSetting("confirm-timeout") * 20);
+    public ConfirmScheduler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils, Player player, String type, Object value) {
+        this.M = M;
+        this.confirmationsManager = confirmationsManager;
+        this.configUtils = configUtils;
 
+        this.player = player;
+        this.type = type;
+        this.value = value;
+
+        run();
     }
 
-    public void cancelTask() {
+    private void run() {
+        id = Bukkit.getScheduler().scheduleSyncDelayedTask(ChatColor.getPlugin(), () -> {
+            player.sendMessage(M.DID_NOT_CONFIRM);
+            confirmationsManager.removeConfirmingPlayer(player);
+        }, (int) configUtils.getSetting("confirm-timeout") * 20);
+    }
+
+    public void cancelScheduler() {
         Bukkit.getScheduler().cancelTask(id);
+        confirmationsManager.removeConfirmingPlayer(player);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Object getValue() {
+        return value;
     }
 
 }
