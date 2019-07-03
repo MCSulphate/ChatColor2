@@ -58,6 +58,20 @@ public class ConfirmCommand implements CommandExecutor {
                 break;
             }
 
+            case "save-interval": {
+                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
+                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+                }
+
+                int value = (int) scheduler.getValue();
+
+                configUtils.setSetting("save-interval", value);
+                // Update the save scheduler with the new interval.
+                ChatColor.getPlugin().getSaveScheduler().setSaveInterval(value);
+                valueString = value + "";
+                break;
+            }
+
             case "color-override": {
                 if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
                     s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
@@ -165,7 +179,7 @@ public class ConfirmCommand implements CommandExecutor {
             }
         }
 
-        s.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", valueString));
+        s.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", GeneralUtils.colourise(valueString)));
         return true;
     }
 

@@ -33,7 +33,7 @@ current-color: 'Your color is currently: '
 set-own-color: 'Successfully set your color to: '
 set-others-color: 'Successfully set &c[player]''s &ecolor to: '
 player-set-your-color: '&c[player] &eset your color to: '
-reloaded-messages: 'Reloaded messages!'
+reloaded-messages: 'Reloaded configs!'
 available-colors: 'Here are your available colors and modifiers:'
 
 # Confirmation and Settings Messages

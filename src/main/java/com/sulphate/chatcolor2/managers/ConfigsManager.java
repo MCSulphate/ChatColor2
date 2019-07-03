@@ -21,7 +21,7 @@ public class ConfigsManager {
     }
 
     // (re)loads all configs.
-    private void loadAllConfigs() {
+    public void loadAllConfigs() {
         configs = new HashMap<>();
         String[] fileNames = { "config.yml", "messages.yml", "player-list.yml" };
 

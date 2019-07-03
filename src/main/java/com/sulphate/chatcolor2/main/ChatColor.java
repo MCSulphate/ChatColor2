@@ -69,7 +69,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Major code refactoring & reorganised config files!");
+            message = message.replace("[version-description]", "Reload command is back, new 'save-interval' setting.");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -144,15 +144,26 @@ public class ChatColor extends JavaPlugin {
             // Check if the old config version is less than 1.7.9:
             // If it is, backup the old config and load the new format.
             YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(config);
-
             String version = currentConfig.getString("version");
-            String toCompare = getDescription().getVersion();
+            String latest = getDescription().getVersion();
 
-            if (!version.equals(toCompare)) {
+            if (!compareVersions(version, "1.7.9")) {
                 if (!backupOldConfig()) return false;
                 saveResource("config.yml", true);
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
+            }
+            // Update the version if it's behind.
+            else if (!version.equals(latest)) {
+                currentConfig.set("version", latest);
+
+                try {
+                    currentConfig.save(new File(dataFolder, "config.yml"));
+                }
+                catch (IOException ex) {
+                    console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to save updated config.yml."));
+                    // Not a critical error, continuing.
+                }
             }
         }
 
@@ -179,6 +190,23 @@ public class ChatColor extends JavaPlugin {
         return true;
     }
 
+    // Compares two version strings, returning true if the first is greater than or equal to the second.
+    private boolean compareVersions(String version1, String version2) {
+        String[] parts1 = version1.split("\\.");
+        String[] parts2 = version2.split("\\.");
+
+        if (parts1.length != parts2.length) return false;
+
+        for (int i = 0; i < parts1.length; i++) {
+            int intPart1 = Integer.parseInt(parts1[i]);
+            int intPart2 = Integer.parseInt(parts2[i]);
+
+            if (intPart1 < intPart2) return false;
+        }
+
+        return true;
+    }
+
     // Backs up an old version of the config to a separate file, so it can be copied from to the new format.
     private boolean backupOldConfig() {
         File oldConfig = new File(getDataFolder(), "config.yml");
@@ -186,7 +214,9 @@ public class ChatColor extends JavaPlugin {
 
         try {
             // Create the backup file, load the old config and save it to the file.
-            if (!backupFile.createNewFile()) return false;
+            if (!backupFile.exists()) {
+                if (!backupFile.createNewFile()) return false;
+            }
 
             YamlConfiguration config = YamlConfiguration.loadConfiguration(oldConfig);
             config.save(backupFile);

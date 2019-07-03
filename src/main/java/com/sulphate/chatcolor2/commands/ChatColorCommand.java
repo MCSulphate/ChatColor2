@@ -44,7 +44,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reloadmessages", "available", "gui");
+            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
                     case "help":
@@ -74,8 +74,8 @@ public class ChatColorCommand implements CommandExecutor {
                         return true;
                     }
 
-                    case "reloadmessages": {
-                        configsManager.reloadConfig("messages.yml");
+                    case "reload": {
+                        configsManager.loadAllConfigs();
                         M.reloadMessages();
                         ColorGUIListener.reloadGUI(M, configUtils); // Reload the GUIs as well, to give up-to-date Strings.
 
@@ -243,14 +243,14 @@ public class ChatColorCommand implements CommandExecutor {
         }
 
         // args is at least 1 in length.
-        List<String> cmds = Arrays.asList("set", "reloadmessages", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
+        List<String> cmds = Arrays.asList("set", "reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("set") && args.length < 3) {
                 player.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
                 return false;
             }
 
-            List<String> settings = Arrays.asList("auto-save", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name");
+            List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name");
 
             if (args[0].equalsIgnoreCase("set") && !settings.contains(args[1])) {
                 player.sendMessage(M.PREFIX + M.INVALID_SETTING + args[1]);
@@ -395,8 +395,8 @@ public class ChatColorCommand implements CommandExecutor {
             player.sendMessage(GeneralUtils.colourise(" &7- &eSettings Help: &c/chatcolor settingshelp"));
         }
 
-        if (player.isOp() || player.hasPermission("chatcolor.admin.reloadmessages")) {
-            player.sendMessage(GeneralUtils.colourise(" &7- &eReload Messages: &c/chatcolor reloadmessages"));
+        if (player.isOp() || player.hasPermission("chatcolor.admin.reload")) {
+            player.sendMessage(GeneralUtils.colourise(" &7- &eReload Configs: &c/chatcolor reload"));
         }
 
         if (player.isOp() || player.hasPermission("chatcolor.admin.reset")) {
@@ -475,6 +475,10 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set auto-save <true/false>"));
 
         player.sendMessage("");
+        player.sendMessage(GeneralUtils.colourise(" &7- &esave-interval: &cSets the time between saves, in minutes."));
+        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set save-interval <time>"));
+
+        player.sendMessage("");
         player.sendMessage(GeneralUtils.colourise(" &7- &ecolor-override: &cOverride '&' symbols in chat."));
         player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set color-override <true/false>"));
 
@@ -537,6 +541,29 @@ public class ChatColorCommand implements CommandExecutor {
                 valueString = val ? trueVal : falseVal;
                 value = val;
                 break;
+            }
+
+            case "save-interval": {
+                int val;
+
+                try {
+                    val = Integer.parseInt(args[2]);
+                }
+                catch (NumberFormatException ex) {
+                    player.sendMessage(M.PREFIX + M.NEEDS_NUMBER);
+                    return;
+                }
+
+                int saveInterval = (int) configUtils.getSetting("save-interval");
+
+                if (val == saveInterval) {
+                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
+                    return;
+                }
+
+                currentValueString = saveInterval + "";
+                valueString = val + "";
+                value = val;
             }
 
             case "color-override": {
