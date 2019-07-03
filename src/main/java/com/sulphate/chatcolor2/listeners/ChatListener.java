@@ -33,7 +33,7 @@ public class ChatListener implements Listener {
             String stripped = org.bukkit.ChatColor.stripColor(colourised);
 
             // If the two messages are different, there was a colour code in it.
-            if (!colourised.equals(stripped) && !player.hasPermission("chatcolor.use-colour-codes")) {
+            if (!colourised.equals(stripped) && !player.hasPermission("chatcolor.use-color-codes")) {
                 e.setMessage(stripped);
             }
         }
