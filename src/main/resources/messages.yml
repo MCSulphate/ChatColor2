@@ -54,7 +54,7 @@ gui-color-already-set: '&cColour already selected!'
 gui-unavailable: '&cUnavailable'
 gui-active: '&aActive'
 gui-click-to-toggle: '&eClick to Toggle'
-gui-click-to-select: 'eClick to Select'
+gui-click-to-select: '&eClick to Select'
 gui-selected: '&aSelected'
 gui-inactive: '&7Inactive'
 

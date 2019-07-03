@@ -49,7 +49,7 @@ public class ConfigsManager {
     }
 
     // Loads a player config.
-    public YamlConfiguration loadPlayerConfig(UUID uuid) {
+    public void loadPlayerConfig(UUID uuid) {
         File file = new File(PLAYERS_FOLDER, uuid.toString() + ".yml");
 
         if (!file.exists()) {
@@ -58,14 +58,13 @@ public class ConfigsManager {
             }
             catch (IOException ex) {
                 Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to create player config file."));
-                return null;
+                return;
             }
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         configs.put(uuid.toString() + ".yml", config);
-        return config;
     }
 
     // Unloads a player config.

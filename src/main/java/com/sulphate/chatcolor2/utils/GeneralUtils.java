@@ -34,13 +34,20 @@ public class GeneralUtils {
         return verify;
     }
 
+    // Returns whether a String is different when colourised.
+    public static boolean isDifferentWhenColourised(String toColourise) {
+        String colourised = colourise(toColourise);
+        return !toColourise.equals(colourised);
+    }
+
     // Applies a color string (like the one the MainClass.getUtils().getColor(uuid) method returns) to a message,
     // optionally taking into account the color override setting.
     public static String colouriseMessage(String color, String message, boolean checkOverride, ConfigUtils configUtils) {
         String colourisedMessage = message;
         boolean override = ((boolean) configUtils.getSetting("color-override")) && checkOverride;
 
-        if (message.contains("&")) {
+        // Check the override if the coloured message is different.
+        if (isDifferentWhenColourised(message)) {
             String colourised = colourise(message);
 
             if (override) {

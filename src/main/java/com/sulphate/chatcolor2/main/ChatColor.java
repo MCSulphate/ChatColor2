@@ -69,7 +69,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Reload command is back, new 'save-interval' setting.");
+            message = message.replace("[version-description]", "Bug Fixes!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -104,7 +104,6 @@ public class ChatColor extends JavaPlugin {
         manager.registerEvents(new ChatListener(configUtils), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(new ColorGUIListener(M, configUtils), this);
-        manager.registerEvents(new PlayerQuitListener(configsManager), this);
     }
 
     @Override

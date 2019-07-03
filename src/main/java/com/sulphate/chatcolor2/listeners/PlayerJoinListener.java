@@ -33,8 +33,10 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        // Load the player's config.
-        configsManager.loadPlayerConfig(uuid);
+        // Load the player's config, if necessary.
+        if (configsManager.getPlayerConfig(uuid) == null) {
+            configsManager.loadPlayerConfig(uuid);
+        }
 
         // Update the player list and check their default colour.
         configUtils.updatePlayerListEntry(player.getName(), uuid);

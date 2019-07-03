@@ -132,18 +132,11 @@ public class ChatColorCommand implements CommandExecutor {
             UUID uuid = configUtils.getUUIDFromName(args[0]);
             if (uuid != null) {
                 // If they are offline, we must load their config first.
-                boolean shouldUnload = false;
-                if (Bukkit.getPlayer(uuid) == null) {
+                if (configsManager.getPlayerConfig(uuid) == null) {
                     configsManager.loadPlayerConfig(uuid);
-                    shouldUnload = true;
                 }
 
                 String result = setColorFromArgs(uuid, Arrays.copyOfRange(args, 1, args.length), configUtils);
-
-                // Unload the config if we loaded it temporarily.
-                if (shouldUnload) {
-                    configsManager.unloadPlayerConfig(uuid);
-                }
 
                 // Notify the player, if necessary.
                 if ((boolean) configUtils.getSetting("notify-others") && Bukkit.getPlayer(uuid) != null) {
@@ -175,19 +168,12 @@ public class ChatColorCommand implements CommandExecutor {
 
             UUID uuid = configUtils.getUUIDFromName(args[0]);
             if (uuid != null) {
-                // If they are offline, we must load their config first.
-                boolean shouldUnload = false;
-                if (Bukkit.getPlayer(uuid) == null) {
+                // If their config hasn't been loaded, we must load it.
+                if (configsManager.getPlayerConfig(uuid) == null) {
                     configsManager.loadPlayerConfig(uuid);
-                    shouldUnload = true;
                 }
 
                 String result = setColorFromArgs(uuid, Arrays.copyOfRange(args, 1, args.length), configUtils);
-
-                // Unload the config if we loaded it temporarily.
-                if (shouldUnload) {
-                    configsManager.unloadPlayerConfig(uuid);
-                }
 
                 if ((boolean) configUtils.getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
                     Bukkit.getPlayer(uuid).sendMessage(M.PREFIX + M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE") + GeneralUtils.colouriseMessage(result, M.THIS, false, configUtils));
