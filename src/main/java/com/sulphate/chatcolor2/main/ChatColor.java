@@ -79,6 +79,9 @@ public class ChatColor extends JavaPlugin {
             new PlaceholderAPIHook(this, configUtils, M).register();
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
+        else {
+            console.sendMessage(M.PREFIX + M.PLACEHOLDERS_DISABLED);
+        }
 
         // Send the relevant metrics message.
         if (!metrics) {
