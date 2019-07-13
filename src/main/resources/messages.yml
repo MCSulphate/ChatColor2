@@ -5,6 +5,8 @@ startup:
 shutdown: 'ChatColor 2 Version &b[version] &ehas been &cdisabled&e.'
 metrics-enabled: '&bMetrics &eis &aenabled &efor this plugin. Stats sent to &bhttps://bstats.org'
 metrics-disabled: '&bMetrics &eis &cdisabled &efor this plugin.'
+placeholders-enabled: '&bPlaceholderAPI has been hooked.'
+placeholders-disabled: '&bPlaceholderAPI not found, placeholders will not be available.'
 
 # General Messages and Strings
 prefix: '&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e'
@@ -52,6 +54,7 @@ invalid-sequence: '&e[sequence] &cis an invalid colour sequence!'
 gui-title: '&9Color Picker GUI'
 gui-color-already-set: '&cColour already selected!'
 gui-unavailable: '&cUnavailable'
+gui-available: '&aAvailable'
 gui-active: '&aActive'
 gui-click-to-toggle: '&eClick to Toggle'
 gui-click-to-select: '&eClick to Select'

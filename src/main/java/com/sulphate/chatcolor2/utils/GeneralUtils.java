@@ -94,6 +94,32 @@ public class GeneralUtils {
         return GeneralUtils.colourise(color) + colourisedMessage;
     }
 
+    public static char[] getAvailableColours(Player player) {
+        char[] cols = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        StringBuilder builder = new StringBuilder();
+
+        for (char col : cols) {
+            if (player.isOp() || player.hasPermission("chatcolor.color." + col)) {
+                builder.append(col);
+            }
+        }
+
+        return builder.toString().toCharArray();
+    }
+
+    public static char[] getAvailableModifiers(Player player) {
+        char[] mods = {'k', 'l', 'm', 'n', 'o'};
+        StringBuilder builder = new StringBuilder();
+
+        for (char mod : mods) {
+            if (player.isOp() || player.hasPermission("chatcolor.modifier." + mod)) {
+                builder.append(mod);
+            }
+        }
+
+        return builder.toString().toCharArray();
+    }
+
     public static boolean check(Player player) {
         return player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"));
     }

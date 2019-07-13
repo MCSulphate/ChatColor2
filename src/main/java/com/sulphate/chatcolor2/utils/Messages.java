@@ -15,6 +15,8 @@ public class Messages {
     // Startup and Shutdown Messages
     public String METRICS_ENABLED;
     public String METRICS_DISABLED;
+    public String PLACEHOLDERS_ENABLED;
+    public String PLACEHOLDERS_DISABLED;
     public String SHUTDOWN;
 
     // General Messages and Strings
@@ -66,6 +68,7 @@ public class Messages {
     public String GUI_TITLE;
     public String GUI_COLOR_ALREADY_SET;
     public String GUI_UNAVAILABLE;
+    public String GUI_AVAILABLE;
     public String GUI_ACTIVE;
     public String GUI_CLICK_TO_TOGGLE;
     public String GUI_CLICK_TO_SELECT;
@@ -101,6 +104,8 @@ public class Messages {
         // Startup Messages
         METRICS_ENABLED = getAndColourise("metrics-enabled");
         METRICS_DISABLED = getAndColourise("metrics-disabled");
+        PLACEHOLDERS_ENABLED = getAndColourise("placeholders-enabled");
+        PLACEHOLDERS_DISABLED = getAndColourise("placeholders-disabled");
         SHUTDOWN = getAndColourise("shutdown");
 
         // General Messages and Strings
@@ -149,6 +154,7 @@ public class Messages {
         GUI_TITLE = getAndColourise("gui-title");
         GUI_COLOR_ALREADY_SET = getAndColourise("gui-color-already-set");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");
+        GUI_AVAILABLE = getAndColourise("gui-available");
         GUI_ACTIVE = getAndColourise("gui-active");
         GUI_CLICK_TO_TOGGLE = getAndColourise("gui-click-to-toggle");
         GUI_CLICK_TO_SELECT = getAndColourise("gui-click-to-select");

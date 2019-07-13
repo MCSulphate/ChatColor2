@@ -13,6 +13,7 @@ import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.PlaceholderAPIHook;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -73,6 +74,13 @@ public class ChatColor extends JavaPlugin {
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
+        // Check whether PlaceholderAPI is installed, if it is load the expansion.
+        if (manager.getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderAPIHook(this, configUtils, M).register();
+            console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
+        }
+
+        // Send the relevant metrics message.
         if (!metrics) {
             console.sendMessage(M.PREFIX + M.METRICS_DISABLED);
         }

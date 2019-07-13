@@ -84,40 +84,42 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "available": {
-                        String comma = "§7, ";
-                        char[] cols = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-                        char[] mods = {'k', 'l', 'm', 'n', 'o'};
+                        String comma = GeneralUtils.colourise("&7, ");
 
-                        String colstring;
-                        String modstring;
+                        char[] availableColours = GeneralUtils.getAvailableColours(s);
+                        char[] availableModifiers = GeneralUtils.getAvailableModifiers(s);
 
-                        StringBuilder colbuilder = new StringBuilder();
-                        for (int i = 0; i < cols.length; i++) {
-                            if (s.isOp() || s.hasPermission("chatcolor.color." + cols[i])) {
-                                colbuilder.append(org.bukkit.ChatColor.COLOR_CHAR).append(cols[i]).append(cols[i]);
+                        String colourString;
+                        String modifierString;
 
-                                if (i != cols.length - 1) {
-                                    colbuilder.append(comma);
-                                }
+                        StringBuilder builder = new StringBuilder();
+
+                        for (int i = 0; i < availableColours.length; i++) {
+                            char colour = availableColours[i];
+                            builder.append('&').append(colour).append(colour);
+
+                            if (i != availableColours.length - 1) {
+                                builder.append(comma);
                             }
                         }
-                        colstring = colbuilder.toString();
 
-                        StringBuilder modbuilder = new StringBuilder();
-                        for (int i = 0; i < mods.length; i++) {
-                            if (s.isOp() || s.hasPermission("chatcolor.modifier." + mods[i])) {
-                                modbuilder.append(org.bukkit.ChatColor.COLOR_CHAR).append("b").append(org.bukkit.ChatColor.COLOR_CHAR).append(mods[i]).append(mods[i]);
+                        colourString = builder.toString();
+                        builder = new StringBuilder();
 
-                                if (i != mods.length - 1) {
-                                    modbuilder.append(comma);
-                                }
+                        for (int i = 0; i < availableModifiers.length; i++) {
+                            char mod = availableModifiers[i];
+                            builder.append('&').append(mod).append(mod);
+
+                            if (i != availableModifiers.length - 1) {
+                                builder.append(comma);
                             }
                         }
-                        modstring = modbuilder.toString();
+
+                        modifierString = builder.toString();
 
                         s.sendMessage(M.PREFIX + M.AVAILABLE_COLORS);
-                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.COLORS + ": " + colstring));
-                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.MODIFIERS + ": " + modstring));
+                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.COLORS + ": " + colourString));
+                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.MODIFIERS + ": " + modifierString));
                         return true;
                     }
 
