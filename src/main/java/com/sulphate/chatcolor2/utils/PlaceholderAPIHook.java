@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -79,9 +80,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
             case "modifiers_text": {
                 String colour = configUtils.getColour(uuid);
-                String modPart = colour.substring(2);
 
-                return getTextEquivalent(modPart);
+                if (colour.contains("rainbow")) {
+                    return getTextEquivalent(colour.replace("rainbow", ""));
+                }
+                else {
+                    return getTextEquivalent(colour.substring(2));
+                }
             }
 
             case "color": {
@@ -93,9 +98,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
             case "color_text": {
                 String colour = configUtils.getColour(uuid);
-                String colourPart = colour.substring(0, 2);
 
-                return getTextEquivalent(colourPart);
+                if (colour.contains("rainbow")) {
+                    return getTextEquivalent("rainbow");
+                }
+                else {
+                    return getTextEquivalent(colour.substring(0, 2));
+                }
             }
 
             default: {
@@ -129,11 +138,17 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     // Returns the text equivalent of a string of colours or modifiers.
     private String getTextEquivalent(String str) {
-        String stripped = str.replace(org.bukkit.ChatColor.COLOR_CHAR + "", "");
+        StringBuilder builder = new StringBuilder();
+        String stripped = str.replaceAll("&", "");
+
+        if (stripped.contains("rainbow")) {
+            builder.append(GeneralUtils.colouriseMessage("rainbow", M.RAINBOW, false, configUtils)).append("&r");
+            stripped = stripped.replace("rainbow", "");
+        }
+
         char[] chars = stripped.toCharArray();
 
-        StringBuilder builder = new StringBuilder(chars[0]);
-        for (int i = 1; i < chars.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             List<String> specialChars = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o");
             String[] charNames = { M.BLACK, M.DARK_BLUE, M.DARK_GREEN, M.DARK_AQUA, M.DARK_RED, M.DARK_PURPLE, M.GOLD, M.GRAY, M.DARK_GRAY, M.BLUE, M.GREEN, M.AQUA, M.RED, M.LIGHT_PURPLE, M.YELLOW, M.WHITE, M.OBFUSCATED, M.BOLD, M.STRIKETHROUGH, M.UNDERLINED, M.ITALIC };
 
@@ -141,8 +156,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             int index = specialChars.indexOf(chr + "");
 
             // Get the correct text equiv., and add it to the builder.
-            String text = "&" + chr + charNames[index];
-            builder.append(',').append(text);
+            String text = "&" + chr + charNames[index] + "&r";
+
+            if (builder.length() > 0 || i != 0) {
+                builder.append(", ");
+            }
+
+            builder.append(text);
         }
 
         return GeneralUtils.colourise(builder.toString());
