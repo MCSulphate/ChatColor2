@@ -120,6 +120,44 @@ public class GeneralUtils {
         return builder.toString().toCharArray();
     }
 
+    // Replaces a set-colour-message including if rainbow is in the colour.
+    // This is a clever (if i say so myself ;)) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
+    public static String colourSetMessage(String originalMessage, String colour, ConfigUtils configUtils) {
+        // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
+        if (colour.contains("rainbow")) {
+            String finalString;
+
+            if (originalMessage.contains("[color]")) {
+                // The message up to the colour placeholder.
+                String firstPart = originalMessage.substring(0, originalMessage.indexOf("[color]"));
+                // The message past the colour placeholder.
+
+                String lastPart = originalMessage.substring(originalMessage.indexOf("[color]") + 7);
+
+                // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
+                if (lastPart.contains(org.bukkit.ChatColor.COLOR_CHAR + "")) {
+                    // The part of the message past the placeholder that is not colour-changed.
+                    String toColour = lastPart.substring(0, lastPart.indexOf(org.bukkit.ChatColor.COLOR_CHAR + ""));
+                    // The part of the message past the placeholder that *is* colour-changed, if any.
+                    String toAdd = lastPart.substring(lastPart.indexOf(org.bukkit.ChatColor.COLOR_CHAR + ""));
+
+                    finalString = firstPart + GeneralUtils.colouriseMessage(colour, toColour, false, configUtils) + toAdd;
+                }
+                else {
+                    finalString = firstPart + GeneralUtils.colouriseMessage(colour, lastPart, false, configUtils);
+                }
+            }
+            else {
+                finalString = originalMessage;
+            }
+
+            return finalString;
+        }
+        else {
+            return originalMessage.replace("[color]", GeneralUtils.colourise(colour));
+        }
+    }
+
     public static boolean check(Player player) {
         return player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"));
     }

@@ -49,7 +49,7 @@ public class PlayerJoinListener implements Listener {
                 GeneralUtils.verifyRainbowSequence(rseq, true, configUtils);
             }
 
-            player.sendMessage(M.PREFIX + M.CURRENT_COLOR + GeneralUtils.colouriseMessage(configUtils.getColour(uuid), M.THIS, false, configUtils));
+            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, configUtils.getColour(uuid), configUtils));
         }
 
         if (GeneralUtils.check(player)) {

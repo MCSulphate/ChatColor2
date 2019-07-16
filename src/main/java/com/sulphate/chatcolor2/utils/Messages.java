@@ -24,7 +24,6 @@ public class Messages {
     public String AUTHOR_MESSAGE_1 = GeneralUtils.colourise("&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:");
     public String AUTHOR_MESSAGE_2 = GeneralUtils.colourise("&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<");
     public String PLUGIN_NOTIFICATION = GeneralUtils.colourise("Server is running ChatColor 2 version &c" + ChatColor.getPlugin().getDescription().getVersion());
-    public String THIS;
     public String COMMAND_EXISTS;
     public String COLORS;
     public String MODIFIERS;
@@ -51,6 +50,8 @@ public class Messages {
     public String PLAYER_SET_YOUR_COLOR;
     public String RELOADED_MESSAGES;
     public String AVAILABLE_COLORS;
+    public String MODIFIER_NOT_IN_COLOR;
+    public String MODIFIER_ALREADY_IN_COLOR;
 
     // Confirmation and Settings Messages
     public String CONFIRM;
@@ -110,7 +111,6 @@ public class Messages {
 
         // General Messages and Strings
         PREFIX = getAndColourise("prefix");
-        THIS = getAndColourise("this");
         COMMAND_EXISTS = getAndColourise("command-exists");
         COLORS = getAndColourise("colors");
         MODIFIERS = getAndColourise("modifiers");
@@ -137,6 +137,8 @@ public class Messages {
         PLAYER_SET_YOUR_COLOR = getAndColourise("player-set-your-color");
         RELOADED_MESSAGES = getAndColourise("reloaded-messages");
         AVAILABLE_COLORS = getAndColourise("available-colors");
+        MODIFIER_NOT_IN_COLOR = getAndColourise("modifier-not-in-color");
+        MODIFIER_ALREADY_IN_COLOR = getAndColourise("modifier-already-in-color");
 
         // Confirmation and Settings Messages
         CONFIRM = getAndColourise("confirm");

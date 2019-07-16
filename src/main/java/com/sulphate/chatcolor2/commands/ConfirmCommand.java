@@ -148,7 +148,7 @@ public class ConfirmCommand implements CommandExecutor {
                 String value = (String) scheduler.getValue();
 
                 configUtils.createNewDefaultColour(value);
-                valueString = GeneralUtils.colouriseMessage(value, M.THIS, false, configUtils);
+                valueString = GeneralUtils.colouriseMessage(value, "this", false, configUtils);
                 break;
             }
 
@@ -161,7 +161,7 @@ public class ConfirmCommand implements CommandExecutor {
                 String value = (String) scheduler.getValue();
 
                 configUtils.setSetting("rainbow-sequence", value);
-                valueString = GeneralUtils.colouriseMessage("rainbow", M.THIS, false, configUtils);
+                valueString = GeneralUtils.colouriseMessage("rainbow", value, false, configUtils);
                 break;
             }
 

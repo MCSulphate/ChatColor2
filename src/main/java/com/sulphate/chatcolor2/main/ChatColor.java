@@ -70,7 +70,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "PlaceholderAPI Support!");
+            message = message.replace("[version-description]", "/chatcolor <add/remove> added, message placeholder improvements!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 

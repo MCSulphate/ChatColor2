@@ -91,7 +91,7 @@ public class ColorGUIListener implements Listener {
             }
 
             Player player = (Player) event.getWhoClicked();
-            UUID playerUuid = player.getUniqueId();
+            UUID uuid = player.getUniqueId();
             String displayName = clickedItem.getItemMeta().getDisplayName();
             String firstLoreLine = clickedItem.getItemMeta().getLore().get(0);
 
@@ -116,7 +116,7 @@ public class ColorGUIListener implements Listener {
                 }
                 else {
                     // Check if it is already their colour.
-                    String colour = configUtils.getColour(playerUuid);
+                    String colour = configUtils.getColour(uuid);
 
                     if (colour.contains(newColor)) {
                         player.sendMessage(M.PREFIX + M.GUI_COLOR_ALREADY_SET);
@@ -124,9 +124,9 @@ public class ColorGUIListener implements Listener {
                     }
 
                     String[] args = createArgs(newColor, activeModifiers);
-                    ChatColorCommand.setColorFromArgs(playerUuid, args, configUtils);
+                    ChatColorCommand.setColorFromArgs(uuid, args, configUtils);
 
-                    player.sendMessage(M.PREFIX + M.SET_OWN_COLOR + GeneralUtils.colouriseMessage(configUtils.getColour(playerUuid), M.THIS, false, configUtils));
+                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils));
                 }
             }
             else {
@@ -153,9 +153,9 @@ public class ColorGUIListener implements Listener {
                     }
 
                     String[] args = createArgs(selectedColour, activeModifiers);
-                    ChatColorCommand.setColorFromArgs(playerUuid, args, configUtils);
+                    ChatColorCommand.setColorFromArgs(uuid, args, configUtils);
 
-                    player.sendMessage(M.PREFIX + M.SET_OWN_COLOR + GeneralUtils.colouriseMessage(configUtils.getColour(playerUuid), M.THIS, false, configUtils));
+                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils));
                 }
             }
 
