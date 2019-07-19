@@ -38,6 +38,11 @@ public class ConfirmCommand implements CommandExecutor {
             return true;
         }
 
+        if (!s.isOp() && !s.hasPermission("chatcolor.admin")) {
+            s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+            return true;
+        }
+
         ConfirmScheduler scheduler = confirmationsManager.getSchedulerForPlayer(s);
         String type = scheduler.getType();
         scheduler.cancelScheduler();
@@ -46,11 +51,6 @@ public class ConfirmCommand implements CommandExecutor {
 
         switch(type) {
             case "auto-save": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 boolean value = (boolean) scheduler.getValue();
 
                 configUtils.setSetting("auto-save", value);
@@ -59,10 +59,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "save-interval": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                }
-
                 int value = (int) scheduler.getValue();
 
                 configUtils.setSetting("save-interval", value);
@@ -73,11 +69,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "color-override": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 boolean value = (boolean) scheduler.getValue();
 
                 configUtils.setSetting("color-override", value);
@@ -86,14 +77,10 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "reset": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.reset")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 // Overwrite configs with default ones.
                 ChatColor.getPlugin().saveResource("config.yml", true);
                 ChatColor.getPlugin().saveResource("messages.yml", true);
+                ChatColor.getPlugin().saveResource("colors.yml", true);
                 M.reloadMessages();
 
                 s.sendMessage(M.PREFIX + M.CONFIGS_RESET);
@@ -101,11 +88,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "notify-others": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 boolean value = (boolean) scheduler.getValue();
 
                 configUtils.setSetting("notify-others", value);
@@ -114,11 +96,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "join-message": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 boolean value = (boolean) scheduler.getValue();
 
                 configUtils.setSetting("join-message", value);
@@ -127,11 +104,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "confirm-timeout": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 int value = (int) scheduler.getValue();
 
                 configUtils.setSetting("confirm-timeout", value);
@@ -140,11 +112,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "default-color": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 String value = (String) scheduler.getValue();
 
                 configUtils.createNewDefaultColour(value);
@@ -153,11 +120,6 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "rainbow-sequence": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 String value = (String) scheduler.getValue();
 
                 configUtils.setSetting("rainbow-sequence", value);
@@ -166,15 +128,18 @@ public class ConfirmCommand implements CommandExecutor {
             }
 
             case "command-name": {
-                if (!s.isOp() && !s.hasPermission("chatcolor.admin.set")) {
-                    s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-                    return true;
-                }
-
                 String value = (String) scheduler.getValue();
 
                 configUtils.setSetting("command-name", value);
                 valueString = "&b" + value;
+                break;
+            }
+
+            case "force-custom-colors": {
+                boolean value = (boolean) scheduler.getValue();
+
+                configUtils.setSetting("force-custom-colors", value);
+                valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
         }

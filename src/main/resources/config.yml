@@ -10,6 +10,7 @@ settings:
   default-color: '&f'
   rainbow-sequence: 'abcde'
   command-name: 'chatcolor'
+  force-custom-colors: true
 default:
   code: 1
   color: '&f'

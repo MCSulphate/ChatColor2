@@ -23,19 +23,12 @@ public class ConfigsManager {
     // (re)loads all configs.
     public void loadAllConfigs() {
         configs = new HashMap<>();
-        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml" };
+        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "colors.yml" };
 
         for (String fileName : fileNames) {
             File file = new File(ChatColor.getPlugin().getDataFolder(), fileName);
             configs.put(fileName, YamlConfiguration.loadConfiguration(file));
         }
-    }
-
-    // Removes and reloads a config.
-    public void reloadConfig(String fileName) {
-        File file = new File(ChatColor.getPlugin().getDataFolder(), fileName);
-        configs.remove(fileName);
-        configs.put(fileName, YamlConfiguration.loadConfiguration(file));
     }
 
     // Returns a given config.
@@ -63,13 +56,7 @@ public class ConfigsManager {
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
         configs.put(uuid.toString() + ".yml", config);
-    }
-
-    // Unloads a player config.
-    public void unloadPlayerConfig(UUID uuid) {
-        configs.remove(uuid.toString() + ".yml");
     }
 
     // Saves a player config.

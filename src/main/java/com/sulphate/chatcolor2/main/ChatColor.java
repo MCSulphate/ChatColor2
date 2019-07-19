@@ -62,15 +62,16 @@ public class ChatColor extends JavaPlugin {
         setupCommands();
         setupListeners();
 
-        // Scan messages.yml to make sure all messages are there. Reload if necessary.
+        // Scan messages and settings to make sure all are present.
         scanMessages();
+        scanSettings();
 
         // Startup messages.
         List<String> messages = configUtils.getStartupMessages();
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "/chatcolor <add/remove> added, message placeholder improvements!");
+            message = message.replace("[version-description]", "Static (custom) group/permission-based colours!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -163,8 +164,9 @@ public class ChatColor extends JavaPlugin {
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
             }
+
             // Update the version if it's behind.
-            else if (!version.equals(latest)) {
+            if (!version.equals(latest)) {
                 currentConfig.set("version", latest);
 
                 try {
@@ -184,6 +186,13 @@ public class ChatColor extends JavaPlugin {
             saveResource("messages.yml", true);
         }
 
+        File coloursFile = new File(dataFolder, "colors.yml");
+
+        // Save default colours file if it doesn't exist.
+        if (!coloursFile.exists()) {
+            saveResource("colors.yml", true);
+        }
+
         File playerList = new File(dataFolder, "player-list.yml");
 
         // Create player list if it doesn't exist.
@@ -200,18 +209,21 @@ public class ChatColor extends JavaPlugin {
         return true;
     }
 
-    // Compares two version strings, returning true if the first is greater than or equal to the second.
+    // Compares two version strings, returning true if the first is greater than or equal to the second (in format x.x.x...x).
     private boolean compareVersions(String version1, String version2) {
         String[] parts1 = version1.split("\\.");
         String[] parts2 = version2.split("\\.");
 
-        if (parts1.length != parts2.length) return false;
-
+        // Iterating up to first version's length, as the version string may be shorter.
         for (int i = 0; i < parts1.length; i++) {
             int intPart1 = Integer.parseInt(parts1[i]);
             int intPart2 = Integer.parseInt(parts2[i]);
 
+            // If greater, this is a newer version.
+            if (intPart1 > intPart2) return true;
+            // If less, this is an older version.
             if (intPart1 < intPart2) return false;
+            // If equal, continue to compare.
         }
 
         return true;
@@ -268,6 +280,29 @@ public class ChatColor extends JavaPlugin {
         // Reload messages if necessary.
         if (needsReload) {
             M.reloadMessages();
+        }
+    }
+
+    // Scans the current config.yml for settings differences (any new settings will be added).
+    private void scanSettings() {
+        InputStream defaultStream = getResource("config.yml");
+
+        if (defaultStream == null) {
+            console.sendMessage(M.PREFIX + GeneralUtils.colourise("&cError: Failed to load default config resource. Settings will not be scanned."));
+            return;
+        }
+
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+        YamlConfiguration currentConfig = configsManager.getConfig("config.yml");
+
+        Set<String> keys = defaultConfig.getConfigurationSection("settings").getKeys(false);
+        for (String key : keys) {
+            // Check all settings are present.
+            if (!currentConfig.contains(key)) {
+                // If not, set the default and save the config.
+                currentConfig.set(key, defaultConfig.getString(key));
+                configsManager.saveConfig("config.yml");
+            }
         }
     }
 

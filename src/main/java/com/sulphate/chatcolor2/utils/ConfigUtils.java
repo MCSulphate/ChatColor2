@@ -1,9 +1,13 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.managers.ConfigsManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ConfigUtils {
@@ -78,10 +82,8 @@ public class ConfigUtils {
         // Current millis time will always be unique.
         long code = System.currentTimeMillis();
 
-        YamlConfiguration config = configsManager.getConfig("config.yml");
-        config.set("default.code", code);
-        config.set("default.color", colour);
-        configsManager.saveConfig("config.yml");
+        setAndSave("config.yml", "default.code", code);
+        setAndSave("config.yml", "default.color", colour);
     }
 
     // Attempts to get a player's UUID from their name, from the playerlist.
@@ -99,9 +101,74 @@ public class ConfigUtils {
 
     // Updates a player's playerlist entry.
     public void updatePlayerListEntry(String name, UUID uuid) {
-        YamlConfiguration config = configsManager.getConfig("player-list.yml");
-        config.set(name, uuid.toString());
-        configsManager.saveConfig("player-list.yml");
+        setAndSave("player-list.yml", name, uuid.toString());
+    }
+
+    // Gets a list of custom colours.
+    public HashMap<String, String> getCustomColours() {
+        YamlConfiguration config = configsManager.getConfig("colors.yml");
+        HashMap<String, String> returnValue = new HashMap<>();
+
+        // Fill the HashMap with the custom colours.
+        Set<String> keys = config.getKeys(false);
+        for (String key : keys) {
+            returnValue.put(key, config.getString(key));
+        }
+
+        return returnValue;
+    }
+
+    // Returns whether a custom colour exists.
+    public boolean customColourExists(String name) {
+        return getCustomColours().containsKey(name);
+    }
+
+    // Adds a new custom colour.
+    public void addCustomColour(String name, String colour) {
+        setAndSave("colors.yml", name, colour);
+    }
+
+    // Removes a custom colour.
+    public void removeCustomColour(String name) {
+        setAndSave("colors.yml", name, null);
+    }
+
+    // Returns the custom colour, if any, that a player has.
+    public String getCustomColour(Player player) {
+        HashMap<String, String> customColours = getCustomColours();
+
+        // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
+        for (String key : customColours.keySet()) {
+            // Not checking for OP, that would cause the first colour to always be chosen.
+            if (player.hasPermission("chatcolor.custom." + key)) {
+                return customColours.get(key);
+            }
+        }
+
+        return null;
+    }
+
+    // Sets and saves a config's value.
+    private void setAndSave(String configName, String key, Object value) {
+        YamlConfiguration config = configsManager.getConfig(configName);
+        config.set(key, value);
+        configsManager.saveConfig(configName);
+    }
+
+    // Gets the default color for a player, taking into account custom color (if they are online).
+    public String getDefaultColourForPlayer(UUID uuid) {
+        String colour = null;
+
+        if (Bukkit.getPlayer(uuid) != null) {
+            colour = getCustomColour(Bukkit.getPlayer(uuid));
+        }
+
+        if (colour == null) {
+            return getCurrentDefaultColour();
+        }
+        else {
+            return colour;
+        }
     }
 
 }

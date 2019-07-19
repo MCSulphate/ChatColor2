@@ -49,7 +49,18 @@ public class PlayerJoinListener implements Listener {
                 GeneralUtils.verifyRainbowSequence(rseq, true, configUtils);
             }
 
-            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, configUtils.getColour(uuid), configUtils));
+            // Check if they have a custom colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
+            String customColour = configUtils.getCustomColour(player);
+            String colour = configUtils.getColour(uuid);
+
+            if (customColour != null) {
+                // If it should be forced, set it so.
+                if ((boolean) configUtils.getSetting("force-custom-colors")) {
+                    colour = customColour;
+                }
+            }
+
+            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils));
         }
 
         if (GeneralUtils.check(player)) {

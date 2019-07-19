@@ -53,6 +53,15 @@ public class Messages {
     public String MODIFIER_NOT_IN_COLOR;
     public String MODIFIER_ALREADY_IN_COLOR;
 
+    // Custom-Colour Messages
+    public String CUSTOM_COLOR_EXISTS;
+    public String CUSTOM_COLOR_NOT_EXISTS;
+    public String USING_CUSTOM_COLOR;
+    public String ADDED_CUSTOM_COLOR;
+    public String REMOVED_CUSTOM_COLOR;
+    public String CUSTOM_COLOR_LIST;
+    public String CUSTOM_COLOR_FORMAT;
+
     // Confirmation and Settings Messages
     public String CONFIRM;
     public String DID_NOT_CONFIRM;
@@ -139,6 +148,15 @@ public class Messages {
         AVAILABLE_COLORS = getAndColourise("available-colors");
         MODIFIER_NOT_IN_COLOR = getAndColourise("modifier-not-in-color");
         MODIFIER_ALREADY_IN_COLOR = getAndColourise("modifier-already-in-color");
+
+        // Custom-Color Messages
+        CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");
+        CUSTOM_COLOR_NOT_EXISTS = getAndColourise("custom-color-not-exists");
+        USING_CUSTOM_COLOR = getAndColourise("using-custom-color");
+        ADDED_CUSTOM_COLOR = getAndColourise("added-custom-color");
+        REMOVED_CUSTOM_COLOR = getAndColourise("removed-custom-color");
+        CUSTOM_COLOR_LIST = getAndColourise("custom-color-list");
+        CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
 
         // Confirmation and Settings Messages
         CONFIRM = getAndColourise("confirm");

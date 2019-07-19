@@ -36,7 +36,18 @@ public class ChatListener implements Listener {
             }
         }
 
-        e.setMessage(GeneralUtils.colouriseMessage(configUtils.getColour(uuid), message, true, configUtils));
+        // Check if they have a custom colour, and if it should be enforced.
+        String customColour = configUtils.getCustomColour(player);
+        String colour = configUtils.getColour(uuid);
+
+        if (customColour != null) {
+            // If it should be forced, set it so.
+            if ((boolean) configUtils.getSetting("force-custom-colors")) {
+                colour = customColour;
+            }
+        }
+
+        e.setMessage(GeneralUtils.colouriseMessage(colour, message, true, configUtils));
     }
 
     // Checks if a player's colour has been set to the default since a default was last set.

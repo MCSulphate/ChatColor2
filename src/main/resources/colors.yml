@@ -1,0 +1,4 @@
+# Format:
+# color-name: color
+Basic: '&f'
+Bold: '&f&l'

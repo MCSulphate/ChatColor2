@@ -1,6 +1,6 @@
 name: ChatColor2
 main: com.sulphate.chatcolor2.main.ChatColor
-version: 1.8.0
+version: 1.9.0
 author: Sulphate
 
 softdepend: [ PlaceholderAPI ]
@@ -9,7 +9,7 @@ commands:
 
   chatcolor:
     description: main command for ChatColor 2.
-    usage: /<command> [player] <color> [modifiers]
+    usage: /<command> [player] <color/default> [modifiers]
 
   confirm:
     description: Confirms a choice within ChatColor 2.
