@@ -41,7 +41,6 @@ public class ChatListener implements Listener {
         if (customColour != null) {
             // If it should be forced, set it so.
             if ((boolean) configUtils.getSetting("force-custom-colors")) {
-                Bukkit.broadcastMessage("Forcing custom colour: " + customColour);
                 colour = customColour;
             }
         }
