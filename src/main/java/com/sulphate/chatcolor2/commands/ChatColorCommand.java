@@ -335,27 +335,42 @@ public class ChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        // Arguments are at least 1 in length.
-        List<String> cmds = Arrays.asList("set", "reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
+        // Single-argument commands.
+        List<String> cmds = Arrays.asList("reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
         if (cmds.contains(args[0])) {
-            if (args[0].equalsIgnoreCase("set") && args.length < 3) {
+            if (args[0].equalsIgnoreCase("reset") && confirmationsManager.isConfirming(player)) {
+                player.sendMessage(M.PREFIX + M.ALREADY_CONFIRMING);
+                return false;
+            }
+
+            if (!player.isOp() && !player.hasPermission("chatcolor.admin") && !(args[0].equals("commandshelp") || args[0].equals("available"))) {
+                player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Check if they are changing a setting.
+        if (args[0].equals("set")) {
+            if (args.length < 3) {
                 player.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
                 return false;
             }
 
             List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name", "force-custom-colors");
 
-            if (args[0].equalsIgnoreCase("set") && !settings.contains(args[1])) {
+            if (!settings.contains(args[1])) {
                 player.sendMessage(M.PREFIX + M.INVALID_SETTING.replace("[setting]", args[1]));
                 return false;
             }
 
-            if ((args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("reset")) && confirmationsManager.isConfirming(player)) {
+            if (confirmationsManager.isConfirming(player)) {
                 player.sendMessage(M.PREFIX + M.ALREADY_CONFIRMING);
                 return false;
             }
 
-            if (!player.isOp() && !player.hasPermission("chatcolor.admin") && !(args[0].equals("commandshelp") || args[0].equals("available"))) {
+            if (!player.isOp() && !player.hasPermission("chatcolor.admin")) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
             }

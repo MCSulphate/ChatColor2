@@ -1,6 +1,6 @@
 name: ChatColor2
 main: com.sulphate.chatcolor2.main.ChatColor
-version: 1.9.1
+version: 1.9.2
 author: Sulphate
 
 softdepend: [ PlaceholderAPI ]
