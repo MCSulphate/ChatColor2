@@ -4,6 +4,8 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +68,7 @@ public class ConfigUtils {
     }
 
     // Gets the current default code.
-    public long getCurrentDefaultCode() {
+    public Long getCurrentDefaultCode() {
         YamlConfiguration config = configsManager.getConfig("config.yml");
         return config.getLong("default.code");
     }
@@ -80,7 +82,7 @@ public class ConfigUtils {
     // Creates a new default colour, setting it in the config.
     public void createNewDefaultColour(String colour) {
         // Current millis time will always be unique.
-        long code = System.currentTimeMillis();
+        String code = System.currentTimeMillis() + "";
 
         setAndSave("config.yml", "default.code", code);
         setAndSave("config.yml", "default.color", colour);
@@ -140,7 +142,8 @@ public class ConfigUtils {
         // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
         for (String key : customColours.keySet()) {
             // Not checking for OP, that would cause the first colour to always be chosen.
-            if (player.hasPermission("chatcolor.custom." + key)) {
+            Permission permission = new Permission("chatcolor.custom." + key, PermissionDefault.FALSE);
+            if (player.hasPermission(permission)) {
                 return customColours.get(key);
             }
         }

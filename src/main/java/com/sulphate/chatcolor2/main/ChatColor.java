@@ -71,7 +71,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Static (custom) group/permission-based colours!");
+            message = message.replace("[version-description]", "Custom Colours Bug Fix Patch");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 

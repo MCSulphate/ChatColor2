@@ -40,7 +40,7 @@ public class PlayerJoinListener implements Listener {
 
         // Update the player list and check their default colour.
         configUtils.updatePlayerListEntry(player.getName(), uuid);
-        checkDefault(uuid);
+        GeneralUtils.checkDefault(uuid, configUtils);
 
         if ((boolean) configUtils.getSetting("join-message")) {
             if (configUtils.getColour(uuid).contains("rainbow")) {
@@ -65,17 +65,6 @@ public class PlayerJoinListener implements Listener {
 
         if (GeneralUtils.check(player)) {
             player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
-        }
-    }
-
-    // Checks if a player's colour has been set to the default since a default was last set.
-    private void checkDefault(UUID uuid) {
-        long currentCode = configUtils.getCurrentDefaultCode();
-        long playerCode = configUtils.getDefaultCode(uuid);
-
-        if (playerCode != currentCode) {
-            configUtils.setDefaultCode(uuid, currentCode);
-            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
         }
     }
 }

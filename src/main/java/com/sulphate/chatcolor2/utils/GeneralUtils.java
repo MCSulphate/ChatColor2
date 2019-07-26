@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -155,6 +156,16 @@ public class GeneralUtils {
         }
         else {
             return originalMessage.replace("[color]", GeneralUtils.colourise(colour));
+        }
+    }
+
+    public static void checkDefault(UUID uuid, ConfigUtils configUtils) {
+        long currentCode = configUtils.getCurrentDefaultCode();
+        long playerCode = configUtils.getDefaultCode(uuid);
+
+        if (playerCode != currentCode) {
+            configUtils.setDefaultCode(uuid, currentCode);
+            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
         }
     }
 

@@ -6,7 +6,7 @@
 
     <groupId>com.sulphate.plugins</groupId>
     <artifactId>ChatColor2</artifactId>
-    <version>v1.9.0</version>
+    <version>v1.9.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
