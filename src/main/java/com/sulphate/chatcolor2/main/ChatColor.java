@@ -298,9 +298,9 @@ public class ChatColor extends JavaPlugin {
         Set<String> keys = defaultConfig.getConfigurationSection("settings").getKeys(false);
         for (String key : keys) {
             // Check all settings are present.
-            if (!currentConfig.contains(key)) {
+            if (!currentConfig.contains("settings." + key)) {
                 // If not, set the default and save the config.
-                currentConfig.set(key, defaultConfig.getString(key));
+                currentConfig.set("settings." + key, defaultConfig.getString("settings." + key));
                 configsManager.saveConfig("config.yml");
             }
         }
