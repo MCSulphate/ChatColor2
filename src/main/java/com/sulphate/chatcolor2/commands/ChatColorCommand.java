@@ -4,20 +4,16 @@ import com.sulphate.chatcolor2.listeners.ColorGUIListener;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
-import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Location;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
 
 public class ChatColorCommand implements CommandExecutor {
 
@@ -271,10 +267,52 @@ public class ChatColorCommand implements CommandExecutor {
             }
 
             UUID uuid = configUtils.getUUIDFromName(args[0]);
+
+            // If it's a command block sending the command, check for @p argument.
+            if (uuid == null && sender instanceof BlockCommandSender && args[0].equals("@p")) {
+                BlockCommandSender blockSender = (BlockCommandSender) sender;
+                Location location = blockSender.getBlock().getLocation();
+
+                // Find the nearest player.
+                Collection<Player> players = location.getWorld().getEntitiesByClass(Player.class);
+                Player closestPlayer = null;
+                double closestDistance = Integer.MAX_VALUE;
+
+                for (Player player : players) {
+                    Location playerLoc = player.getLocation();
+                    double distance = playerLoc.distance(location); // Wow, didn't know that existed, very nice.
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPlayer = player;
+                    }
+                }
+
+                // May technically be null but the likelihood is it won't. Still, won't cause any issues.
+                if (closestPlayer != null) {
+                    uuid = closestPlayer.getUniqueId();
+                }
+            }
+
             if (uuid != null) {
                 // If their config hasn't been loaded, we must load it.
                 if (configsManager.getPlayerConfig(uuid) == null) {
                     configsManager.loadPlayerConfig(uuid);
+                }
+
+                // Make sure the colour / modifiers are valid.
+                for (int i = 1; i < argsno; i++) {
+                    if (i == 1) {
+                        if (getColour(args[i]) == null) {
+                            sender.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", args[i]));
+                            return true;
+                        }
+                    }
+
+                    else if (getModifier(args[i]) == null) {
+                        sender.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
+                        return true;
+                    }
                 }
 
                 String result = setColorFromArgs(uuid, Arrays.copyOfRange(args, 1, args.length), configUtils);
@@ -283,7 +321,8 @@ public class ChatColorCommand implements CommandExecutor {
                     Bukkit.getPlayer(uuid).sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE"), result, configUtils));
                 }
                 sender.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result, configUtils));
-            } else {
+            }
+            else {
                 sender.sendMessage(M.PREFIX + M.PLAYER_NOT_JOINED);
             }
         }

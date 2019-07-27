@@ -44,7 +44,15 @@ public class ConfigUtils {
     // Gets a player's colour (config must be loaded).
     public String getColour(UUID uuid) {
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        return config.getString("color");
+        String colour = config.getString("color");
+
+        // If their colour is null / empty, set it to the default.
+        if (colour == null || colour.equals("")) {
+            setColour(uuid, getCurrentDefaultColour());
+            return getCurrentDefaultColour();
+        }
+
+        return colour;
     }
 
     // Sets a player's colour (config must be loaded).

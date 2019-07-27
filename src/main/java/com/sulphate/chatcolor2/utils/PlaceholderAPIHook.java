@@ -2,10 +2,8 @@ package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -71,6 +69,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return getTextEquivalent(colour);
             }
 
+            case "full_color_text_plain": {
+                String colour = configUtils.getColour(uuid);
+
+                return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour));
+            }
+
             case "modifiers": {
                 String colour = configUtils.getColour(uuid);
                 String modPart = colour.substring(2);
@@ -89,6 +93,17 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
             }
 
+            case "modifiers_text_plain": {
+                String colour = configUtils.getColour(uuid);
+
+                if (colour.contains("rainbow")) {
+                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.replace("rainbow", "")));
+                }
+                else {
+                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.substring(2)));
+                }
+            }
+
             case "color": {
                 String colour = configUtils.getColour(uuid);
                 String colourPart = colour.substring(0, 2);
@@ -104,6 +119,17 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 else {
                     return getTextEquivalent(colour.substring(0, 2));
+                }
+            }
+
+            case "color_text_plain": {
+                String colour = configUtils.getColour(uuid);
+
+                if (colour.contains("rainbow")) {
+                    return org.bukkit.ChatColor.stripColor(getTextEquivalent("rainbow"));
+                }
+                else {
+                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.substring(0, 2)));
                 }
             }
 
