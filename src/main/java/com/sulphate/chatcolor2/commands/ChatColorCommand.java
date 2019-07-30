@@ -1,6 +1,6 @@
 package com.sulphate.chatcolor2.commands;
 
-import com.sulphate.chatcolor2.listeners.ColorGUIListener;
+import com.sulphate.chatcolor2.listeners.ColourGUIListener;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
@@ -74,7 +74,7 @@ public class ChatColorCommand implements CommandExecutor {
                     case "reload": {
                         configsManager.loadAllConfigs();
                         M.reloadMessages();
-                        ColorGUIListener.reloadGUI(M, configUtils); // Reload the GUIs as well, to give up-to-date Strings.
+                        ColourGUIListener.reloadGUI(M, configUtils); // Reload the GUIs as well, to give up-to-date Strings.
 
                         // Reload all online player's configs, as they all get unloaded by ConfigsManager.loadAllConfigs().
                         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -126,7 +126,7 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "gui": {
-                        ColorGUIListener.openGUI(s, M, configUtils);
+                        ColourGUIListener.openGUI(s, M, configUtils);
                         return true;
                     }
 

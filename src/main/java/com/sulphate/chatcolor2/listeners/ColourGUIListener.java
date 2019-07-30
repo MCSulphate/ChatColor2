@@ -21,15 +21,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class ColorGUIListener implements Listener {
+public class ColourGUIListener implements Listener {
 
     private Messages M;
     private ConfigUtils configUtils;
 
     // Not using LinkedHashSet as order is not important.
-    private static final Set<Player> playersUsingGui = new HashSet<>(Bukkit.getMaxPlayers(), 0.8f);
+    private static final Set<Player> playersUsingGUI = new HashSet<>(Bukkit.getMaxPlayers(), 0.8f);
 
-    public ColorGUIListener(Messages M, ConfigUtils configUtils) {
+    public ColourGUIListener(Messages M, ConfigUtils configUtils) {
         this.M = M;
         this.configUtils = configUtils;
     }
@@ -112,7 +112,7 @@ public class ColorGUIListener implements Listener {
 
                 // Make sure it's not unavailable.
                 if (firstLoreLine.equals(M.GUI_UNAVAILABLE)) {
-                    player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS + displayName);
+                    player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", displayName));
                 }
                 else {
                     // Check if it is already their colour.
@@ -134,7 +134,7 @@ public class ColorGUIListener implements Listener {
 
                 // Make sure it's not unavailable.
                 if (firstLoreLine.equals(M.GUI_UNAVAILABLE)) {
-                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS + displayName.substring(2));
+                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", displayName.substring(2)));
                 }
                 else {
                     // If it's active, toggle it off.
@@ -273,7 +273,7 @@ public class ColorGUIListener implements Listener {
             inventory.setItem(inventoryIndex, itemToAdd);
         }
 
-        playersUsingGui.add(player);
+        playersUsingGUI.add(player);
         player.openInventory(inventory);
     }
 
@@ -282,13 +282,13 @@ public class ColorGUIListener implements Listener {
         InventoryView inventoryView = event.getView();
 
         if (inventoryView != null && inventoryView.getTitle().equals(M.GUI_TITLE) && inventoryView.getType().equals(InventoryType.CHEST)) {
-            playersUsingGui.remove(inventoryView.getPlayer());
+            playersUsingGUI.remove(inventoryView.getPlayer());
         }
     }
 
     public static void reloadGUI(Messages M, ConfigUtils configUtils) {
         // Refresh the GUI after message reload, so players see the latest text, and events are handled consistently.
-        for (Player player : playersUsingGui) {
+        for (Player player : playersUsingGUI) {
             openGUI(player, M, configUtils);
         }
     }

@@ -115,7 +115,7 @@ public class ChatColor extends JavaPlugin {
         manager.registerEvents(new PlayerJoinListener(M, configUtils, configsManager), this);
         manager.registerEvents(new ChatListener(configUtils), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
-        manager.registerEvents(new ColorGUIListener(M, configUtils), this);
+        manager.registerEvents(new ColourGUIListener(M, configUtils), this);
     }
 
     @Override
