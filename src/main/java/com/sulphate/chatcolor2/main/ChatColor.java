@@ -62,10 +62,6 @@ public class ChatColor extends JavaPlugin {
         setupCommands();
         setupListeners();
 
-        // Scan messages and settings to make sure all are present.
-        scanMessages();
-        scanSettings();
-
         // Startup messages.
         List<String> messages = configUtils.getStartupMessages();
 
@@ -103,6 +99,12 @@ public class ChatColor extends JavaPlugin {
         configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);
         confirmationsManager = new ConfirmationsManager();
+
+        // Scan messages and settings to make sure all are present.
+        scanMessages();
+        scanSettings();
+
+        // Have to scan settings before this otherwise it causes an NPE when upgrading from old versions.
         saveScheduler = new AutoSaveScheduler((int) configUtils.getSetting("save-interval"));
     }
 
