@@ -121,41 +121,80 @@ public class GeneralUtils {
     }
 
     // Replaces a set-colour-message including if rainbow is in the colour.
-    // This is a clever (if i say so myself ;)) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
-    public static String colourSetMessage(String originalMessage, String colour, ConfigUtils configUtils) {
+    // This is a clever (if I say so myself) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
+    public static String colourSetMessage(String originalMessage, String colour, ConfigUtils configUtils, Messages M) {
+        String placeholder = originalMessage.contains("[color]") ? "[color]" : originalMessage.contains("[color-text]") ? "[color-text]" : null;
+
+        // If there is no placeholder present, we don't need to do anything.
+        if (placeholder == null) {
+            return originalMessage;
+        }
+
+        // If the color-text placeholder is present, set colour to the text equivalent.
+        if (placeholder.equals("[color-text]")) {
+            colour = GeneralUtils.getTextEquivalent(colour, M, configUtils);
+        }
+
         // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
         if (colour.contains("rainbow")) {
             String finalString;
 
-            if (originalMessage.contains("[color]")) {
-                // The message up to the colour placeholder.
-                String firstPart = originalMessage.substring(0, originalMessage.indexOf("[color]"));
-                // The message past the colour placeholder.
+            // The message up to the colour placeholder.
+            String firstPart = originalMessage.substring(0, originalMessage.indexOf(placeholder));
+            // The message past the colour placeholder.
 
-                String lastPart = originalMessage.substring(originalMessage.indexOf("[color]") + 7);
+            String lastPart = originalMessage.substring(originalMessage.indexOf(placeholder) + placeholder.length());
 
-                // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
-                if (lastPart.contains(org.bukkit.ChatColor.COLOR_CHAR + "")) {
-                    // The part of the message past the placeholder that is not colour-changed.
-                    String toColour = lastPart.substring(0, lastPart.indexOf(org.bukkit.ChatColor.COLOR_CHAR + ""));
-                    // The part of the message past the placeholder that *is* colour-changed, if any.
-                    String toAdd = lastPart.substring(lastPart.indexOf(org.bukkit.ChatColor.COLOR_CHAR + ""));
+            // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
+            if (lastPart.contains(ChatColor.COLOR_CHAR + "")) {
+                // The part of the message past the placeholder that is not colour-changed.
+                String toColour = lastPart.substring(0, lastPart.indexOf(ChatColor.COLOR_CHAR + ""));
+                // The part of the message past the placeholder that *is* colour-changed, if any.
+                String toAdd = lastPart.substring(lastPart.indexOf(ChatColor.COLOR_CHAR + ""));
 
-                    finalString = firstPart + GeneralUtils.colouriseMessage(colour, toColour, false, configUtils) + toAdd;
-                }
-                else {
-                    finalString = firstPart + GeneralUtils.colouriseMessage(colour, lastPart, false, configUtils);
-                }
+                finalString = firstPart + GeneralUtils.colouriseMessage(colour, toColour, false, configUtils) + toAdd;
             }
             else {
-                finalString = originalMessage;
+                finalString = firstPart + GeneralUtils.colouriseMessage(colour, lastPart, false, configUtils);
             }
 
             return finalString;
         }
         else {
-            return originalMessage.replace("[color]", GeneralUtils.colourise(colour));
+            return originalMessage.replace(placeholder, GeneralUtils.colourise(colour));
         }
+    }
+
+    // Returns the text equivalent of a string of colours or modifiers.
+    public static String getTextEquivalent(String str, Messages M, ConfigUtils configUtils) {
+        StringBuilder builder = new StringBuilder();
+        String stripped = str.replaceAll("&", "");
+
+        if (stripped.contains("rainbow")) {
+            builder.append(colouriseMessage("rainbow", M.RAINBOW, false, configUtils)).append("&r");
+            stripped = stripped.replace("rainbow", "");
+        }
+
+        char[] chars = stripped.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            List<String> specialChars = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o");
+            String[] charNames = { M.BLACK, M.DARK_BLUE, M.DARK_GREEN, M.DARK_AQUA, M.DARK_RED, M.DARK_PURPLE, M.GOLD, M.GRAY, M.DARK_GRAY, M.BLUE, M.GREEN, M.AQUA, M.RED, M.LIGHT_PURPLE, M.YELLOW, M.WHITE, M.OBFUSCATED, M.BOLD, M.STRIKETHROUGH, M.UNDERLINED, M.ITALIC };
+
+            char chr = chars[i];
+            int index = specialChars.indexOf(chr + "");
+
+            // Get the correct text equiv., and add it to the builder.
+            String text = "&" + chr + charNames[index] + "&r";
+
+            if (builder.length() > 0 || i != 0) {
+                builder.append(", ");
+            }
+
+            builder.append(text);
+        }
+
+        return colourise(builder.toString());
     }
 
     public static void checkDefault(UUID uuid, ConfigUtils configUtils) {

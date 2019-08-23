@@ -58,7 +58,7 @@ public class PlayerJoinListener implements Listener {
                 }
             }
 
-            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils));
+            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils, M));
         }
 
         if (GeneralUtils.check(player)) {

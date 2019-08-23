@@ -137,7 +137,7 @@ public class ChatColorCommand implements CommandExecutor {
                         String newColour = colour + modifierToAdd;
 
                         configUtils.setColour(s.getUniqueId(), newColour);
-                        s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, newColour, configUtils));
+                        s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, newColour, configUtils, M));
                         return true;
                     }
 
@@ -148,7 +148,7 @@ public class ChatColorCommand implements CommandExecutor {
                         String newColour = colour.replace(modifierToRemove, "");
 
                         configUtils.setColour(s.getUniqueId(), newColour);
-                        s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, newColour, configUtils));
+                        s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, newColour, configUtils, M));
                         return true;
                     }
 
@@ -158,7 +158,7 @@ public class ChatColorCommand implements CommandExecutor {
 
                             HashMap<String, String> customColours = configUtils.getCustomColours();
                             for (String colourName : customColours.keySet()) {
-                                s.sendMessage(GeneralUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName), configUtils));
+                                s.sendMessage(GeneralUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName), configUtils, M));
                             }
 
                             return true;
@@ -185,7 +185,7 @@ public class ChatColorCommand implements CommandExecutor {
 
                             String fullColour = colour + modifiers;
                             configUtils.addCustomColour(name, fullColour);
-                            s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.ADDED_CUSTOM_COLOR.replace("[color-name]", name), fullColour, configUtils));
+                            s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.ADDED_CUSTOM_COLOR.replace("[color-name]", name), fullColour, configUtils, M));
                         }
                         else if (action.equals("remove")) {
                             configUtils.removeCustomColour(name);
@@ -220,10 +220,10 @@ public class ChatColorCommand implements CommandExecutor {
 
                 // Notify the player, if necessary.
                 if ((boolean) configUtils.getSetting("notify-others") && Bukkit.getPlayer(uuid) != null) {
-                    Bukkit.getPlayer(args[0]).sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", s.getName()), result, configUtils));
+                    Bukkit.getPlayer(args[0]).sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", s.getName()), result, configUtils, M));
                 }
 
-                s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result, configUtils));
+                s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result, configUtils, M));
             }
             // Otherwise, set their colour.
             else {
@@ -248,7 +248,7 @@ public class ChatColorCommand implements CommandExecutor {
                     result = setColorFromArgs(s.getUniqueId(), args, configUtils);
                 }
 
-                s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, result, configUtils));
+                s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, result, configUtils, M));
             }
 
             return true;
@@ -318,9 +318,9 @@ public class ChatColorCommand implements CommandExecutor {
                 String result = setColorFromArgs(uuid, Arrays.copyOfRange(args, 1, args.length), configUtils);
 
                 if ((boolean) configUtils.getSetting("notify-others") && Bukkit.getPlayer(args[0]) != null) {
-                    Bukkit.getPlayer(uuid).sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE"), result, configUtils));
+                    Bukkit.getPlayer(uuid).sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE"), result, configUtils, M));
                 }
-                sender.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result, configUtils));
+                sender.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result, configUtils, M));
             }
             else {
                 sender.sendMessage(M.PREFIX + M.PLAYER_NOT_JOINED);
@@ -365,7 +365,7 @@ public class ChatColorCommand implements CommandExecutor {
                 }
             }
 
-            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils));
+            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils, M));
             return false;
         }
 

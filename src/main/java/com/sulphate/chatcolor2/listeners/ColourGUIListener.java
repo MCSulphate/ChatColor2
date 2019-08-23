@@ -126,7 +126,7 @@ public class ColourGUIListener implements Listener {
                     String[] args = createArgs(newColor, activeModifiers);
                     ChatColorCommand.setColorFromArgs(uuid, args, configUtils);
 
-                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils));
+                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
                 }
             }
             else {
@@ -155,7 +155,7 @@ public class ColourGUIListener implements Listener {
                     String[] args = createArgs(selectedColour, activeModifiers);
                     ChatColorCommand.setColorFromArgs(uuid, args, configUtils);
 
-                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils));
+                    player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
                 }
             }
 

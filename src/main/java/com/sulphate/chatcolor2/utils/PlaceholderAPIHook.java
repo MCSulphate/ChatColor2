@@ -4,8 +4,6 @@ import com.sulphate.chatcolor2.main.ChatColor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
@@ -66,13 +64,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             case "full_color_text": {
                 String colour = configUtils.getColour(uuid);
 
-                return getTextEquivalent(colour);
+                return GeneralUtils.getTextEquivalent(colour, M, configUtils);
             }
 
             case "full_color_text_plain": {
                 String colour = configUtils.getColour(uuid);
 
-                return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour));
+                return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour, M, configUtils));
             }
 
             case "modifiers": {
@@ -86,10 +84,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String colour = configUtils.getColour(uuid);
 
                 if (colour.contains("rainbow")) {
-                    return getTextEquivalent(colour.replace("rainbow", ""));
+                    return GeneralUtils.getTextEquivalent(colour.replace("rainbow", ""), M, configUtils);
                 }
                 else {
-                    return getTextEquivalent(colour.substring(2));
+                    return GeneralUtils.getTextEquivalent(colour.substring(2), M, configUtils);
                 }
             }
 
@@ -97,10 +95,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String colour = configUtils.getColour(uuid);
 
                 if (colour.contains("rainbow")) {
-                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.replace("rainbow", "")));
+                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.replace("rainbow", ""), M, configUtils));
                 }
                 else {
-                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.substring(2)));
+                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.substring(2), M, configUtils));
                 }
             }
 
@@ -115,10 +113,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String colour = configUtils.getColour(uuid);
 
                 if (colour.contains("rainbow")) {
-                    return getTextEquivalent("rainbow");
+                    return GeneralUtils.getTextEquivalent("rainbow", M, configUtils);
                 }
                 else {
-                    return getTextEquivalent(colour.substring(0, 2));
+                    return GeneralUtils.getTextEquivalent(colour.substring(0, 2), M, configUtils);
                 }
             }
 
@@ -126,10 +124,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String colour = configUtils.getColour(uuid);
 
                 if (colour.contains("rainbow")) {
-                    return org.bukkit.ChatColor.stripColor(getTextEquivalent("rainbow"));
+                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent("rainbow", M, configUtils));
                 }
                 else {
-                    return org.bukkit.ChatColor.stripColor(getTextEquivalent(colour.substring(0, 2)));
+                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.substring(0, 2), M, configUtils));
                 }
             }
 
@@ -160,38 +158,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         return null;
-    }
-
-    // Returns the text equivalent of a string of colours or modifiers.
-    private String getTextEquivalent(String str) {
-        StringBuilder builder = new StringBuilder();
-        String stripped = str.replaceAll("&", "");
-
-        if (stripped.contains("rainbow")) {
-            builder.append(GeneralUtils.colouriseMessage("rainbow", M.RAINBOW, false, configUtils)).append("&r");
-            stripped = stripped.replace("rainbow", "");
-        }
-
-        char[] chars = stripped.toCharArray();
-
-        for (int i = 0; i < chars.length; i++) {
-            List<String> specialChars = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o");
-            String[] charNames = { M.BLACK, M.DARK_BLUE, M.DARK_GREEN, M.DARK_AQUA, M.DARK_RED, M.DARK_PURPLE, M.GOLD, M.GRAY, M.DARK_GRAY, M.BLUE, M.GREEN, M.AQUA, M.RED, M.LIGHT_PURPLE, M.YELLOW, M.WHITE, M.OBFUSCATED, M.BOLD, M.STRIKETHROUGH, M.UNDERLINED, M.ITALIC };
-
-            char chr = chars[i];
-            int index = specialChars.indexOf(chr + "");
-
-            // Get the correct text equiv., and add it to the builder.
-            String text = "&" + chr + charNames[index] + "&r";
-
-            if (builder.length() > 0 || i != 0) {
-                builder.append(", ");
-            }
-
-            builder.append(text);
-        }
-
-        return GeneralUtils.colourise(builder.toString());
     }
 
 }
