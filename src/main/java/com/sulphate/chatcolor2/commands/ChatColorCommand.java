@@ -76,11 +76,6 @@ public class ChatColorCommand implements CommandExecutor {
                         M.reloadMessages();
                         ColourGUIListener.reloadGUI(M, configUtils); // Reload the GUIs as well, to give up-to-date Strings.
 
-                        // Reload all online player's configs, as they all get unloaded by ConfigsManager.loadAllConfigs().
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            configsManager.loadPlayerConfig(player.getUniqueId());
-                        }
-
                         s.sendMessage(M.PREFIX + M.RELOADED_MESSAGES);
                         return true;
                     }

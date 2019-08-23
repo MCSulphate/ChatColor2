@@ -22,10 +22,18 @@ public class ConfigsManager {
 
     // (re)loads all configs.
     public void loadAllConfigs() {
-        configs = new HashMap<>();
         String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "colors.yml" };
+        boolean removeExisting = configs != null;
+
+        if (!removeExisting) {
+            configs = new HashMap<>();
+        }
 
         for (String fileName : fileNames) {
+            if (removeExisting) {
+                configs.remove(fileName);
+            }
+
             File file = new File(ChatColor.getPlugin().getDataFolder(), fileName);
             configs.put(fileName, YamlConfiguration.loadConfiguration(file));
         }
