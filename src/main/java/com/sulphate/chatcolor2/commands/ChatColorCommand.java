@@ -558,7 +558,6 @@ public class ChatColorCommand implements CommandExecutor {
                         continue;
                     }
 
-                    String mod = getModifier(args[i]);
                     if (getModifier(args[i]) == null) {
                         player.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
                         return false;
@@ -1025,36 +1024,19 @@ public class ChatColorCommand implements CommandExecutor {
         List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.grey", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
 
         if (words.contains(s)) {
+            if (words.indexOf(s) < 10) {
+                return "&" + words.indexOf(s);
+            }
 
-            for (int i = 0; i < words.size(); i++) {
-                if (i == 10) {
-                    break;
+            for (int i = 10; i < words.size(); i++) {
+                // The chars representing the colours can just be added to from 'a'.
+                char colorChar = 'a';
+                colorChar += (i - 10);
+
+                String currentWord = words.get(i);
+                if (s.equals(currentWord)) {
+                    return "&" + colorChar;
                 }
-
-                String st = words.get(i);
-
-                if (s.equalsIgnoreCase(st)) {
-                    return "&" + i;
-                }
-            }
-
-            if (s.equalsIgnoreCase("light.green")) {
-                return "&a";
-            }
-            else if (s.equalsIgnoreCase("aqua")) {
-                return "&b";
-            }
-            else if (s.equalsIgnoreCase("light.red")) {
-                return "&c";
-            }
-            else if (s.equalsIgnoreCase("magenta")) {
-                return "&d";
-            }
-            else if (s.equalsIgnoreCase("yellow")) {
-                return "&e";
-            }
-            else if (s.equalsIgnoreCase("white")) {
-                return "&f";
             }
         }
 
@@ -1069,31 +1051,28 @@ public class ChatColorCommand implements CommandExecutor {
     }
 
     private static String getModifier(String str) {
+        List<String> mods = Arrays.asList("obfuscated", "bold", "strikethrough", "underlined", "italic");
         String s = str.toLowerCase();
-        if (s.equalsIgnoreCase("obfuscated")) {
-            return "&k";
-        }
-        else if (s.equalsIgnoreCase("bold")) {
-            return "&l";
-        }
-        else if (s.equalsIgnoreCase("strikethrough")) {
-            return "&m";
-        }
-        else if (s.equalsIgnoreCase("underlined")) {
-            return "&n";
-        }
-        else if (s.equalsIgnoreCase("italic")) {
-            return "&o";
-        }
-        else {
-            List<String> other = Arrays.asList("k", "l", "m", "n", "o");
 
-            if (other.contains(s)) {
-                return "&" + s;
+        if (mods.contains(s)) {
+            for (int i = 0; i < mods.size(); i++) {
+                char modChar = 'k';
+                modChar += i;
+
+                String currentMod = mods.get(i);
+                if (currentMod.equals(s)) {
+                    return "&" + modChar;
+                }
             }
-
-            return null;
         }
+
+        List<String> other = Arrays.asList("k", "l", "m", "n", "o");
+
+        if (other.contains(s)) {
+            return "&" + s;
+        }
+
+        return null;
     }
 
 }
