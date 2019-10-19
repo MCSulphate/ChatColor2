@@ -67,7 +67,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Color-Text placeholders everywhere, bug fixes.");
+            message = message.replace("[version-description]", "Custom Rainbow Chat Colors & Bug Fixes");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -100,12 +100,22 @@ public class ChatColor extends JavaPlugin {
         M = new Messages(configUtils);
         confirmationsManager = new ConfirmationsManager();
 
+        boolean setSaveInterval = false;
+        if (configUtils.getSetting("save-interval") == null) {
+            setSaveInterval = true;
+            saveScheduler = new AutoSaveScheduler(5); // Use the default if the setting is null, set afterwards.
+        }
+        else {
+            saveScheduler = new AutoSaveScheduler((int) configUtils.getSetting("save-interval"));
+        }
+
         // Scan messages and settings to make sure all are present.
         scanMessages();
         scanSettings();
 
-        // Have to scan settings before this otherwise it causes an NPE when upgrading from old versions.
-        saveScheduler = new AutoSaveScheduler((int) configUtils.getSetting("save-interval"));
+        if (setSaveInterval) {
+            saveScheduler.setSaveInterval((int) configUtils.getSetting("save-interval"));
+        }
     }
 
     private void setupCommands() {

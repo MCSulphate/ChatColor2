@@ -581,6 +581,8 @@ public class ChatColorCommand implements CommandExecutor {
 
         String colour = getColour(args[0]);
         if (colour != null) {
+            char colourChar = colour.charAt(1);
+
             if (!player.isOp() && !player.hasPermission("chatcolor.change.self")) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
@@ -598,8 +600,8 @@ public class ChatColorCommand implements CommandExecutor {
 
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
-                    if (!player.isOp() && !player.hasPermission("chatcolor.color." + args[0])) {
-                        player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", args[0]));
+                    if (!player.isOp() && !player.hasPermission("chatcolor.color." + colourChar)) {
+                        player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", GeneralUtils.colourise(colour + colourChar)));
                         return false;
                     }
 
@@ -612,8 +614,10 @@ public class ChatColorCommand implements CommandExecutor {
                     return false;
                 }
 
-                if (!player.isOp() && !player.hasPermission("chatcolor.modifier." + args[i])) {
-                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", args[i]));
+                char modChar = mod.charAt(1);
+
+                if (!player.isOp() && !player.hasPermission("chatcolor.modifier." + modChar)) {
+                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", GeneralUtils.colourise(mod + modChar)));
                     return false;
                 }
             }
@@ -1015,17 +1019,17 @@ public class ChatColorCommand implements CommandExecutor {
             return str;
         }
 
-        String s = str.toLowerCase();
+        String colour = str.toLowerCase();
 
-        if (s.equalsIgnoreCase("rainbow")) {
-            return s;
+        if (colour.equals("rainbow")) {
+            return colour;
         }
 
-        List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.grey", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
+        List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.gray", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
 
-        if (words.contains(s)) {
-            if (words.indexOf(s) < 10) {
-                return "&" + words.indexOf(s);
+        if (words.contains(colour)) {
+            if (words.indexOf(colour) < 10) {
+                return "&" + words.indexOf(colour);
             }
 
             for (int i = 10; i < words.size(); i++) {
@@ -1034,7 +1038,7 @@ public class ChatColorCommand implements CommandExecutor {
                 colorChar += (i - 10);
 
                 String currentWord = words.get(i);
-                if (s.equals(currentWord)) {
+                if (colour.equals(currentWord)) {
                     return "&" + colorChar;
                 }
             }
@@ -1042,8 +1046,8 @@ public class ChatColorCommand implements CommandExecutor {
 
         List<String> other = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
 
-        if (other.contains(s)) {
-            return "&" + s;
+        if (other.contains(colour)) {
+            return "&" + colour;
         }
         else {
             return null;
