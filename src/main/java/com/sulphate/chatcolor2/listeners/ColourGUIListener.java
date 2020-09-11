@@ -189,15 +189,15 @@ public class ColourGUIListener implements Listener {
 
         // Colours Array - each of these maps to the colour of a stained glass pane.
         // If the value in a position is -1, we'll use thin glass instead.
-        short[] colours = {15, 11, 13, 9, 14, 10, 1, 8, 7, 11, 5, 3, 6, 2, 4, 0, -1};
+        String[] colours = {"BLACK", "BLUE", "GREEN", "CYAN", "RED", "PURPLE", "ORANGE", "LIGHT_GRAY", "GRAY", "BLUE", "LIME", "LIGHT_BLUE", "PINK", "MAGENTA", "YELLOW", "WHITE", null};
 
         // Modifier ItemStacks
-        ItemStack inactiveModifier = new ItemStack(Material.INK_SACK, 1, (short) 8);
-        ItemStack activeModifier = new ItemStack(Material.INK_SACK, 1, (short) 10);
+        ItemStack inactiveModifier = new ItemStack(Material.INK_SAC, 1, (short) 8);
+        ItemStack activeModifier = new ItemStack(Material.INK_SAC, 1, (short) 10);
 
         // Unavailable ItemStack, Unavailable Mod ItemStack
         ItemStack greyedOut = new ItemStack(Material.BARRIER);
-        ItemStack unavailableMod = new ItemStack(Material.INK_SACK, 1, (short) 1);
+        ItemStack unavailableMod = new ItemStack(Material.INK_SAC, 1, (short) 1);
 
         // Greyed-out lore
         ItemMeta goItemMeta = greyedOut.getItemMeta();
@@ -232,7 +232,7 @@ public class ColourGUIListener implements Listener {
             ItemMeta im;
 
             if (available.contains(colourCodes[i])) {
-                itemToAdd = colours[i] == -1 ? new ItemStack(Material.THIN_GLASS, 1) : new ItemStack(Material.STAINED_GLASS_PANE, 1, colours[i]);
+                itemToAdd = colours[i] == null ? new ItemStack(Material.GLASS_PANE, 1) : new ItemStack(Material.getMaterial(colours[i] + "_STAINED_GLASS_PANE"));
                 im = itemToAdd.getItemMeta();
                 List<String> lore = colourParts.contains(colourCodes[i]) ? selectedLore : clickToSelectLore;
                 im.setLore(lore);
