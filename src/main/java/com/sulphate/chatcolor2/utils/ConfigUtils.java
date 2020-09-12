@@ -147,9 +147,9 @@ public class ConfigUtils {
     public String getCustomColour(Player player) {
         HashMap<String, String> customColours = getCustomColours();
 
-        // Make sure the player doesn't have the * or chatcolor.* permissions!
+        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.custom.* permissions!
         // If they do, then they would have the first custom colour applied to them, always.
-        if (player.hasPermission("*") || player.hasPermission("chatcolor.*")) {
+        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.custom.*")) {
             return null;
         }
 
