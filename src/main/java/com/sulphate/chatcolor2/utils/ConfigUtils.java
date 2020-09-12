@@ -147,6 +147,12 @@ public class ConfigUtils {
     public String getCustomColour(Player player) {
         HashMap<String, String> customColours = getCustomColours();
 
+        // Make sure the player doesn't have the * or chatcolor.* permissions!
+        // If they do, then they would have the first custom colour applied to them, always.
+        if (player.hasPermission("*") || player.hasPermission("chatcolor.*")) {
+            return null;
+        }
+
         // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
         for (String key : customColours.keySet()) {
             // Not checking for OP, that would cause the first colour to always be chosen.
