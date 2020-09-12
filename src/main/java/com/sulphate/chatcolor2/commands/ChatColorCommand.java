@@ -81,38 +81,11 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "available": {
-                        String comma = GeneralUtils.colourise("&7, ");
-
                         char[] availableColours = GeneralUtils.getAvailableColours(s);
                         char[] availableModifiers = GeneralUtils.getAvailableModifiers(s);
 
-                        String colourString;
-                        String modifierString;
-
-                        StringBuilder builder = new StringBuilder();
-
-                        for (int i = 0; i < availableColours.length; i++) {
-                            char colour = availableColours[i];
-                            builder.append('&').append(colour).append(colour);
-
-                            if (i != availableColours.length - 1) {
-                                builder.append(comma);
-                            }
-                        }
-
-                        colourString = builder.toString();
-                        builder = new StringBuilder();
-
-                        for (int i = 0; i < availableModifiers.length; i++) {
-                            char mod = availableModifiers[i];
-                            builder.append('&').append(mod).append(mod);
-
-                            if (i != availableModifiers.length - 1) {
-                                builder.append(comma);
-                            }
-                        }
-
-                        modifierString = builder.toString();
+                        String colourString = buildCharacterColourString(availableColours);
+                        String modifierString = buildCharacterColourString(availableModifiers);
 
                         s.sendMessage(M.PREFIX + M.AVAILABLE_COLORS);
                         s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.COLORS + ": " + colourString));
@@ -323,6 +296,22 @@ public class ChatColorCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private String buildCharacterColourString(char[] characters) {
+        String comma = GeneralUtils.colourise("&7, ");
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < characters.length; i++) {
+            char mod = characters[i];
+            builder.append('&').append(mod).append(mod);
+
+            if (i != characters.length - 1) {
+                builder.append(comma);
+            }
+        }
+
+        return builder.toString();
     }
 
     public static String setColorFromArgs(UUID uuid, String[] args, ConfigUtils configUtils) {
