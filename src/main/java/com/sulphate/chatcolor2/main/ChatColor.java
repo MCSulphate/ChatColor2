@@ -67,7 +67,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Updated to Minecraft 1.16!");
+            message = message.replace("[version-description]", "Bug fixes!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 

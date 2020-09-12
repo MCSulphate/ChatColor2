@@ -58,7 +58,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 // Return the player's full colour, including modifiers. Does not work for rainbow colour!
                 String colour = configUtils.getColour(uuid);
 
-                return GeneralUtils.colourise(colour);
+                if (colour.contains("rainbow")) {
+                    return "";
+                }
+                else {
+                    return GeneralUtils.colourise(colour);
+                }
             }
 
             case "full_color_text": {

@@ -44,10 +44,10 @@ public class GeneralUtils {
     // optionally taking into account the color override setting.
     public static String colouriseMessage(String color, String message, boolean checkOverride, ConfigUtils configUtils) {
         String colourisedMessage = message;
-        boolean override = ((boolean) configUtils.getSetting("color-override")) && checkOverride;
 
         // Check the override if the coloured message is different.
         if (isDifferentWhenColourised(message)) {
+            boolean override = ((boolean) configUtils.getSetting("color-override")) && checkOverride;
             String colourised = colourise(message);
 
             if (override) {
