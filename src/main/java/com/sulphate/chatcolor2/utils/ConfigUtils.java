@@ -175,9 +175,10 @@ public class ConfigUtils {
     // Gets the default color for a player, taking into account custom color (if they are online).
     public String getDefaultColourForPlayer(UUID uuid) {
         String colour = null;
+        Player target = Bukkit.getPlayer(uuid);
 
-        if (Bukkit.getPlayer(uuid) != null) {
-            colour = getCustomColour(Bukkit.getPlayer(uuid));
+        if (target != null) {
+            colour = getCustomColour(target);
         }
 
         if (colour == null) {

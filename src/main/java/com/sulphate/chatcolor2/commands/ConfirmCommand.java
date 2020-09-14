@@ -123,7 +123,7 @@ public class ConfirmCommand implements CommandExecutor {
                 String value = (String) scheduler.getValue();
 
                 configUtils.setSetting("rainbow-sequence", value);
-                valueString = GeneralUtils.colouriseMessage("rainbow", value, false, configUtils);
+                valueString = GeneralUtils.getRainbowSequenceText(value.toCharArray(), value);
                 break;
             }
 

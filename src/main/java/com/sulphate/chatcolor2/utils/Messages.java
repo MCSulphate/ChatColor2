@@ -52,6 +52,8 @@ public class Messages {
     public String AVAILABLE_COLORS;
     public String MODIFIER_NOT_IN_COLOR;
     public String MODIFIER_ALREADY_IN_COLOR;
+    public String NO_HEX_PERMISSIONS;
+    public String HEX_ACCESS;
 
     // Custom-Colour Messages
     public String CUSTOM_COLOR_EXISTS;
@@ -148,6 +150,8 @@ public class Messages {
         AVAILABLE_COLORS = getAndColourise("available-colors");
         MODIFIER_NOT_IN_COLOR = getAndColourise("modifier-not-in-color");
         MODIFIER_ALREADY_IN_COLOR = getAndColourise("modifier-already-in-color");
+        NO_HEX_PERMISSIONS = getAndColourise("no-hex-permissions");
+        HEX_ACCESS = getAndColourise("hex-access");
 
         // Custom-Color Messages
         CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");

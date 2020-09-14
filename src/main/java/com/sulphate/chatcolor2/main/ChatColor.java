@@ -67,7 +67,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Placeholder fix, custom colors bug fix!");
+            message = message.replace("[version-description]", "Hex colours! (+optimisations)");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -285,6 +285,7 @@ public class ChatColor extends JavaPlugin {
                 currentConfig.set(key, defaultConfig.getString(key));
                 configsManager.saveConfig("messages.yml");
 
+                console.sendMessage(M.PREFIX + GeneralUtils.colourise("&eAdded new message: &a" + key));
                 needsReload = true;
             }
         }
