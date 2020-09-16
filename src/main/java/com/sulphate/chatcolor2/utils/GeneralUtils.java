@@ -46,11 +46,15 @@ public class GeneralUtils {
         String[] chars = seq.split("");
 
         boolean verify = true;
+        // Hex flag to check for legacy availability.
+        boolean hexFlag = false;
         for (int i = 0; i < chars.length; i++) {
             String c = chars[i];
 
             // Handle hex colours in the rainbow sequence.
             if (c.equals("#")) {
+                hexFlag = true;
+
                 if (seq.length() < i + 7) {
                     verify = false;
                     break;
@@ -72,6 +76,10 @@ public class GeneralUtils {
                     break;
                 }
             }
+        }
+
+        if (hexFlag && verify && CompatabilityUtils.isLegacy()) {
+            verify = false;
         }
 
         if (replace && !verify) {

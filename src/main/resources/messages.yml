@@ -40,6 +40,7 @@ modifier-not-in-color: '&cThat modifier is not in your color.'
 modifier-already-in-color: '&cThat modifier is already in your color.'
 no-hex-permissions: '&cYou do not have permission to use hex codes.'
 hex-access: '&eYou have access to hex codes.'
+no-hex-support: '&cHex colours are not supported on Minecraft versions less than 1.16.'
 
 # Custom-Color Messages
 custom-color-exists: '&cThat custom color already exists!'

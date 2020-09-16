@@ -77,4 +77,8 @@ public class CompatabilityUtils {
         }
     }
 
+    public static boolean isLegacy() {
+        return isLegacy;
+    }
+
 }

@@ -193,8 +193,6 @@ public class ColourGUIListener implements Listener {
         String[] colours = {"BLACK", "BLUE", "GREEN", "CYAN", "RED", "PURPLE", "ORANGE", "LIGHT_GRAY", "GRAY", "BLUE", "LIME", "LIGHT_BLUE", "PINK", "MAGENTA", "YELLOW", "WHITE", null};
 
         // Modifier ItemStacks
-        ItemStack incSac = CompatabilityUtils.getColouredItem("INK_SAC");
-
         ItemStack inactiveModifier = CompatabilityUtils.getColouredItem("GRAY_DYE");
         ItemStack activeModifier = new ItemStack(CompatabilityUtils.getColouredItem("LIME_DYE"));
 
