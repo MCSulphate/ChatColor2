@@ -11,9 +11,7 @@ import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
-import com.sulphate.chatcolor2.utils.PlaceholderAPIHook;
+import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -25,7 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.commands.ConfirmCommand;
-import com.sulphate.chatcolor2.utils.Messages;
 
 public class ChatColor extends JavaPlugin {
 
@@ -67,7 +64,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Hex colours! (+optimisations)");
+            message = message.replace("[version-description]", "Minecraft 1.15 and below compatability!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -95,6 +92,8 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupObjects() {
+        // Init compatability utils.
+        new CompatabilityUtils();
         configsManager = new ConfigsManager();
         configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);

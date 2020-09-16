@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
+import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
@@ -192,12 +193,14 @@ public class ColourGUIListener implements Listener {
         String[] colours = {"BLACK", "BLUE", "GREEN", "CYAN", "RED", "PURPLE", "ORANGE", "LIGHT_GRAY", "GRAY", "BLUE", "LIME", "LIGHT_BLUE", "PINK", "MAGENTA", "YELLOW", "WHITE", null};
 
         // Modifier ItemStacks
-        ItemStack inactiveModifier = new ItemStack(Material.INK_SAC, 1, (short) 8);
-        ItemStack activeModifier = new ItemStack(Material.INK_SAC, 1, (short) 10);
+        ItemStack incSac = CompatabilityUtils.getColouredItem("INK_SAC");
+
+        ItemStack inactiveModifier = CompatabilityUtils.getColouredItem("GRAY_DYE");
+        ItemStack activeModifier = new ItemStack(CompatabilityUtils.getColouredItem("LIME_DYE"));
 
         // Unavailable ItemStack, Unavailable Mod ItemStack
         ItemStack greyedOut = new ItemStack(Material.BARRIER);
-        ItemStack unavailableMod = new ItemStack(Material.INK_SAC, 1, (short) 1);
+        ItemStack unavailableMod = CompatabilityUtils.getColouredItem("RED_DYE");
 
         // Greyed-out lore
         ItemMeta goItemMeta = greyedOut.getItemMeta();
@@ -232,7 +235,7 @@ public class ColourGUIListener implements Listener {
             ItemMeta im;
 
             if (available.contains(colourCodes[i])) {
-                itemToAdd = colours[i] == null ? new ItemStack(Material.GLASS_PANE, 1) : new ItemStack(Material.getMaterial(colours[i] + "_STAINED_GLASS_PANE"));
+                itemToAdd = colours[i] == null ? CompatabilityUtils.getColouredItem("GLASS_PANE") : CompatabilityUtils.getColouredItem(colours[i] + "_STAINED_GLASS_PANE");
                 im = itemToAdd.getItemMeta();
                 List<String> lore = colourParts.contains(colourCodes[i]) ? selectedLore : clickToSelectLore;
                 im.setLore(lore);
