@@ -21,8 +21,6 @@ public class Messages {
 
     // General Messages and Strings
     public String PREFIX;
-    public String AUTHOR_MESSAGE_1 = GeneralUtils.colourise("&eThis plugin was developed by &bSulphate&e! You can view the plugin page here:");
-    public String AUTHOR_MESSAGE_2 = GeneralUtils.colourise("&e> &bhttps://dev.bukkit.org/projects/chatcolor-s &e<");
     public String PLUGIN_NOTIFICATION = GeneralUtils.colourise("Server is running ChatColor 2 version &c" + ChatColor.getPlugin().getDescription().getVersion());
     public String COMMAND_EXISTS;
     public String COLORS;
@@ -219,7 +217,7 @@ public class Messages {
         String message = utils.getMessage(key);
 
         if (message == null) {
-            Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Null message: " + key));
+            Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &6Warning: Message not found: " + key));
             return null;
         }
 

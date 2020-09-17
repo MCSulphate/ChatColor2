@@ -1,0 +1,232 @@
+# GUI Config Format Guide
+#
+# NOTE: All materials must be 1.16 materials. They will be automatically
+#       converted into other version's materials.
+#
+#       See here for 1.16:
+#       https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#
+# NOTE: COLOR items represent a color, MODIFIER items represent a modifier
+#       and INVENTORY items link to another inventory.
+#
+# NOTE: All inventory-related messages can be used as a placeholder, like
+#       %gui-available%.
+#
+# NOTE: color-unavailable, modifier-unavailable, modifier-inactive, modifier-active
+#       can all be left out if not needed.
+#
+# <inventory name>:
+#   title: [inventory title (colors supported) titles MUST be unique]
+#   size: [must be a multiple of 9]
+#
+#   color-unavailable: <- The item that shows if the player doesn't have permission for a color.
+#     lore: [item lore]
+#     material: [item material]
+#
+#   modifier-unavailable: <- The item that shows if the player doesn't have permission for a modifier.
+#     lore: [item lore]
+#     material: [item material]
+#
+#   color-active: <- The lore that is applied to a color item if it's active.
+#     lore: [item lore]
+#
+#   color-inactive: <- The lore that is applied to a color item if it's inactive.
+#     lore: [item lore]
+#
+#   modifier-inactive: <- The item that shows if a modifier is not in use.
+#     lore: [item lore]
+#     material: [item material]
+#
+#   modifier-active: <- The item that shows if a modifier is in use.
+#     lore: [item lore]
+#     material: [item material]
+#
+#   items:
+#     <slot number>:
+#       type: [COLOR / MODIFIER / INVENTORY]
+#       data: [color char / modifier char / inventory name]
+#       name: [item name (colors supported)]
+#       material: [item material (MUST be 1.16 material!) ONLY FOR COLORS / INVENTORIES]
+#
+#     <slot number>: ...
+#
+# <inventory name>: ...
+#
+
+# There MUST be an inventory called main. This is the one the plugin will open first.
+main:
+  title: %gui-title%
+  size: 36
+
+  color-unavailable:
+    lore:
+      - %gui-unavailable%
+    material: BARRIER
+
+  modifier-unavailable:
+    lore:
+      - %gui-unavailable%
+    material: RED_DYE
+
+  color-active:
+    lore:
+      - %gui-selected%
+
+  color-inactive:
+    lore:
+      - %gui-click-to-select%
+
+  modifier-inactive:
+    lore:
+      - %gui-inactive%
+      - %gui-click-to-toggle%
+    material: GRAY_DYE
+
+  modifier-active:
+    lore:
+      - %gui-active%
+    material: LIME_DYE
+
+  items:
+    0:
+      type: COLOR
+      data: 0
+      name: "&0Black"
+      material: BLACK_STAINED_GLASS_PANE
+
+    1:
+      type: COLOR
+      data: 1
+      name: "&1Dark Blue"
+      material: BLUE_STAINED_GLASS_PANE
+
+    2:
+      type: COLOR
+      data: 2
+      name: "&2Dark Green"
+      material: GREEN_STAINED_GLASS_PANE
+
+    3:
+      type: COLOR
+      data: 3
+      name: "&3Dark Aqua"
+      material: CYAN_STAINED_GLASS_PANE
+
+    4:
+      type: COLOR
+      data: 4
+      name: "&4Dark Red"
+      material: RED_STAINED_GLASS_PANE
+
+    5:
+      type: COLOR
+      data: 5
+      name: "&5Dark Purple"
+      material: PURPLE_STAINED_GLASS_PANE
+
+    6:
+      type: COLOR
+      data: 6
+      name: "&6Gold"
+      material: ORANGE_STAINED_GLASS_PANE
+
+    7:
+      type: COLOR
+      data: 7
+      name: "&7Gray"
+      material: LIGHT_GRAY_STAINED_GLASS_PANE
+
+    8:
+      type: COLOR
+      data: 8
+      name: "&8Dark Gray"
+      material: GRAY_STAINED_GLASS_PANE
+
+    10:
+      type: COLOR
+      data: 9
+      name: "&9Blue"
+      material: BLUE_STAINED_GLASS_PANE
+
+    11:
+      type: COLOR
+      data: a
+      name: "&aGreen"
+      material: LIME_STAINED_GLASS_PANE
+
+    12:
+      type: COLOR
+      data: b
+      name: "&bAqua"
+      material: LIGHT_BLUE_STAINED_GLASS_PANE
+
+    13:
+      type: COLOR
+      data: c
+      name: "&cRed"
+      material: PINK_STAINED_GLASS_PANE
+
+    14:
+      type: COLOR
+      data: d
+      name: "&dLight Purple"
+      material: MAGENTA_STAINED_GLASS_PANE
+
+    15:
+      type: COLOR
+      data: e
+      name: "&eYellow"
+      material: YELLOW_STAINED_GLASS_PANE
+
+    16:
+      type: COLOR
+      data: f
+      name: "&fWhite"
+      material: WHITE_STAINED_GLASS_PANE
+
+    22:
+      type: COLOR
+      data: rainbow
+      name: "rainbowRainbow"
+      material: GLASS_PANE
+
+    29:
+      type: MODIFIER
+      data: k
+      name: "&e&kM&eObfuscated&e&kM"
+
+    30:
+      type: MODIFIER
+      data: l
+      name: "&e&lBold"
+
+    31:
+      type: MODIFIER
+      data: m
+      name: "&e&mStrikethrough"
+
+    32:
+      type: MODIFIER
+      data: n
+      name: "&e&nUnderlined"
+
+    33:
+      type: MODIFIER
+      data: o
+      name: "&e&oItalic"
+
+    35:
+      type: INVENTORY
+      data: test
+      name: "&cMove to test inventory"
+      material: DIAMOND_BLOCK
+
+test:
+  title: "&cTest Inventory"
+  size: 9
+  items:
+    0:
+      type: INVENTORY
+      data: main
+      name: "&cMove to main inventory"
+      material: GOLD_BLOCK
