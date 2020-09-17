@@ -224,6 +224,7 @@ main:
 test:
   title: "&cTest Inventory"
   size: 9
+
   items:
     0:
       type: INVENTORY
