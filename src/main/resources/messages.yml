@@ -7,6 +7,7 @@ metrics-enabled: '&bMetrics &eis &aenabled &efor this plugin. Stats sent to &bht
 metrics-disabled: '&bMetrics &eis &cdisabled &efor this plugin.'
 placeholders-enabled: '&bPlaceholderAPI has been &ahooked&b.'
 placeholders-disabled: '&bPlaceholderAPI not found, placeholders &cwill not be available&b.'
+legacy-detected: '&bLegacy Minecraft version detected, hex colours &cwill not be available&b.'
 
 # General Messages and Strings
 prefix: '&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e'

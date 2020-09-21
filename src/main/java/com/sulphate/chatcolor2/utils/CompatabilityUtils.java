@@ -10,12 +10,20 @@ import java.util.HashMap;
 // Utils for managing cross-api-version compatability.
 public class CompatabilityUtils {
 
-    private static boolean isLegacy;
+    private static boolean isMaterialLegacy;
+    private static boolean isHexLegacy;
     private static HashMap<String, Short> blockColourToDataMap;
     private static HashMap<String, Short> dyeColourToDataMap;
 
     public CompatabilityUtils() {
-        isLegacy = Material.getMaterial("INK_SAC") == null;
+        // Parse minor version to check for hex compatability.
+        String version = Bukkit.getVersion();
+        int dotIndex = version.indexOf('.');
+        int minorVersion = Integer.parseInt(version.substring(dotIndex + 1, version.indexOf('.', dotIndex + 1)));
+
+        isHexLegacy = minorVersion < 16;
+        isMaterialLegacy = Material.getMaterial("INK_SAC") == null;
+
         blockColourToDataMap = new HashMap<>();
         dyeColourToDataMap = new HashMap<>();
 
@@ -31,7 +39,7 @@ public class CompatabilityUtils {
     }
 
     public static ItemStack getColouredItem(String materialName) {
-        if (!isLegacy) {
+        if (!isMaterialLegacy) {
             return new ItemStack(Material.getMaterial(materialName), 1);
         }
 
@@ -77,8 +85,12 @@ public class CompatabilityUtils {
         }
     }
 
-    public static boolean isLegacy() {
-        return isLegacy;
+    public static boolean isMaterialLegacy() {
+        return isMaterialLegacy;
+    }
+
+    public static boolean isHexLegacy() {
+        return isHexLegacy;
     }
 
 }

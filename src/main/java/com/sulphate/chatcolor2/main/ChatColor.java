@@ -68,6 +68,11 @@ public class ChatColor extends JavaPlugin {
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
+        // Show legacy notice if necessary.
+        if (CompatabilityUtils.isHexLegacy()) {
+            console.sendMessage(M.PREFIX + M.LEGACY_DETECTED);
+        }
+
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
             new PlaceholderAPIHook(this, configUtils, M).register();
@@ -118,6 +123,7 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupCommands() {
+        // TODO: Add check to see that no other plugins are using chatcolor or confirm.
         getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager));
         getCommand("confirm").setExecutor(new ConfirmCommand(M, confirmationsManager, configUtils));
     }

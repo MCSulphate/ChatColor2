@@ -18,6 +18,7 @@ public class Messages {
     public String PLACEHOLDERS_ENABLED;
     public String PLACEHOLDERS_DISABLED;
     public String SHUTDOWN;
+    public String LEGACY_DETECTED;
 
     // General Messages and Strings
     public String PREFIX;
@@ -118,6 +119,7 @@ public class Messages {
         PLACEHOLDERS_ENABLED = getAndColourise("placeholders-enabled");
         PLACEHOLDERS_DISABLED = getAndColourise("placeholders-disabled");
         SHUTDOWN = getAndColourise("shutdown");
+        LEGACY_DETECTED = getAndColourise("legacy-detected");
 
         // General Messages and Strings
         PREFIX = getAndColourise("prefix");

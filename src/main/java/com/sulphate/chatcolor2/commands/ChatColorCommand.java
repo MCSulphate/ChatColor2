@@ -283,7 +283,7 @@ public class ChatColorCommand implements CommandExecutor {
                             return true;
                         }
                         // Check for hex support, if necessary.
-                        else if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isLegacy()) {
+                        else if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
                             sender.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                             return false;
                         }
@@ -503,7 +503,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return false;
                 }
                 // Check for hex support, if necessary.
-                else if (CompatabilityUtils.isLegacy() && GeneralUtils.isValidHexColour(colour)) {
+                else if (CompatabilityUtils.isHexLegacy() && GeneralUtils.isValidHexColour(colour)) {
                     player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                     return false;
                 }
@@ -557,7 +557,7 @@ public class ChatColorCommand implements CommandExecutor {
             String colour = getColour(args[1]);
             if (colour != null) {
                 // Check for hex support, if necessary.
-                if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isLegacy()) {
+                if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
                     player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                     return false;
                 }
@@ -619,7 +619,7 @@ public class ChatColorCommand implements CommandExecutor {
             }
 
             // Check for hex support, if necessary.
-            if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isLegacy()) {
+            if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
                 player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                 return false;
             }
@@ -927,7 +927,7 @@ public class ChatColorCommand implements CommandExecutor {
                 String colour = getColour(args[2]);
 
                 // Check for hex support, if necessary.
-                if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isLegacy()) {
+                if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
                     player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                     return;
                 }
