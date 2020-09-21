@@ -11,6 +11,7 @@ settings:
   rainbow-sequence: 'abcde'
   command-name: 'chatcolor'
   force-custom-colors: true
+  default-color-enabled: true
 default:
   code: '1'
   color: '&f'

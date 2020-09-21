@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -308,6 +309,9 @@ public class GeneralUtils {
     public static void checkDefault(UUID uuid, ConfigUtils configUtils) {
         long currentCode = configUtils.getCurrentDefaultCode();
         long playerCode = configUtils.getDefaultCode(uuid);
+
+        Bukkit.getConsoleSender().sendMessage("CURRENT: " + currentCode);
+        Bukkit.getConsoleSender().sendMessage("PLAYER: " + playerCode);
 
         if (playerCode != currentCode) {
             configUtils.setDefaultCode(uuid, currentCode);

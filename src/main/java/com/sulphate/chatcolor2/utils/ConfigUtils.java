@@ -45,14 +45,24 @@ public class ConfigUtils {
     public String getColour(UUID uuid) {
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
         String colour = config.getString("color");
+        String newColour = colour;
 
-        // If their colour is null / empty, set it to the default.
-        if (colour == null || colour.equals("")) {
-            setColour(uuid, getCurrentDefaultColour());
-            return getCurrentDefaultColour();
+        // If their colour is null, set it to "".
+        if (colour == null) {
+            newColour = "";
         }
 
-        return colour;
+        // If it's empty and default colour is enabled, set it to the default.
+        if (newColour.equals("") && (boolean) getSetting("default-color-enabled")) {
+            newColour = getCurrentDefaultColour();
+        }
+
+        // Update their colour if necessary.
+        if (!newColour.equals(colour)) {
+            setColour(uuid, newColour);
+        }
+
+        return newColour;
     }
 
     // Sets a player's colour (config must be loaded).
@@ -76,9 +86,9 @@ public class ConfigUtils {
     }
 
     // Gets the current default code.
-    public Long getCurrentDefaultCode() {
+    public long getCurrentDefaultCode() {
         YamlConfiguration config = configsManager.getConfig("config.yml");
-        return config.getLong("default.code");
+        return config.getInt("default.code");
     }
 
     // Gets the current default colour.
@@ -90,7 +100,7 @@ public class ConfigUtils {
     // Creates a new default colour, setting it in the config.
     public void createNewDefaultColour(String colour) {
         // Current millis time will always be unique.
-        String code = System.currentTimeMillis() + "";
+        long code = (System.currentTimeMillis() / 1000);
 
         setAndSave("config.yml", "default.code", code);
         setAndSave("config.yml", "default.color", colour);

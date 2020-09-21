@@ -12,38 +12,31 @@ import org.bukkit.entity.Player;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.Messages;
 
-public class ConfirmCommand implements CommandExecutor {
+public class ConfirmHandler extends Handler {
 
     private Messages M;
     private ConfirmationsManager confirmationsManager;
     private ConfigUtils configUtils;
 
-    public ConfirmCommand(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils) {
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
         this.configUtils = configUtils;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(M.PREFIX + M.PLAYERS_ONLY);
+    @Override
+    public boolean handle(Player sender) {
+        if (!confirmationsManager.isConfirming(sender)) {
+            sender.sendMessage(M.PREFIX + M.NOTHING_TO_CONFIRM);
             return true;
         }
 
-        Player s = (Player) sender;
-
-        if (!confirmationsManager.isConfirming(s)) {
-            s.sendMessage(M.PREFIX + M.NOTHING_TO_CONFIRM);
+        if (!sender.isOp() && !sender.hasPermission("chatcolor.admin")) {
+            sender.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
             return true;
         }
 
-        if (!s.isOp() && !s.hasPermission("chatcolor.admin")) {
-            s.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
-            return true;
-        }
-
-        ConfirmScheduler scheduler = confirmationsManager.getSchedulerForPlayer(s);
+        ConfirmScheduler scheduler = confirmationsManager.getSchedulerForPlayer(sender);
         String type = scheduler.getType();
         scheduler.cancelScheduler();
 
@@ -83,7 +76,7 @@ public class ConfirmCommand implements CommandExecutor {
                 ChatColor.getPlugin().saveResource("colors.yml", true);
                 M.reloadMessages();
 
-                s.sendMessage(M.PREFIX + M.CONFIGS_RESET);
+                sender.sendMessage(M.PREFIX + M.CONFIGS_RESET);
                 return true;
             }
 
@@ -142,9 +135,17 @@ public class ConfirmCommand implements CommandExecutor {
                 valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
+
+            case "default-color-enabled": {
+                boolean value = (boolean) scheduler.getValue();
+
+                configUtils.setSetting("default-color-enabled", value);
+                valueString = value ? "&aTRUE" : "&cFALSE";
+                break;
+            }
         }
 
-        s.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", GeneralUtils.colourise(valueString)));
+        sender.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", GeneralUtils.colourise(valueString)));
         return true;
     }
 

@@ -4,6 +4,7 @@ import com.sulphate.chatcolor2.listeners.ColourGUIListener;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
@@ -22,12 +23,14 @@ public class ChatColorCommand implements CommandExecutor {
     private ConfigUtils configUtils;
     private ConfirmationsManager confirmationsManager;
     private ConfigsManager configsManager;
+    private HandlersManager handlersManager;
 
-    public ChatColorCommand(Messages M, ConfigUtils configUtils, ConfirmationsManager confirmationsManager, ConfigsManager configsManager) {
+    public ChatColorCommand(Messages M, ConfigUtils configUtils, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, HandlersManager handlersManager) {
         this.M = M;
         this.configUtils = configUtils;
         this.confirmationsManager = confirmationsManager;
         this.configsManager = configsManager;
+        this.handlersManager = handlersManager;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -42,9 +45,13 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "custom");
+            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "custom");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
+                    case "confirm": {
+                        return handlersManager.callHandler(ConfirmHandler.class, s);
+                    }
+
                     case "help":
                     case "commandshelp": {
                         handleCommandsHelp(s);
@@ -376,7 +383,7 @@ public class ChatColorCommand implements CommandExecutor {
         }
 
         // Single-argument commands.
-        List<String> cmds = Arrays.asList("reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
+        List<String> cmds = Arrays.asList("confirm", "reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("reset") && confirmationsManager.isConfirming(player)) {
                 player.sendMessage(M.PREFIX + M.ALREADY_CONFIRMING);
@@ -398,7 +405,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return false;
             }
 
-            List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name", "force-custom-colors");
+            List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name", "force-custom-colors", "default-color-enabled");
 
             if (!settings.contains(args[1])) {
                 player.sendMessage(M.PREFIX + M.INVALID_SETTING.replace("[setting]", args[1]));
@@ -953,7 +960,7 @@ public class ChatColorCommand implements CommandExecutor {
 
                 String fullColour = builder.toString();
 
-                currentValueString = (String) configUtils.getSetting("default-color");
+                currentValueString = configUtils.getCurrentDefaultColour();
                 // The only place in the plugin that 'this' is needed - no point in having a message for this (pardon the pun).
                 valueString = GeneralUtils.colouriseMessage(fullColour, "this", false, configUtils);
                 value = fullColour;
@@ -1013,6 +1020,30 @@ public class ChatColorCommand implements CommandExecutor {
                 boolean notify = (boolean) configUtils.getSetting("force-custom-colors");
 
                 if (val == notify) {
+                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
+                    return;
+                }
+
+                currentValueString = val ? falseVal : trueVal;
+                valueString = val ? trueVal : falseVal;
+                value = val;
+                break;
+            }
+
+            case "default-color-enabled": {
+                boolean val;
+
+                try {
+                    val = Boolean.parseBoolean(args[2]);
+                }
+                catch (Exception e) {
+                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
+                    return;
+                }
+
+                boolean enabled = (boolean) configUtils.getSetting("default-color-enabled");
+
+                if (val == enabled) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);
                     return;
                 }

@@ -27,7 +27,11 @@ public class ChatListener implements Listener {
         Player player = e.getPlayer();
         String message = e.getMessage();
         UUID uuid = player.getUniqueId();
-        GeneralUtils.checkDefault(uuid, configUtils);
+
+        // Check default colour.
+        if ((boolean) configUtils.getSetting("default-color-enabled")) {
+            GeneralUtils.checkDefault(uuid, configUtils);
+        }
 
         // If their message contains &, check they have permissions for it, or strip the colour.
         if (GeneralUtils.isDifferentWhenColourised(message)) {

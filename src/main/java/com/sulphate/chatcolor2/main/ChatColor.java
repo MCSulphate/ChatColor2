@@ -10,6 +10,7 @@ import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
@@ -22,12 +23,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
-import com.sulphate.chatcolor2.commands.ConfirmCommand;
+import com.sulphate.chatcolor2.commands.ConfirmHandler;
 
 public class ChatColor extends JavaPlugin {
 
     private static ChatColor plugin;
 
+    private HandlersManager handlersManager;
     private ConfigsManager configsManager;
     private ConfigUtils configUtils;
     private ConfirmationsManager confirmationsManager;
@@ -64,7 +66,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Minecraft 1.15 and below compatability!");
+            message = message.replace("[version-description]", "Confirm command refactored, new default-color-enabled setting & bug fixes!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -99,6 +101,7 @@ public class ChatColor extends JavaPlugin {
     private void setupObjects() {
         // Init compatability utils.
         new CompatabilityUtils();
+        handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
         configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);
@@ -123,9 +126,9 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupCommands() {
-        // TODO: Add check to see that no other plugins are using chatcolor or confirm.
-        getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager));
-        getCommand("confirm").setExecutor(new ConfirmCommand(M, confirmationsManager, configUtils));
+        getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager, handlersManager));
+
+        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configUtils));
     }
 
     private void setupListeners() {
@@ -318,7 +321,7 @@ public class ChatColor extends JavaPlugin {
             // Check all settings are present.
             if (!currentConfig.contains("settings." + key)) {
                 // If not, set the default and save the config.
-                currentConfig.set("settings." + key, defaultConfig.getString("settings." + key));
+                currentConfig.set("settings." + key, defaultConfig.get("settings." + key));
                 configsManager.saveConfig("config.yml");
             }
         }
