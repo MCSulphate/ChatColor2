@@ -34,8 +34,9 @@ public class ChatListener implements Listener {
         }
 
         // If their message contains &, check they have permissions for it, or strip the colour.
-        if (GeneralUtils.isDifferentWhenColourised(message)) {
-            if (!player.hasPermission("chatcolor.use-color-codes")) {
+        if (!player.hasPermission("chatcolor.use-color-codes")) {
+            // A player reported using '&&a' for example, would bypass this. So, loop until it's not different.
+            while (GeneralUtils.isDifferentWhenColourised(message)) {
                 // Strip the colour from the message.
                 message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
             }

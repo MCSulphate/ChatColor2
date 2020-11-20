@@ -282,8 +282,12 @@ public class ColourGUIListener implements Listener {
     public void onEvent(InventoryCloseEvent event) {
         InventoryView inventoryView = event.getView();
 
-        if (inventoryView != null && inventoryView.getTitle().equals(M.GUI_TITLE) && inventoryView.getType().equals(InventoryType.CHEST)) {
-            playersUsingGUI.remove(inventoryView.getPlayer());
+        try {
+            if (inventoryView.getTitle().equals(M.GUI_TITLE) && inventoryView.getType().equals(InventoryType.CHEST)) {
+                playersUsingGUI.remove((Player) inventoryView.getPlayer());
+            }
+        }
+        catch (IllegalStateException ex) {
         }
     }
 
