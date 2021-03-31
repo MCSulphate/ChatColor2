@@ -1,16 +1,17 @@
 package com.sulphate.chatcolor2.utils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import com.sulphate.chatcolor2.managers.ConfigsManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 public class ConfigUtils {
 

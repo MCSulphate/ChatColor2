@@ -1,12 +1,12 @@
 package com.sulphate.chatcolor2.schedulers;
 
+import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.Messages;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.utils.Messages;
 
 public class ConfirmScheduler {
 

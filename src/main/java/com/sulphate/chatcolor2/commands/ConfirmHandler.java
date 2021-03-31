@@ -2,15 +2,12 @@ package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.Messages;
+
+import org.bukkit.entity.Player;
 
 public class ConfirmHandler extends Handler {
 

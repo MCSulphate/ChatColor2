@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
+
 import org.bukkit.Bukkit;
 
 public class Messages {

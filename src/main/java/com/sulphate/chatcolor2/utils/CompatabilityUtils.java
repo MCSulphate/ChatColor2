@@ -1,11 +1,11 @@
 package com.sulphate.chatcolor2.utils;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
 
 // Utils for managing cross-api-version compatability.
 public class CompatabilityUtils {
@@ -14,7 +14,7 @@ public class CompatabilityUtils {
     private static boolean isHexLegacy;
     private static HashMap<String, Short> blockColourToDataMap;
     private static HashMap<String, Short> dyeColourToDataMap;
-
+    
     public CompatabilityUtils() {
         // Parse minor version to check for hex compatability.
         String version = Bukkit.getVersion();

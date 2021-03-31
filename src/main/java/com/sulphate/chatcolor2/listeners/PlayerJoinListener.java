@@ -1,18 +1,18 @@
 package com.sulphate.chatcolor2.listeners;
 
+import java.util.UUID;
+
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import com.sulphate.chatcolor2.utils.Messages;
-
-import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
 

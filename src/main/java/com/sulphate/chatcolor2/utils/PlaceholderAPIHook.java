@@ -1,10 +1,12 @@
 package com.sulphate.chatcolor2.utils;
 
+import java.util.UUID;
+
 import com.sulphate.chatcolor2.main.ChatColor;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 

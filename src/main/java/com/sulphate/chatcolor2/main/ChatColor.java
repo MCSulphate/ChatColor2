@@ -4,15 +4,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
-import com.sulphate.chatcolor2.listeners.*;
+import com.sulphate.chatcolor2.commands.ConfirmHandler;
+import com.sulphate.chatcolor2.listeners.ChatListener;
+import com.sulphate.chatcolor2.listeners.ColourGUIListener;
+import com.sulphate.chatcolor2.listeners.CustomCommandListener;
+import com.sulphate.chatcolor2.listeners.PlayerJoinListener;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
-import com.sulphate.chatcolor2.utils.*;
+import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
+import com.sulphate.chatcolor2.utils.CompatabilityUtils;
+import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
+import com.sulphate.chatcolor2.utils.PlaceholderAPIHook;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -21,9 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
-import com.sulphate.chatcolor2.commands.ConfirmHandler;
 
 public class ChatColor extends JavaPlugin {
 

@@ -1,9 +1,10 @@
 package com.sulphate.chatcolor2.managers;
 
-import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
-import org.bukkit.entity.Player;
-
 import java.util.HashMap;
+
+import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
+
+import org.bukkit.entity.Player;
 
 public class ConfirmationsManager {
 

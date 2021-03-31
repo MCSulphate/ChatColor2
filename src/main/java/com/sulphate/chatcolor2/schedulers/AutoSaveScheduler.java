@@ -1,14 +1,15 @@
 package com.sulphate.chatcolor2.schedulers;
 
-import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitTask;
 
 public class AutoSaveScheduler {
 
