@@ -18,7 +18,7 @@ import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
-import com.sulphate.chatcolor2.utils.CompatabilityUtils;
+import com.sulphate.chatcolor2.utils.CompatibilityUtils;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
@@ -79,7 +79,7 @@ public class ChatColor extends JavaPlugin {
         }
 
         // Show legacy notice if necessary.
-        if (CompatabilityUtils.isHexLegacy()) {
+        if (CompatibilityUtils.isHexLegacy()) {
             console.sendMessage(M.PREFIX + M.LEGACY_DETECTED);
         }
 
@@ -107,8 +107,8 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupObjects() {
-        // Init compatability utils.
-        new CompatabilityUtils();
+        // Init compatibility utils.
+        new CompatibilityUtils();
         handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
         configUtils = new ConfigUtils(configsManager);

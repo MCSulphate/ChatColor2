@@ -7,17 +7,17 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
-// Utils for managing cross-api-version compatability.
+// Utils for managing cross-api-version compatibility.
 @SuppressWarnings("deprecation")
-public class CompatabilityUtils {
+public class CompatibilityUtils {
 
     private static boolean isMaterialLegacy;
     private static boolean isHexLegacy;
     private static HashMap<String, Short> blockColourToDataMap;
     private static HashMap<String, Short> dyeColourToDataMap;
     
-    public CompatabilityUtils() {
-        // Parse minor version to check for hex compatability.
+    public CompatibilityUtils() {
+        // Parse minor version to check for hex compatibility.
         String version = Bukkit.getVersion();
         int dotIndex = version.indexOf('.');
         int minorVersion = Integer.parseInt(version.substring(dotIndex + 1, version.indexOf('.', dotIndex + 1)));

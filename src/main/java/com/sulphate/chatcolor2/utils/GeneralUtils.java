@@ -81,7 +81,7 @@ public class GeneralUtils {
             }
         }
 
-        if (hexFlag && verify && CompatabilityUtils.isMaterialLegacy()) {
+        if (hexFlag && verify && CompatibilityUtils.isMaterialLegacy()) {
             verify = false;
         }
 
