@@ -10,7 +10,7 @@
 #       and INVENTORY items link to another inventory.
 #
 # NOTE: All inventory-related messages can be used as a placeholder, like
-#       %gui-available%.
+#       "%gui-available%.
 #
 # NOTE: color-unavailable, modifier-unavailable, modifier-inactive, modifier-active
 #       can all be left out if not needed.
@@ -55,36 +55,36 @@
 
 # There MUST be an inventory called main. This is the one the plugin will open first.
 main:
-  title: %gui-title%
+  title: "%gui-title%"
   size: 36
 
   color-unavailable:
     lore:
-      - %gui-unavailable%
+      - "%gui-unavailable%"
     material: BARRIER
 
   modifier-unavailable:
     lore:
-      - %gui-unavailable%
+      - "%gui-unavailable%"
     material: RED_DYE
 
   color-active:
     lore:
-      - %gui-selected%
+      - "%gui-selected%"
 
   color-inactive:
     lore:
-      - %gui-click-to-select%
+      - "%gui-click-to-select%"
 
   modifier-inactive:
     lore:
-      - %gui-inactive%
-      - %gui-click-to-toggle%
+      - "%gui-inactive%"
+      - "%gui-click-to-toggle%"
     material: GRAY_DYE
 
   modifier-active:
     lore:
-      - %gui-active%
+      - "%gui-active%"
     material: LIME_DYE
 
   items:

@@ -7,11 +7,11 @@ settings:
   notify-others: true
   join-message: true
   confirm-timeout: 10
-  default-color: '&f'
-  rainbow-sequence: 'abcde'
-  command-name: 'chatcolor'
+  default-color: "&f"
+  rainbow-sequence: "abcde"
+  command-name: "chatcolor"
   force-custom-colors: true
   default-color-enabled: true
 default:
-  code: '1'
-  color: '&f'
+  code: "1"
+  color: "&f"

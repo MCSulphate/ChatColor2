@@ -1,101 +1,101 @@
 # Startup and Shutdown Messages
 startup:
-  - 'ChatColor 2 Version &b[version] &ehas been &aenabled&e.'
-  - 'Current update: &b[version-description]'
-shutdown: 'ChatColor 2 Version &b[version] &ehas been &cdisabled&e.'
-metrics-enabled: '&bMetrics &eis &aenabled &efor this plugin. Stats sent to &bhttps://bstats.org/plugin/bukkit/ChatColor2'
-metrics-disabled: '&bMetrics &eis &cdisabled &efor this plugin.'
-placeholders-enabled: '&bPlaceholderAPI has been &ahooked&b.'
-placeholders-disabled: '&bPlaceholderAPI not found, placeholders &cwill not be available&b.'
-legacy-detected: '&bLegacy Minecraft version detected, hex colours &cwill not be available&b.'
+  - "ChatColor 2 Version &b[version] &ehas been &aenabled&e."
+  - "Current update: &b[version-description]"
+shutdown: "ChatColor 2 Version &b[version] &ehas been &cdisabled&e."
+metrics-enabled: "&bMetrics &eis &aenabled &efor this plugin. Stats sent to &bhttps://bstats.org/plugin/bukkit/ChatColor2"
+metrics-disabled: "&bMetrics &eis &cdisabled &efor this plugin."
+placeholders-enabled: "&bPlaceholderAPI has been &ahooked&b."
+placeholders-disabled: "&bPlaceholderAPI not found, placeholders &cwill not be available&b."
+legacy-detected: "&bLegacy Minecraft version detected, hex colours &cwill not be available&b."
 
 # General Messages and Strings
-prefix: '&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e'
-command-exists: '&cThat command already exists!'
-colors: 'Colors'
-modifiers: 'Modifiers'
-rainbow: 'Rainbow'
+prefix: "&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e"
+command-exists: "&cThat command already exists!"
+colors: "Colors"
+modifiers: "Modifiers"
+rainbow: "Rainbow"
 
 # Command-Related Messages
-help: '&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!'
-not-enough-args: '&cNot enough arguments!'
-too-many-args: '&cToo many arguments!'
-player-not-joined: '&cThat player has not joined yet!'
-players-only: '&cThis command can only be run by players.'
-no-permissions: '&cYou do not have permission to use that command.'
-no-color-perms: '&cYou do not have permission to use the color: &f[color]&e.'
-no-mod-perms: '&cYou do not have permission to use the modifier: &f[modifier]&r&e.'
-invalid-color: '&cInvalid color: &e[color]&c.'
-invalid-modifier: '&cInvalid modifier: &e[modifier]&r&c.'
-invalid-command: '&cThat is an invalid command!'
-invalid-setting: '&cInvalid setting: &e[setting].'
-needs-boolean: '&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE'
-needs-number: '&cThat setting requires a number!'
-current-color: 'Your color is currently: [color]this&e!'
-set-own-color: 'Successfully set your color to: [color]this&e!'
-set-others-color: 'Successfully set &c[player]''s &ecolor to: [color]this&e!'
-player-set-your-color: '&c[player] &eset your color to: [color]this&e!'
-reloaded-messages: 'Reloaded configs!'
-available-colors: 'Here are your available colors and modifiers:'
-modifier-not-in-color: '&cThat modifier is not in your color.'
-modifier-already-in-color: '&cThat modifier is already in your color.'
-no-hex-permissions: '&cYou do not have permission to use hex codes.'
-hex-access: '&eYou have access to hex codes.'
-no-hex-support: '&cHex colours are not supported on Minecraft versions less than 1.16.'
+help: "&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!"
+not-enough-args: "&cNot enough arguments!"
+too-many-args: "&cToo many arguments!"
+player-not-joined: "&cThat player has not joined yet!"
+players-only: "&cThis command can only be run by players."
+no-permissions: "&cYou do not have permission to use that command."
+no-color-perms: "&cYou do not have permission to use the color: &f[color]&e."
+no-mod-perms: "&cYou do not have permission to use the modifier: &f[modifier]&r&e."
+invalid-color: "&cInvalid color: &e[color]&c."
+invalid-modifier: "&cInvalid modifier: &e[modifier]&r&c."
+invalid-command: "&cThat is an invalid command!"
+invalid-setting: "&cInvalid setting: &e[setting]."
+needs-boolean: "&cThat setting requires a boolean! &eUse either &aTRUE &eor &cFALSE"
+needs-number: "&cThat setting requires a number!"
+current-color: "Your color is currently: [color]this&e!"
+set-own-color: "Successfully set your color to: [color]this&e!"
+set-others-color: "Successfully set &c[player]'s &ecolor to: [color]this&e!"
+player-set-your-color: "&c[player] &eset your color to: [color]this&e!"
+reloaded-messages: "Reloaded configs!"
+available-colors: "Here are your available colors and modifiers:"
+modifier-not-in-color: "&cThat modifier is not in your color."
+modifier-already-in-color: "&cThat modifier is already in your color."
+no-hex-permissions: "&cYou do not have permission to use hex codes."
+hex-access: "&eYou have access to hex codes."
+no-hex-support: "&cHex colours are not supported on Minecraft versions less than 1.16."
 
 # Custom-Color Messages
-custom-color-exists: '&cThat custom color already exists!'
-custom-color-not-exists: '&cThat custom color does not exist!'
-using-custom-color: '&cYou have been set to a custom chat color, and cannot change it.'
-added-custom-color: 'Added the custom color &b[color-name]&e, it looks like this: [color]Message&e.'
-removed-custom-color: 'Removed the custom color &b[color-name]&e.'
-custom-color-list: 'Here is a list of all custom colors:'
-custom-color-format: ' &7- [color][color-name]'
+custom-color-exists: "&cThat custom color already exists!"
+custom-color-not-exists: "&cThat custom color does not exist!"
+using-custom-color: "&cYou have been set to a custom chat color, and cannot change it."
+added-custom-color: "Added the custom color &b[color-name]&e, it looks like this: [color]Message&e."
+removed-custom-color: "Removed the custom color &b[color-name]&e."
+custom-color-list: "Here is a list of all custom colors:"
+custom-color-format: " &7- [color][color-name]"
 
 # Confirmation and Settings Messages
-confirm: 'Are you sure you want to do that? Type &c/chatcolor confirm &eif you are sure.'
-did-not-confirm: '&cYou did not confirm in time. &eNothing has been changed.'
-already-confirming: '&cYou cannot do that until you have confirmed or waited.'
-nothing-to-confirm: '&cYou have nothing to confirm!'
-already-set: '&cThat value is already set!'
-is-currently: '&c[setting] &eis currently: &c[value]'
-to-change: 'You are changing it to: &c[value]'
-change-success: 'Success! &b[setting] has been set to &b[value].'
-configs-reset: 'Configs reset!'
-invalid-sequence: '&e[sequence] &cis an invalid colour sequence!'
+confirm: "Are you sure you want to do that? Type &c/chatcolor confirm &eif you are sure."
+did-not-confirm: "&cYou did not confirm in time. &eNothing has been changed."
+already-confirming: "&cYou cannot do that until you have confirmed or waited."
+nothing-to-confirm: "&cYou have nothing to confirm!"
+already-set: "&cThat value is already set!"
+is-currently: "&c[setting] &eis currently: &c[value]"
+to-change: "You are changing it to: &c[value]"
+change-success: "Success! &b[setting] has been set to &b[value]."
+configs-reset: "Configs reset!"
+invalid-sequence: "&e[sequence] &cis an invalid colour sequence!"
 
 # GUI-Related Messages and Strings
-gui-title: '&9Color Picker GUI'
-gui-color-already-set: '&cColour already selected!'
-gui-unavailable: '&cUnavailable'
-gui-available: '&aAvailable'
-gui-active: '&aActive'
-gui-click-to-toggle: '&eClick to Toggle'
-gui-click-to-select: '&eClick to Select'
-gui-selected: '&aSelected'
-gui-inactive: '&7Inactive'
+gui-title: "&9Color Picker GUI"
+gui-color-already-set: "&cColour already selected!"
+gui-unavailable: "&cUnavailable"
+gui-available: "&aAvailable"
+gui-active: "&aActive"
+gui-click-to-toggle: "&eClick to Toggle"
+gui-click-to-select: "&eClick to Select"
+gui-selected: "&aSelected"
+gui-inactive: "&7Inactive"
 
 # Color Strings
-black: 'Black'
-dark-blue: 'Dark Blue'
-dark-green: 'Dark Green'
-dark-aqua: 'Dark Aqua'
-dark-red: 'Dark Red'
-dark-purple: 'Dark Purple'
-gold: 'Gold'
-gray: 'Gray'
-dark-gray: 'Dark Gray'
-blue: 'Blue'
-green: 'Green'
-aqua: 'Aqua'
-red: 'Red'
-light-purple: 'Light Purple'
-yellow: 'Yellow'
-white: 'White'
+black: "Black"
+dark-blue: "Dark Blue"
+dark-green: "Dark Green"
+dark-aqua: "Dark Aqua"
+dark-red: "Dark Red"
+dark-purple: "Dark Purple"
+gold: "Gold"
+gray: "Gray"
+dark-gray: "Dark Gray"
+blue: "Blue"
+green: "Green"
+aqua: "Aqua"
+red: "Red"
+light-purple: "Light Purple"
+yellow: "Yellow"
+white: "White"
 
 # Modifier Strings
-obfuscated: 'Obfuscated'
-bold: 'Bold'
-strikethrough: 'Strikethrough'
-underlined: 'Underlined'
-italic: 'Italic'
+obfuscated: "Obfuscated"
+bold: "Bold"
+strikethrough: "Strikethrough"
+underlined: "Underlined"
+italic: "Italic"
