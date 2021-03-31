@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
 // Utils for managing cross-api-version compatability.
+@SuppressWarnings("deprecation")
 public class CompatabilityUtils {
 
     private static boolean isMaterialLegacy;
