@@ -96,8 +96,8 @@ public class ChatColorCommand implements CommandExecutor {
                         String modifierString = buildCharacterColourString(availableModifiers);
 
                         s.sendMessage(M.PREFIX + M.AVAILABLE_COLORS);
-                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.COLORS + ": " + colourString));
-                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.PREFIX + M.MODIFIERS + ": " + modifierString));
+                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.COLORS + ": " + colourString));
+                        s.sendMessage(GeneralUtils.colourise(" &7- &e" + M.MODIFIERS + ": " + modifierString));
                         s.sendMessage(M.PREFIX + (checkPermission(s, "chatcolor.use-hex-codes") ? M.HEX_ACCESS : M.NO_HEX_PERMISSIONS));
 
                         return true;
