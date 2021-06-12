@@ -22,7 +22,7 @@ public class ConfigsManager {
 
     // (re)loads all configs.
     public void loadAllConfigs() {
-        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "colors.yml" };
+        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "colors.yml", "gui.yml" };
         boolean removeExisting = configs != null;
 
         if (!removeExisting) {

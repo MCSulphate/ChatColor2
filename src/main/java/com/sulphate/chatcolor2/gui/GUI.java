@@ -1,18 +1,21 @@
 package com.sulphate.chatcolor2.gui;
 
+import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GUI {
+
+    private final GUIManager manager;
+    private final ConfigUtils configUtils;
 
     private final String title;
     private final int size;
@@ -25,9 +28,11 @@ public class GUI {
     private ItemStack modifierActive;
     private ItemStack modifierInactive;
 
-    public GUI(ConfigurationSection config) {
-        items = new HashMap<>();
+    public GUI(GUIManager manager, ConfigurationSection config, ConfigUtils configUtils) {
+        this.manager = manager;
+        this.configUtils = configUtils;
 
+        items = new HashMap<>();
         title = config.getString("title");
         size = config.getInt("size");
 
@@ -128,12 +133,100 @@ public class GUI {
         }
     }
 
+    boolean loaded() {
+        return colourUnavailable != null;
+    }
+
     void open(Player player) {
-        // TODO
+        Inventory inventory = Bukkit.createInventory(null, size, title);
+        String chatColour = configUtils.getColour(player.getUniqueId());
+        String[] parts = chatColour.split("&");
+
+        String colourPart = parts[0];
+        List<String> modifierParts = Arrays.asList(parts).subList(1, parts.length);
+
+        for (Map.Entry<Integer, GUIItem> entry : items.entrySet()) {
+            int slot = entry.getKey();
+            GUIItem item = entry.getValue();
+
+            if (GUIUtils.checkPermission(player, item)) {
+                switch (item.getType()) {
+                    case COLOR: {
+                        ItemStack inventoryItem = item.getItem().clone();
+
+                        if (colourPart.equals(item.getData())) {
+                            InventoryUtils.setLore(inventoryItem, colourActive);
+                        }
+                        else {
+                            InventoryUtils.setLore(inventoryItem, colourInactive);
+                        }
+
+                        inventory.setItem(slot, inventoryItem);
+                        break;
+                    }
+
+                    case MODIFIER: {
+                        ItemStack inventoryItem = item.getItem().clone();
+
+                        // If it's active, clone the active item and set the display name.
+                        if (modifierParts.contains(item.getData())) {
+                            ItemStack original = inventoryItem;
+                            inventoryItem = modifierActive.clone();
+
+                            InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
+                        }
+
+                        inventory.setItem(slot, inventoryItem);
+                        break;
+                    }
+
+                    case INVENTORY:
+                        inventory.setItem(slot, item.getItem());
+                        break;
+                }
+            }
+            else {
+                switch (item.getType()) {
+                    case COLOR: {
+                        ItemStack original = item.getItem();
+                        ItemStack inventoryItem = colourUnavailable.clone();
+                        InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
+
+                        inventory.setItem(slot, inventoryItem);
+                        break;
+                    }
+
+                    case MODIFIER: {
+                        ItemStack original = item.getItem();
+                        ItemStack inventoryItem = modifierUnavailable.clone();
+                        InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
+
+                        inventory.setItem(slot, inventoryItem);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     void onClick(Player player, ItemStack item, int slot) {
-        // TODO
+        GUIItem clicked = items.get(slot);
+
+        if (clicked != null) {
+            ItemType type = clicked.getType();
+
+            switch (type) {
+                case COLOR:
+                    // TODO
+                    break;
+                case MODIFIER:
+                    // TODO
+                    break;
+                case INVENTORY:
+                    // TODO
+                    break;
+            }
+        }
     }
 
 }
