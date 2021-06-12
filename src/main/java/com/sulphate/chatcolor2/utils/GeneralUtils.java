@@ -28,6 +28,10 @@ public class GeneralUtils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    public static void sendConsoleMessage(String message) {
+        Bukkit.getConsoleSender().sendMessage(colourise(message));
+    }
+
     // Validates if a string is a valid hex colour.
     public static boolean isValidHexColour(String toValidate) {
         // If it replaces the regex to nothing, then it's a valid colour.
@@ -310,9 +314,6 @@ public class GeneralUtils {
         long currentCode = configUtils.getCurrentDefaultCode();
         long playerCode = configUtils.getDefaultCode(uuid);
 
-        Bukkit.getConsoleSender().sendMessage("CURRENT: " + currentCode);
-        Bukkit.getConsoleSender().sendMessage("PLAYER: " + playerCode);
-
         if (playerCode != currentCode) {
             configUtils.setDefaultCode(uuid, currentCode);
             configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
@@ -322,4 +323,9 @@ public class GeneralUtils {
     public static boolean check(Player player) {
         return player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"));
     }
+
+    public static boolean checkPermission(Player player, String permission) {
+        return (player.isOp() || player.hasPermission(permission));
+    }
+
 }

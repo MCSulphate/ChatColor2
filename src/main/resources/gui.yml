@@ -55,7 +55,7 @@
 
 # There MUST be an inventory called main. This is the one the plugin will open first.
 main:
-  title: %gui-title%
+  title: '&9Color Picker GUI'
   size: 36
 
   color-unavailable:

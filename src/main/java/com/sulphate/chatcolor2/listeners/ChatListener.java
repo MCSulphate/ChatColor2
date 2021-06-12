@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
 
-    private ConfigUtils configUtils;
+    private final ConfigUtils configUtils;
 
     public ChatListener(ConfigUtils configUtils) {
         this.configUtils = configUtils;

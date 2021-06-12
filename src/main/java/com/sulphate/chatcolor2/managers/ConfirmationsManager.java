@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class ConfirmationsManager {
 
-    private HashMap<Player, ConfirmScheduler> confirmingPlayers = new HashMap<>();
+    private final HashMap<Player, ConfirmScheduler> confirmingPlayers = new HashMap<>();
 
     public boolean isConfirming(Player player) {
         return confirmingPlayers.containsKey(player);
