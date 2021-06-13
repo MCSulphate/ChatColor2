@@ -3,6 +3,7 @@ package com.sulphate.chatcolor2.gui;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -20,14 +21,16 @@ public class GUIManager implements Listener {
 
     private final ConfigsManager configsManager;
     private final ConfigUtils configUtils;
+    private final Messages M;
 
     private final Map<String, GUI> guis;
     private final Map<Player, GUI> openGUIs;
     private final Set<Player> transitioningPlayers;
 
-    public GUIManager(ConfigsManager configsManager, ConfigUtils configUtils) {
+    public GUIManager(ConfigsManager configsManager, ConfigUtils configUtils, Messages M) {
         this.configsManager = configsManager;
         this.configUtils = configUtils;
+        this.M = M;
 
         guis = new HashMap<>();
         openGUIs = new HashMap<>();
@@ -59,6 +62,7 @@ public class GUIManager implements Listener {
                 player.closeInventory();
             }
 
+            player.sendMessage(M.PREFIX + M.INVALID_GUI.replace("[name]", guiName));
             GeneralUtils.sendConsoleMessage("&6[ChatColor] &eWarning: Tried to open an invalid GUI: " + guiName);
         }
     }
@@ -96,7 +100,7 @@ public class GUIManager implements Listener {
 
         for (String key : keys) {
             ConfigurationSection guiSection = config.getConfigurationSection(key);
-            GUI gui = new GUI(this, guiSection, configUtils);
+            GUI gui = new GUI(this, key, guiSection, configUtils, M);
 
             if (gui.loaded()) {
                 guis.put(key, gui);

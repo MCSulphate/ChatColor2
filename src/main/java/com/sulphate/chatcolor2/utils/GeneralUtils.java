@@ -138,13 +138,15 @@ public class GeneralUtils {
         String colourisedMessage = message;
 
         // Check the override if the coloured message is different.
-        if (isDifferentWhenColourised(message)) {
+        if (checkOverride && isDifferentWhenColourised(message)) {
             boolean override = ((boolean) configUtils.getSetting("color-override")) && checkOverride;
             String colourised = colourise(message);
 
             if (override) {
-                // Remove the colour (override it).
-                colourisedMessage = ChatColor.stripColor(colourised);
+                while (isDifferentWhenColourised(message)) {
+                    // Remove the colour (override it).
+                    colourisedMessage = ChatColor.stripColor(colourised);
+                }
             }
             else {
                 // If not overriding, return the colourised message.

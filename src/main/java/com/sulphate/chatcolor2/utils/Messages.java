@@ -77,6 +77,7 @@ public class Messages {
     public String INVALID_SEQUENCE;
 
     // GUI-Related Messages and Strings
+    public String INVALID_GUI;
     public String GUI_TITLE;
     public String GUI_COLOR_ALREADY_SET;
     public String GUI_UNAVAILABLE;
@@ -177,6 +178,7 @@ public class Messages {
         INVALID_SEQUENCE = getAndColourise("invalid-sequence");
 
         // GUI-Related Messages and Strings
+        INVALID_GUI = getAndColourise("invalid-gui");
         GUI_TITLE = getAndColourise("gui-title");
         GUI_COLOR_ALREADY_SET = getAndColourise("gui-color-already-set");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");

@@ -1,8 +1,10 @@
 package com.sulphate.chatcolor2.gui;
 
+import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
+import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,7 +18,9 @@ public class GUI {
 
     private final GUIManager manager;
     private final ConfigUtils configUtils;
+    private final Messages M;
 
+    private final String guiName;
     private final String title;
     private final int size;
     private final Map<Integer, GUIItem> items;
@@ -28,12 +32,14 @@ public class GUI {
     private ItemStack modifierActive;
     private ItemStack modifierInactive;
 
-    public GUI(GUIManager manager, ConfigurationSection config, ConfigUtils configUtils) {
+    public GUI(GUIManager manager, String guiName, ConfigurationSection config, ConfigUtils configUtils, Messages M) {
         this.manager = manager;
         this.configUtils = configUtils;
+        this.M = M;
+        this.guiName = guiName;
 
         items = new HashMap<>();
-        title = config.getString("title");
+        title = GeneralUtils.colourise(config.getString("title"));
         size = config.getInt("size");
 
         try {
@@ -140,8 +146,12 @@ public class GUI {
     void open(Player player) {
         Inventory inventory = Bukkit.createInventory(null, size, title);
         String chatColour = configUtils.getColour(player.getUniqueId());
-        String[] parts = chatColour.split("&");
 
+        if (chatColour.startsWith("&")) {
+            chatColour = chatColour.substring(1);
+        }
+
+        String[] parts = chatColour.split("&");
         String colourPart = parts[0];
         List<String> modifierParts = Arrays.asList(parts).subList(1, parts.length);
 
@@ -207,6 +217,8 @@ public class GUI {
                 }
             }
         }
+
+        player.openInventory(inventory);
     }
 
     void onClick(Player player, ItemStack item, int slot) {
@@ -214,17 +226,70 @@ public class GUI {
 
         if (clicked != null) {
             ItemType type = clicked.getType();
+            String chatColour = configUtils.getColour(player.getUniqueId());
+
+            if (chatColour.startsWith("&")) {
+                chatColour = chatColour.substring(1);
+            }
+
+            String[] parts = chatColour.split("&");
+            String colourPart = parts[0];
+            List<String> modifierParts = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
+            UUID uuid = player.getUniqueId();
 
             switch (type) {
-                case COLOR:
-                    // TODO
+                case COLOR: {
+                    Material clickedMaterial = item.getType();
+
+                    if (clickedMaterial.equals(colourUnavailable.getType())) {
+                        player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", item.getItemMeta().getDisplayName()));
+                    }
+                    else {
+                        List<String> clickedLore = item.getItemMeta().getLore();
+
+                        if (clickedLore.equals(colourActive)) {
+                            player.sendMessage(M.PREFIX + M.GUI_COLOR_ALREADY_SET);
+                        }
+                        else {
+                            parts[0] = clicked.getData();
+                            ChatColorCommand.setColorFromArgs(uuid, parts, configUtils);
+
+                            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
+                            manager.openGUI(player, guiName); // Refresh GUI.
+                        }
+                    }
+
                     break;
-                case MODIFIER:
-                    // TODO
+                }
+
+                case MODIFIER: {
+                    Material clickedMaterial = item.getType();
+
+                    if (clickedMaterial.equals(modifierUnavailable.getType())) {
+                        player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", item.getItemMeta().getDisplayName()));
+                    }
+                    else {
+                        if (clickedMaterial.equals(modifierActive.getType())) {
+                            modifierParts.remove(clicked.getData());
+                        }
+                        else {
+                            modifierParts.add(clicked.getData());
+                        }
+
+                        modifierParts.add(0, colourPart);
+                        ChatColorCommand.setColorFromArgs(uuid, modifierParts.toArray(new String[] {}), configUtils);
+
+                        player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
+                        manager.openGUI(player, guiName);
+                    }
+
                     break;
-                case INVENTORY:
-                    // TODO
+                }
+
+                case INVENTORY: {
+                    manager.openGUI(player, clicked.getData());
                     break;
+                }
             }
         }
     }

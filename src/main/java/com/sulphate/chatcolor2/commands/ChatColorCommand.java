@@ -1,6 +1,6 @@
 package com.sulphate.chatcolor2.commands;
 
-import com.sulphate.chatcolor2.listeners.ColourGUIListener;
+import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
@@ -19,18 +19,20 @@ import java.util.*;
 
 public class ChatColorCommand implements CommandExecutor {
 
-    private Messages M;
-    private ConfigUtils configUtils;
-    private ConfirmationsManager confirmationsManager;
-    private ConfigsManager configsManager;
-    private HandlersManager handlersManager;
+    private final Messages M;
+    private final ConfigUtils configUtils;
+    private final ConfirmationsManager confirmationsManager;
+    private final ConfigsManager configsManager;
+    private final HandlersManager handlersManager;
+    private final GUIManager guiManager;
 
-    public ChatColorCommand(Messages M, ConfigUtils configUtils, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, HandlersManager handlersManager) {
+    public ChatColorCommand(Messages M, ConfigUtils configUtils, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, HandlersManager handlersManager, GUIManager guiManager) {
         this.M = M;
         this.configUtils = configUtils;
         this.confirmationsManager = confirmationsManager;
         this.configsManager = configsManager;
         this.handlersManager = handlersManager;
+        this.guiManager = guiManager;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -82,7 +84,7 @@ public class ChatColorCommand implements CommandExecutor {
                     case "reload": {
                         configsManager.loadAllConfigs();
                         M.reloadMessages();
-                        ColourGUIListener.reloadGUI(M, configUtils); // Reload the GUIs as well, to give up-to-date Strings.
+                        guiManager.reload();
 
                         s.sendMessage(M.PREFIX + M.RELOADED_MESSAGES);
                         return true;
@@ -104,7 +106,7 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "gui": {
-                        ColourGUIListener.openGUI(s, M, configUtils);
+                        guiManager.openGUI(s, "main");
                         return true;
                     }
 
@@ -344,11 +346,12 @@ public class ChatColorCommand implements CommandExecutor {
                     sb.append(getColour(args[i]));
                     continue;
                 }
+
                 sb.append(getModifier(args[i]));
             }
         }
-        color = sb.toString();
 
+        color = sb.toString();
         configUtils.setColour(uuid, color);
         return color;
     }
@@ -1065,6 +1068,7 @@ public class ChatColorCommand implements CommandExecutor {
     public static String getColour(String str) {
         String colour = str.toLowerCase();
 
+        // TODO: Custom colours.
         // If default, rainbow or hex colour, just return.
         if (colour.equals("default") || GeneralUtils.isValidHexColour(str) || colour.equals("rainbow")) {
             return colour;

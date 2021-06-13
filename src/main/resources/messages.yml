@@ -65,6 +65,7 @@ configs-reset: 'Configs reset!'
 invalid-sequence: '&e[sequence] &cis an invalid colour sequence!'
 
 # GUI-Related Messages and Strings
+invalid-gui: '&cTried to open a non-existant GUI ([name]), please report this to an admin.'
 gui-title: '&9Color Picker GUI'
 gui-color-already-set: '&cColour already selected!'
 gui-unavailable: '&cUnavailable'

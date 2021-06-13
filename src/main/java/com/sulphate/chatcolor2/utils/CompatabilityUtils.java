@@ -15,11 +15,15 @@ public class CompatabilityUtils {
     private static HashMap<String, Short> blockColourToDataMap;
     private static HashMap<String, Short> dyeColourToDataMap;
 
-    public CompatabilityUtils() {
+    private CompatabilityUtils() {
+        // Empty private constructor.
+    }
+
+    public static void init() {
         // Parse minor version to check for hex compatability.
-        String version = Bukkit.getVersion();
+        String version = Bukkit.getVersion().replace("(", "").replace(")", "");
         int dotIndex = version.indexOf('.');
-        int minorVersion = Integer.parseInt(version.substring(dotIndex + 1, version.indexOf('.', dotIndex + 1)));
+        float minorVersion = Float.parseFloat(version.substring(dotIndex + 1));
 
         isHexLegacy = minorVersion < 16;
         isMaterialLegacy = Material.getMaterial("INK_SAC") == null;

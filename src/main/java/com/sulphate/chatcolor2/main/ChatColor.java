@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
+import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
@@ -32,6 +33,7 @@ public class ChatColor extends JavaPlugin {
     private HandlersManager handlersManager;
     private ConfigsManager configsManager;
     private ConfigUtils configUtils;
+    private GUIManager guiManager;
     private ConfirmationsManager confirmationsManager;
     private AutoSaveScheduler saveScheduler;
     private Messages M;
@@ -66,7 +68,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Small bug fixes :)");
+            message = message.replace("[version-description]", "Custom GUI update! (+1.17 support)");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -100,11 +102,13 @@ public class ChatColor extends JavaPlugin {
 
     private void setupObjects() {
         // Init compatability utils.
-        new CompatabilityUtils();
+        CompatabilityUtils.init();
+
         handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
         configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);
+        guiManager = new GUIManager(configsManager, configUtils, M);
         confirmationsManager = new ConfirmationsManager();
 
         boolean setSaveInterval = false;
@@ -126,7 +130,7 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupCommands() {
-        getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager, handlersManager));
+        getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager, handlersManager, guiManager));
 
         handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configUtils));
     }
@@ -135,7 +139,7 @@ public class ChatColor extends JavaPlugin {
         manager.registerEvents(new PlayerJoinListener(M, configUtils, configsManager), this);
         manager.registerEvents(new ChatListener(configUtils), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
-        manager.registerEvents(new ColourGUIListener(M, configUtils), this);
+        manager.registerEvents(guiManager, this);
     }
 
     @Override
@@ -224,6 +228,12 @@ public class ChatColor extends JavaPlugin {
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to create player list file."));
                 return false;
             }
+        }
+
+        File guiConfig = new File(dataFolder, "gui.yml");
+
+        if (!guiConfig.exists()) {
+            saveResource("gui.yml", true);
         }
 
         return true;

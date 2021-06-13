@@ -16,6 +16,8 @@ public class ConfigsManager {
     private final File PLAYERS_FOLDER = new File(ChatColor.getPlugin().getDataFolder(), "players");
 
     public ConfigsManager() {
+        configs = new HashMap<>();
+
         loadAllConfigs();
         PLAYERS_FOLDER.mkdir();
     }
@@ -23,17 +25,9 @@ public class ConfigsManager {
     // (re)loads all configs.
     public void loadAllConfigs() {
         String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "colors.yml", "gui.yml" };
-        boolean removeExisting = configs != null;
-
-        if (!removeExisting) {
-            configs = new HashMap<>();
-        }
+        configs.clear();
 
         for (String fileName : fileNames) {
-            if (removeExisting) {
-                configs.remove(fileName);
-            }
-
             File file = new File(ChatColor.getPlugin().getDataFolder(), fileName);
             configs.put(fileName, YamlConfiguration.loadConfiguration(file));
         }
