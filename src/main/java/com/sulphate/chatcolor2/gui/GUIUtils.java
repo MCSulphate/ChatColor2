@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,12 +42,27 @@ public class GUIUtils {
 
         switch (item.getType()) {
             case COLOR:
-                return GeneralUtils.checkPermission(player, "chatcolor.color." + item.getData());
+                if (item.getData().startsWith("#")) {
+                    return GeneralUtils.checkPermission(player, "chatcolor.use-hex-codes");
+                }
+                else {
+                    return GeneralUtils.checkPermission(player, "chatcolor.color." + item.getData());
+                }
             case MODIFIER:
                 return GeneralUtils.checkPermission(player, "chatcolor.modifier." + item.getData());
             default:
                 return true;
         }
+    }
+
+    public static List<String> colouriseList(List<String> toColourise) {
+        List<String> copy = new ArrayList<>();
+
+        for (String entry : toColourise) {
+            copy.add(GeneralUtils.colourise(entry));
+        }
+
+        return copy;
     }
 
 }

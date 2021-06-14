@@ -247,7 +247,7 @@ public class GUI {
                     else {
                         List<String> clickedLore = item.getItemMeta().getLore();
 
-                        if (clickedLore.equals(colourActive)) {
+                        if (clickedLore.equals(GUIUtils.colouriseList(colourActive))) {
                             player.sendMessage(M.PREFIX + M.GUI_COLOR_ALREADY_SET);
                         }
                         else {
