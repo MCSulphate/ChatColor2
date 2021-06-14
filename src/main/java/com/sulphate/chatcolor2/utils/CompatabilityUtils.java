@@ -47,17 +47,15 @@ public class CompatabilityUtils {
             return new ItemStack(Material.getMaterial(materialName), 1);
         }
 
-        CommandSender console = Bukkit.getConsoleSender();
-
         boolean isLightColour = materialName.startsWith("LIGHT");
         int underscoreIndex = materialName.indexOf('_');
 
-        String colourName = materialName.substring(0, isLightColour ? materialName.indexOf('_', underscoreIndex + 1) : underscoreIndex);
         Material legacyMaterial = getLegacyMaterial(materialName);
-        Short legacyColourData = materialName.contains("DYE") ? dyeColourToDataMap.get(colourName) : blockColourToDataMap.get(colourName);
+        String colourName = underscoreIndex == -1 ? null : materialName.substring(0, isLightColour ? materialName.indexOf('_', underscoreIndex + 1) : underscoreIndex);
+        Short legacyColourData = colourName == null ? null : materialName.contains("DYE") ? dyeColourToDataMap.get(colourName) : blockColourToDataMap.get(colourName);
 
         if (legacyMaterial == null) {
-            console.sendMessage(GeneralUtils.colourise("&cError: Failed to resolve legacy material: " + materialName));
+            GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError: Failed to resolve legacy material: " + materialName);
             return new ItemStack(Material.AIR);
         }
 
@@ -85,7 +83,13 @@ public class CompatabilityUtils {
             return Material.getMaterial("INK_SACK");
         }
         else {
-            return null;
+            try {
+                // Just return the material if there is no legacy (if possible).
+                return Material.getMaterial(materialName);
+            }
+            catch (Exception ex) {
+                return null;
+            }
         }
     }
 

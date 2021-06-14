@@ -1,10 +1,7 @@
 package com.sulphate.chatcolor2.gui;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
-import com.sulphate.chatcolor2.utils.InventoryUtils;
-import com.sulphate.chatcolor2.utils.Messages;
+import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,6 +28,7 @@ public class GUI {
     private List<String> colourInactive;
     private ItemStack modifierActive;
     private ItemStack modifierInactive;
+    private ItemStack hexColorsNotSupported;
 
     public GUI(GUIManager manager, String guiName, ConfigurationSection config, ConfigUtils configUtils, Messages M) {
         this.manager = manager;
@@ -44,7 +42,13 @@ public class GUI {
 
         try {
             if (config.contains("color-unavailable")) {
-                colourUnavailable = new ItemStack(Material.getMaterial(config.getString("color-unavailable.material")));
+                if (CompatabilityUtils.isMaterialLegacy()) {
+                    colourUnavailable = CompatabilityUtils.getColouredItem(config.getString("color-unavailable.material"));
+                }
+                else {
+                    colourUnavailable = new ItemStack(Material.getMaterial(config.getString("color-unavailable.material")));
+                }
+
                 InventoryUtils.setLore(colourUnavailable, config.getStringList("color-unavailable.lore"));
             }
             else {
@@ -52,8 +56,14 @@ public class GUI {
             }
 
             if (config.contains("modifier-unavailable")) {
-                modifierUnavailable = new ItemStack(Material.getMaterial(config.getString("modifier-unavailable.material")));
-                InventoryUtils.setLore(colourUnavailable, config.getStringList("modifier-unavailable.lore"));
+                if (CompatabilityUtils.isMaterialLegacy()) {
+                    modifierUnavailable = CompatabilityUtils.getColouredItem(config.getString("modifier-unavailable.material"));
+                }
+                else {
+                    modifierUnavailable = new ItemStack(Material.getMaterial(config.getString("modifier-unavailable.material")));
+                }
+
+                InventoryUtils.setLore(modifierUnavailable, config.getStringList("modifier-unavailable.lore"));
             }
             else {
                 modifierUnavailable = GUIUtils.DEFAULT_MODIFIER_UNAVAILABLE;
@@ -74,7 +84,13 @@ public class GUI {
             }
 
             if (config.contains("modifier-inactive")) {
-                modifierInactive = new ItemStack(Material.getMaterial(config.getString("modifier-inactive.material")));
+                if (CompatabilityUtils.isMaterialLegacy()) {
+                    modifierInactive = CompatabilityUtils.getColouredItem(config.getString("modifier-inactive.material"));
+                }
+                else {
+                    modifierInactive = new ItemStack(Material.getMaterial(config.getString("modifier-inactive.material")));
+                }
+
                 InventoryUtils.setLore(modifierInactive, config.getStringList("modifier-inactive.lore"));
             }
             else {
@@ -82,8 +98,31 @@ public class GUI {
             }
 
             if (config.contains("modifier-active")) {
-                modifierActive = new ItemStack(Material.getMaterial(config.getString("modifier-active.material")));
+                if (CompatabilityUtils.isMaterialLegacy()) {
+                    modifierActive = CompatabilityUtils.getColouredItem(config.getString("modifier-active.material"));
+                }
+                else {
+                    modifierActive = new ItemStack(Material.getMaterial(config.getString("modifier-active.material")));
+                }
+
                 InventoryUtils.setLore(modifierActive, config.getStringList("modifier-active.lore"));
+            }
+            else {
+                modifierActive = GUIUtils.DEFAULT_MODIFIER_ACTIVE;
+            }
+
+            if (config.contains("hex-colors-not-supported")) {
+                if (CompatabilityUtils.isMaterialLegacy()) {
+                    hexColorsNotSupported = CompatabilityUtils.getColouredItem(config.getString("hex-colors-not-supported.material"));
+                }
+                else {
+                    hexColorsNotSupported = new ItemStack(Material.getMaterial(config.getString("hex-colors-not-supported.material")));
+                }
+
+                InventoryUtils.setLore(hexColorsNotSupported, config.getStringList("hex-colors-not-supported.lore"));
+            }
+            else {
+                hexColorsNotSupported = GUIUtils.DEFAULT_HEX_COLORS_NOT_SUPPORTED;
             }
         }
         catch (Exception ex) {
@@ -93,6 +132,7 @@ public class GUI {
             colourInactive = null;
 
             GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError while parsing GUI " + title + " (not in the items section), please check config format & values are correct.");
+            ex.printStackTrace();
         }
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
@@ -112,7 +152,18 @@ public class GUI {
                     switch (type) {
                         case INVENTORY:
                         case COLOR: {
-                            ItemStack item = new ItemStack(Material.getMaterial(itemSection.getString("material")));
+                            ItemStack item;
+
+                            if (CompatabilityUtils.isHexLegacy() && GeneralUtils.isValidHexColour(itemSection.getString("data"))) {
+                                item = hexColorsNotSupported.clone();
+                            }
+                            else if (CompatabilityUtils.isMaterialLegacy()) {
+                                item = CompatabilityUtils.getColouredItem(itemSection.getString("material"));
+                            }
+                            else {
+                                item = new ItemStack(Material.getMaterial(itemSection.getString("material")));
+                            }
+
                             InventoryUtils.setDisplayName(item, itemSection.getString("name"));
 
                             items.put(inventorySlot, new GUIItem(type, itemSection.getString("data"), item));
@@ -134,6 +185,7 @@ public class GUI {
                 }
                 catch (Exception ex) {
                     GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError parsing item " + key + " in GUI " + title + ", please check the config.");
+                    ex.printStackTrace();
                 }
             }
         }
@@ -159,7 +211,10 @@ public class GUI {
             int slot = entry.getKey();
             GUIItem item = entry.getValue();
 
-            if (GUIUtils.checkPermission(player, item)) {
+            if (GUIUtils.colouriseList(hexColorsNotSupported.getItemMeta().getLore()).equals(item.getItem().getItemMeta().getLore())) {
+                inventory.setItem(slot, item.getItem());
+            }
+            else if (GUIUtils.checkPermission(player, item)) {
                 switch (item.getType()) {
                     case COLOR: {
                         ItemStack inventoryItem = item.getItem().clone();
@@ -265,11 +320,14 @@ public class GUI {
                 case MODIFIER: {
                     Material clickedMaterial = item.getType();
 
-                    if (clickedMaterial.equals(modifierUnavailable.getType())) {
+                    // Have to check lore here for compatability with older versions (dyes are the same material in legacy).
+                    if (GUIUtils.colouriseList(modifierUnavailable.getItemMeta().getLore()).equals(item.getItemMeta().getLore())) {
                         player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", item.getItemMeta().getDisplayName()));
                     }
                     else {
-                        if (clickedMaterial.equals(modifierActive.getType())) {
+                        List<String> clickedLore = item.getItemMeta().getLore();
+
+                        if (GUIUtils.colouriseList(modifierActive.getItemMeta().getLore()).equals(clickedLore)) {
                             modifierParts.remove(clicked.getData());
                         }
                         else {

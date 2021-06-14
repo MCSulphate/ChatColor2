@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.gui;
 
+import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
 import org.bukkit.Material;
@@ -20,21 +21,25 @@ public class GUIUtils {
     public static final List<String> DEFAULT_COLOUR_INACTIVE;
     public static final ItemStack DEFAULT_MODIFIER_ACTIVE;
     public static final ItemStack DEFAULT_MODIFIER_INACTIVE;
+    public static final ItemStack DEFAULT_HEX_COLORS_NOT_SUPPORTED;
 
     static {
         DEFAULT_COLOUR_UNAVAILABLE = new ItemStack(Material.BARRIER);
-        DEFAULT_MODIFIER_UNAVAILABLE = new ItemStack(Material.RED_DYE);
+        DEFAULT_MODIFIER_UNAVAILABLE = CompatabilityUtils.isMaterialLegacy() ? CompatabilityUtils.getColouredItem("RED_DYE") : new ItemStack(Material.RED_DYE);
 
         DEFAULT_COLOUR_ACTIVE = Collections.singletonList("&aSelected");
         DEFAULT_COLOUR_INACTIVE = Collections.singletonList("&eClick to Select");
 
-        DEFAULT_MODIFIER_ACTIVE = new ItemStack(Material.LIME_DYE);
-        DEFAULT_MODIFIER_INACTIVE = new ItemStack(Material.GRAY_DYE);
+        DEFAULT_MODIFIER_ACTIVE = CompatabilityUtils.isMaterialLegacy() ? CompatabilityUtils.getColouredItem("LIME_DYE") : new ItemStack(Material.LIME_DYE);
+        DEFAULT_MODIFIER_INACTIVE = CompatabilityUtils.isMaterialLegacy() ? CompatabilityUtils.getColouredItem("GRAY_DYE") : new ItemStack(Material.GRAY_DYE);
+
+        DEFAULT_HEX_COLORS_NOT_SUPPORTED = new ItemStack(Material.BARRIER);
 
         InventoryUtils.setLore(DEFAULT_COLOUR_UNAVAILABLE, Collections.singletonList("&cUnavailable"));
         InventoryUtils.setLore(DEFAULT_MODIFIER_UNAVAILABLE, Collections.singletonList("&cUnavailable"));
         InventoryUtils.setLore(DEFAULT_MODIFIER_ACTIVE, Collections.singletonList("&aActive"));
         InventoryUtils.setLore(DEFAULT_MODIFIER_INACTIVE, Arrays.asList("&7Inactive", "&eClick to Toggle"));
+        InventoryUtils.setLore(DEFAULT_HEX_COLORS_NOT_SUPPORTED, Collections.singletonList("&cHex colors are only supported on 1.16+"));
     }
 
     public static boolean checkPermission(Player player, GUIItem item) {

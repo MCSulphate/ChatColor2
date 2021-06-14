@@ -87,6 +87,11 @@ main:
       - '&aActive'
     material: LIME_DYE
 
+  hex-colors-not-supported:
+    lore:
+      - '&cHex colors are only supported on 1.16+.'
+    material: BARRIER
+
   items:
     0:
       type: COLOR

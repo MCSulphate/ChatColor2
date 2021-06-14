@@ -39,6 +39,11 @@ public class GeneralUtils {
     }
 
     public static String createHexColour(String hexString) {
+        // Safe fallback to white colour if hex is not supported.
+        if (CompatabilityUtils.isHexLegacy()) {
+            return colourise("&f");
+        }
+
         return net.md_5.bungee.api.ChatColor.of(hexString).toString();
     }
 
