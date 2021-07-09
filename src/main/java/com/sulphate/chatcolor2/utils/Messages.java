@@ -55,14 +55,14 @@ public class Messages {
     public String HEX_ACCESS;
     public String NO_HEX_SUPPORT;
 
-    // Custom-Colour Messages
-    public String CUSTOM_COLOR_EXISTS;
-    public String CUSTOM_COLOR_NOT_EXISTS;
-    public String USING_CUSTOM_COLOR;
-    public String ADDED_CUSTOM_COLOR;
-    public String REMOVED_CUSTOM_COLOR;
-    public String CUSTOM_COLOR_LIST;
-    public String CUSTOM_COLOR_FORMAT;
+    // Group-Colour Messages
+    public String GROUP_COLOR_EXISTS;
+    public String GROUP_COLOR_NOT_EXISTS;
+    public String USING_GROUP_COLOR;
+    public String ADDED_GROUP_COLOR;
+    public String REMOVED_GROUP_COLOR;
+    public String GROUP_COLOR_LIST;
+    public String GROUP_COLOR_FORMAT;
 
     // Confirmation and Settings Messages
     public String CONFIRM;
@@ -156,14 +156,14 @@ public class Messages {
         HEX_ACCESS = getAndColourise("hex-access");
         NO_HEX_SUPPORT = getAndColourise("no-hex-support");
 
-        // Custom-Color Messages
-        CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");
-        CUSTOM_COLOR_NOT_EXISTS = getAndColourise("custom-color-not-exists");
-        USING_CUSTOM_COLOR = getAndColourise("using-custom-color");
-        ADDED_CUSTOM_COLOR = getAndColourise("added-custom-color");
-        REMOVED_CUSTOM_COLOR = getAndColourise("removed-custom-color");
-        CUSTOM_COLOR_LIST = getAndColourise("custom-color-list");
-        CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
+        // Group-Color Messages
+        GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");
+        GROUP_COLOR_NOT_EXISTS = getAndColourise("group-color-not-exists");
+        USING_GROUP_COLOR = getAndColourise("using-group-color");
+        ADDED_GROUP_COLOR = getAndColourise("added-group-color");
+        REMOVED_GROUP_COLOR = getAndColourise("removed-group-color");
+        GROUP_COLOR_LIST = getAndColourise("group-color-list");
+        GROUP_COLOR_FORMAT = getAndColourise("group-color-format");
 
         // Confirmation and Settings Messages
         CONFIRM = getAndColourise("confirm");

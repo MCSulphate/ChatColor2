@@ -124,12 +124,12 @@ public class ConfigUtils {
         setAndSave("player-list.yml", name, uuid.toString());
     }
 
-    // Gets a list of custom colours.
-    public HashMap<String, String> getCustomColours() {
-        YamlConfiguration config = configsManager.getConfig("colors.yml");
+    // Gets a list of group colours.
+    public HashMap<String, String> getGroupColours() {
+        YamlConfiguration config = configsManager.getConfig("groups.yml");
         HashMap<String, String> returnValue = new HashMap<>();
 
-        // Fill the HashMap with the custom colours.
+        // Fill the HashMap with the group colours.
         Set<String> keys = config.getKeys(false);
         for (String key : keys) {
             returnValue.put(key, config.getString(key));
@@ -138,37 +138,37 @@ public class ConfigUtils {
         return returnValue;
     }
 
-    // Returns whether a custom colour exists.
-    public boolean customColourExists(String name) {
-        return getCustomColours().containsKey(name);
+    // Returns whether a group colour exists.
+    public boolean groupColourExists(String name) {
+        return getGroupColours().containsKey(name);
     }
 
-    // Adds a new custom colour.
-    public void addCustomColour(String name, String colour) {
-        setAndSave("colors.yml", name, colour);
+    // Adds a new group colour.
+    public void addGroupColour(String name, String colour) {
+        setAndSave("groups.yml", name, colour);
     }
 
-    // Removes a custom colour.
-    public void removeCustomColour(String name) {
-        setAndSave("colors.yml", name, null);
+    // Removes a group colour.
+    public void removeGroupColour(String name) {
+        setAndSave("groups.yml", name, null);
     }
 
-    // Returns the custom colour, if any, that a player has.
-    public String getCustomColour(Player player) {
-        HashMap<String, String> customColours = getCustomColours();
+    // Returns the group colour, if any, that a player has.
+    public String getGroupColour(Player player) {
+        HashMap<String, String> groupColours = getGroupColours();
 
-        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.custom.* permissions!
-        // If they do, then they would have the first custom colour applied to them, always.
-        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.custom.*")) {
+        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
+        // If they do, then they would have the first group colour applied to them, always.
+        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.group.*")) {
             return null;
         }
 
         // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
-        for (String key : customColours.keySet()) {
+        for (String key : groupColours.keySet()) {
             // Not checking for OP, that would cause the first colour to always be chosen.
-            Permission permission = new Permission("chatcolor.custom." + key, PermissionDefault.FALSE);
+            Permission permission = new Permission("chatcolor.group." + key, PermissionDefault.FALSE);
             if (player.hasPermission(permission)) {
-                return customColours.get(key);
+                return groupColours.get(key);
             }
         }
 
@@ -182,13 +182,13 @@ public class ConfigUtils {
         configsManager.saveConfig(configName);
     }
 
-    // Gets the default color for a player, taking into account custom color (if they are online).
+    // Gets the default color for a player, taking into account group color (if they are online).
     public String getDefaultColourForPlayer(UUID uuid) {
         String colour = null;
         Player target = Bukkit.getPlayer(uuid);
 
         if (target != null) {
-            colour = getCustomColour(target);
+            colour = getGroupColour(target);
         }
 
         if (colour == null) {

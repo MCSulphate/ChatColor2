@@ -73,7 +73,7 @@ public class ConfirmHandler extends Handler {
                 // Overwrite configs with default ones.
                 ChatColor.getPlugin().saveResource("config.yml", true);
                 ChatColor.getPlugin().saveResource("messages.yml", true);
-                ChatColor.getPlugin().saveResource("colors.yml", true);
+                ChatColor.getPlugin().saveResource("groups.yml", true);
                 M.reloadMessages();
 
                 sender.sendMessage(M.PREFIX + M.CONFIGS_RESET);
@@ -128,10 +128,10 @@ public class ConfirmHandler extends Handler {
                 break;
             }
 
-            case "force-custom-colors": {
+            case "force-group-colors": {
                 boolean value = (boolean) scheduler.getValue();
 
-                configUtils.setSetting("force-custom-colors", value);
+                configUtils.setSetting("force-group-colors", value);
                 valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }

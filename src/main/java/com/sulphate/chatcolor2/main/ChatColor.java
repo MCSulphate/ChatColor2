@@ -68,7 +68,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Custom GUI update! (+1.17 support)");
+            message = message.replace("[version-description]", "Custom colours v2.0!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -188,6 +188,26 @@ public class ChatColor extends JavaPlugin {
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
             }
+            else if (!compareVersions(version, "1.12")) {
+                File legacyGroupConfigFile = new File(dataFolder, "groups.yml");
+
+                if (legacyGroupConfigFile.exists()) {
+                    YamlConfiguration legacyGroupConfig = YamlConfiguration.loadConfiguration(legacyGroupConfigFile);
+                    File newGroupConfigFile = new File(dataFolder, "groups.yml");
+
+                    try {
+                        newGroupConfigFile.createNewFile();
+                        legacyGroupConfig.save(newGroupConfigFile);
+                        legacyGroupConfigFile.delete();
+
+                        GeneralUtils.sendConsoleMessage("&b[ChatColor] &bInfo: &eCopied legacy groups config to a new file, groups.yml.");
+                    }
+                    catch (IOException ex) {
+                        ex.printStackTrace();
+                        GeneralUtils.sendConsoleMessage("&b[ChatColor] &cWarning: &eFailed to copy legacy groups config to new file.");
+                    }
+                }
+            }
 
             // Update the version if it's behind.
             if (!version.equals(latest)) {
@@ -210,11 +230,11 @@ public class ChatColor extends JavaPlugin {
             saveResource("messages.yml", true);
         }
 
-        File coloursFile = new File(dataFolder, "colors.yml");
+        File groupsFile = new File(dataFolder, "groups.yml");
 
         // Save default colours file if it doesn't exist.
-        if (!coloursFile.exists()) {
-            saveResource("colors.yml", true);
+        if (!groupsFile.exists()) {
+            saveResource("groups.yml", true);
         }
 
         File playerList = new File(dataFolder, "player-list.yml");
@@ -241,6 +261,11 @@ public class ChatColor extends JavaPlugin {
 
     // Compares two version strings, returning true if the first is greater than or equal to the second (in format x.x.x...x).
     private boolean compareVersions(String version1, String version2) {
+        // This happens on VERY old versions of the plugin (2017).
+        if (version1 == null) {
+            return false;
+        }
+
         String[] parts1 = version1.split("\\.");
         String[] parts2 = version2.split("\\.");
 

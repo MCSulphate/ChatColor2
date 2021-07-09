@@ -2,8 +2,6 @@ package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
 
@@ -42,14 +38,14 @@ public class ChatListener implements Listener {
             }
         }
 
-        // Check if they have a custom colour, and if it should be enforced.
-        String customColour = configUtils.getCustomColour(player);
+        // Check if they have a group colour, and if it should be enforced.
+        String groupColour = configUtils.getGroupColour(player);
         String colour = configUtils.getColour(uuid);
 
-        if (customColour != null) {
+        if (groupColour != null) {
             // If it should be forced, set it so.
-            if ((boolean) configUtils.getSetting("force-custom-colors")) {
-                colour = customColour;
+            if ((boolean) configUtils.getSetting("force-group-colors")) {
+                colour = groupColour;
             }
         }
 

@@ -43,14 +43,14 @@ no-hex-permissions: '&cYou do not have permission to use hex codes.'
 hex-access: '&eYou have access to hex codes.'
 no-hex-support: '&cHex colours are not supported on Minecraft versions less than 1.16.'
 
-# Custom-Color Messages
-custom-color-exists: '&cThat custom color already exists!'
-custom-color-not-exists: '&cThat custom color does not exist!'
-using-custom-color: '&cYou have been set to a custom chat color, and cannot change it.'
-added-custom-color: 'Added the custom color &b[color-name]&e, it looks like this: [color]Message&e.'
-removed-custom-color: 'Removed the custom color &b[color-name]&e.'
-custom-color-list: 'Here is a list of all custom colors:'
-custom-color-format: ' &7- [color][color-name]'
+# Group-Color Messages
+group-color-exists: '&cThat group color already exists!'
+group-color-not-exists: '&cThat group color does not exist!'
+using-group-color: '&cYou have been set to a group chat color, and cannot change it.'
+added-group-color: 'Added the group color &bchatcolor.group.[color-name]&e, it looks like this: [color]Message&e.'
+removed-group-color: 'Removed the group color &bchatcolor.group.[color-name]&e.'
+group-color-list: 'Here is a list of all group colors:'
+group-color-format: ' &7- &echatcolor.group.[color][color-name]'
 
 # Confirmation and Settings Messages
 confirm: 'Are you sure you want to do that? Type &c/chatcolor confirm &eif you are sure.'

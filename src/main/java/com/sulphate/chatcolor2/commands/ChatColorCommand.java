@@ -47,7 +47,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "custom");
+            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
                     case "confirm": {
@@ -132,13 +132,13 @@ public class ChatColorCommand implements CommandExecutor {
                         return true;
                     }
 
-                    case "custom": {
+                    case "group": {
                         if (args[1].equals("list")) {
-                            s.sendMessage(M.PREFIX + M.CUSTOM_COLOR_LIST);
+                            s.sendMessage(M.PREFIX + M.GROUP_COLOR_LIST);
 
-                            HashMap<String, String> customColours = configUtils.getCustomColours();
-                            for (String colourName : customColours.keySet()) {
-                                s.sendMessage(GeneralUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName), configUtils, M));
+                            HashMap<String, String> groupColours = configUtils.getGroupColours();
+                            for (String colourName : groupColours.keySet()) {
+                                s.sendMessage(GeneralUtils.colourSetMessage(M.GROUP_COLOR_FORMAT.replace("[color-name]", colourName), groupColours.get(colourName), configUtils, M));
                             }
 
                             return true;
@@ -164,12 +164,12 @@ public class ChatColorCommand implements CommandExecutor {
                             }
 
                             String fullColour = colour + modifiers;
-                            configUtils.addCustomColour(name, fullColour);
-                            s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.ADDED_CUSTOM_COLOR.replace("[color-name]", name), fullColour, configUtils, M));
+                            configUtils.addGroupColour(name, fullColour);
+                            s.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.ADDED_GROUP_COLOR.replace("[color-name]", name), fullColour, configUtils, M));
                         }
                         else if (action.equals("remove")) {
-                            configUtils.removeCustomColour(name);
-                            s.sendMessage(M.PREFIX + M.REMOVED_CUSTOM_COLOR.replace("[color-name]", name));
+                            configUtils.removeGroupColour(name);
+                            s.sendMessage(M.PREFIX + M.REMOVED_GROUP_COLOR.replace("[color-name]", name));
                         }
 
                         return true;
@@ -208,11 +208,11 @@ public class ChatColorCommand implements CommandExecutor {
             }
             // Otherwise, set their colour.
             else {
-                // Check if they have been set to a custom colour, and if it's forced.
-                // Admins no longer bypass this check as it's no longer possible to wildcard custom colour permissions.
-                if (configUtils.getCustomColour(s) != null) {
-                    if ((boolean) configUtils.getSetting("force-custom-colors")) {
-                        s.sendMessage(M.PREFIX + M.USING_CUSTOM_COLOR);
+                // Check if they have been set to a group colour, and if it's forced.
+                // Admins no longer bypass this check as it's no longer possible to wildcard group colour permissions.
+                if (configUtils.getGroupColour(s) != null) {
+                    if ((boolean) configUtils.getSetting("force-group-colors")) {
+                        s.sendMessage(M.PREFIX + M.USING_GROUP_COLOR);
                         return true;
                     }
                 }
@@ -365,14 +365,14 @@ public class ChatColorCommand implements CommandExecutor {
         UUID uuid = player.getUniqueId();
 
         if (args.length == 0) {
-            // Check if they have a custom colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-            String customColour = configUtils.getCustomColour(player);
+            // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
+            String groupColour = configUtils.getGroupColour(player);
             String colour = configUtils.getColour(uuid);
 
-            if (customColour != null) {
+            if (groupColour != null) {
                 // If it should be forced, set it so.
-                if ((boolean) configUtils.getSetting("force-custom-colors")) {
-                    colour = customColour;
+                if ((boolean) configUtils.getSetting("force-group-colors")) {
+                    colour = groupColour;
                 }
             }
 
@@ -408,7 +408,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return false;
             }
 
-            List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name", "force-custom-colors", "default-color-enabled");
+            List<String> settings = Arrays.asList("auto-save", "save-interval", "color-override", "notify-others", "join-message", "confirm-timeout", "default-color", "rainbow-sequence", "command-name", "force-group-colors", "default-color-enabled");
 
             if (!settings.contains(args[1])) {
                 player.sendMessage(M.PREFIX + M.INVALID_SETTING.replace("[setting]", args[1]));
@@ -468,8 +468,8 @@ public class ChatColorCommand implements CommandExecutor {
             return true;
         }
 
-        // Check if they are modifying a custom colour.
-        if (args[0].equals("custom")) {
+        // Check if they are modifying a group colour.
+        if (args[0].equals("group")) {
             if (args.length < 2) {
                 player.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
                 return false;
@@ -500,8 +500,8 @@ public class ChatColorCommand implements CommandExecutor {
                 }
 
                 // Make sure it doesn't already exist.
-                if (configUtils.customColourExists(name)) {
-                    player.sendMessage(M.PREFIX + M.CUSTOM_COLOR_EXISTS);
+                if (configUtils.groupColourExists(name)) {
+                    player.sendMessage(M.PREFIX + M.GROUP_COLOR_EXISTS);
                     return false;
                 }
 
@@ -533,8 +533,8 @@ public class ChatColorCommand implements CommandExecutor {
             else if (action.equals("remove")) {
 
                 // Make sure it exists.
-                if (!configUtils.customColourExists(name)) {
-                    player.sendMessage(M.PREFIX + M.CUSTOM_COLOR_NOT_EXISTS);
+                if (!configUtils.groupColourExists(name)) {
+                    player.sendMessage(M.PREFIX + M.GROUP_COLOR_NOT_EXISTS);
                     return false;
                 }
 
@@ -744,7 +744,7 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(GeneralUtils.colourise("&eOther Permissions:"));
         player.sendMessage(GeneralUtils.colourise(" &7- &eChange Own Color: &cchatcolor.change.self"));
         player.sendMessage(GeneralUtils.colourise(" &7- &eChange Other's Color: &cchatcolor.change.others"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eSet a Custom Chat Color: &7cchatcolor.custom.<color name>"));
+        player.sendMessage(GeneralUtils.colourise(" &7- &eSet a Group Chat Color: &7cchatcolor.group.<color name>"));
     }
 
     private void handleSettingsHelp(Player player) {
@@ -781,8 +781,8 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set rainbow-sequence <sequence>"));
 
         player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &eforce-custom-colors: &cForce custom colors to be active."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set force-custom-colors <true/false>"));
+        player.sendMessage(GeneralUtils.colourise(" &7- &eforce-group-colors: &cForce group colors to be active."));
+        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set force-group-colors <true/false>"));
     }
 
     private void handleSet(String[] args, Player player) {
@@ -1009,7 +1009,7 @@ public class ChatColorCommand implements CommandExecutor {
                 break;
             }
 
-            case "force-custom-colors": {
+            case "force-group-colors": {
                 boolean val;
 
                 try {
@@ -1020,7 +1020,7 @@ public class ChatColorCommand implements CommandExecutor {
                     return;
                 }
 
-                boolean notify = (boolean) configUtils.getSetting("force-custom-colors");
+                boolean notify = (boolean) configUtils.getSetting("force-group-colors");
 
                 if (val == notify) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);

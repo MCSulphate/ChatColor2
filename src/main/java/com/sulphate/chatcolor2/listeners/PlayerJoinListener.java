@@ -47,14 +47,14 @@ public class PlayerJoinListener implements Listener {
                 GeneralUtils.verifyRainbowSequence(rseq, true, configUtils);
             }
 
-            // Check if they have a custom colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-            String customColour = configUtils.getCustomColour(player);
+            // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
+            String groupColour = configUtils.getGroupColour(player);
             String colour = configUtils.getColour(uuid);
 
-            if (customColour != null) {
+            if (groupColour != null) {
                 // If it should be forced, set it so.
-                if ((boolean) configUtils.getSetting("force-custom-colors")) {
-                    colour = customColour;
+                if ((boolean) configUtils.getSetting("force-group-colors")) {
+                    colour = groupColour;
                 }
             }
 
