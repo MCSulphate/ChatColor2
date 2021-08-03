@@ -24,7 +24,7 @@ public class ConfigsManager {
 
     // (re)loads all configs.
     public void loadAllConfigs() {
-        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "groups.yml", "gui.yml" };
+        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "groups.yml", "gui.yml", "custom-colors.yml" };
         configs.clear();
 
         for (String fileName : fileNames) {

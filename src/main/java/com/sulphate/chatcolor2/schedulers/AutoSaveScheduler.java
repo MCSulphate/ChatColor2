@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoSaveScheduler {
 
-    private ChatColor plugin;
+    private final ChatColor plugin;
 
     private BukkitTask task;
-    private ConcurrentHashMap<String, YamlConfiguration> configsToSave;
+    private final ConcurrentHashMap<String, YamlConfiguration> configsToSave;
     private int saveInterval;
 
     public AutoSaveScheduler(int saveInterval) {
@@ -27,7 +27,7 @@ public class AutoSaveScheduler {
     }
 
     private void run() {
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllConfigs, saveInterval * 20 * 60, saveInterval * 20 * 60);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllConfigs, (long) saveInterval * 20 * 60, (long) saveInterval * 20 * 60);
     }
 
     public void setSaveInterval(int saveInterval) {

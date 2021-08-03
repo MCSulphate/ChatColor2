@@ -13,12 +13,14 @@ import java.util.UUID;
 public class ChatListener implements Listener {
 
     private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
 
-    public ChatListener(ConfigUtils configUtils) {
+    public ChatListener(ConfigUtils configUtils, GeneralUtils generalUtils) {
         this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEvent(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         String message = e.getMessage();
@@ -26,7 +28,7 @@ public class ChatListener implements Listener {
 
         // Check default colour.
         if ((boolean) configUtils.getSetting("default-color-enabled")) {
-            GeneralUtils.checkDefault(uuid, configUtils);
+            generalUtils.checkDefault(uuid);
         }
 
         // If their message contains &, check they have permissions for it, or strip the colour.
@@ -49,7 +51,7 @@ public class ChatListener implements Listener {
             }
         }
 
-        e.setMessage(GeneralUtils.colouriseMessage(colour, message, true, configUtils));
+        e.setMessage(generalUtils.colouriseMessage(colour, message, true));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -10,10 +11,25 @@ import java.util.regex.Pattern;
 
 public class GeneralUtils {
 
+    private final ConfigUtils configUtils;
+    private final CustomColoursManager customColoursManager;
+    private final Messages M;
+
+    public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, Messages M) {
+        this.configUtils = configUtils;
+        this.customColoursManager = customColoursManager;
+        this.M = M;
+    }
+
     // Small utility method to colourise messages.
     public static String colourise(String message) {
+        // Attempt to colourise any rainbow text.
+        if (message.contains("&u")) {
+            message = colouriseRainbow(message);
+        }
+
         // Replace hex colour codes with the correct hex colour(s).
-        Pattern hexPattern = Pattern.compile("#[A-Fa-f0-9]{6}");
+        Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
         Matcher matcher = hexPattern.matcher(message);
         StringBuffer result = new StringBuffer();
 
@@ -28,14 +44,74 @@ public class GeneralUtils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    private static String colouriseRainbow(String message) {
+        Pattern pattern = Pattern.compile("(&u\\[[^\\[\\]]+])((&[klmno])*)?");
+        Matcher matcher = pattern.matcher(message);
+
+        if (matcher.find()) {
+            String unparsedRainbow = matcher.group(1);
+            String mods = matcher.group(2);
+
+
+            List<String> parsedRainbow = parseRainbowColour(unparsedRainbow);
+            message = message.substring(matcher.end());
+
+            if (message.isEmpty()) {
+                return message;
+            }
+
+            message = pattern.matcher(message).replaceAll("");
+            return applyRainbow(parsedRainbow, mods, message);
+        }
+
+        return message;
+    }
+
+    private static String applyRainbow(List<String> colours, String mods, String text) {
+        int colourIndex = 0;
+        StringBuilder builder = new StringBuilder();
+
+        for (char c : text.toCharArray()) {
+            if (colourIndex == colours.size()) {
+                colourIndex = 0;
+            }
+
+            if (c == ' ') {
+                builder.append(c);
+                continue;
+            }
+
+            String colour = colours.get(colourIndex);
+
+            if (colour.startsWith("#")) {
+                builder.append(createHexColour(colour));
+            }
+            else {
+                builder.append('&').append(colour);
+            }
+
+            if (mods != null) {
+                builder.append(mods);
+            }
+
+            builder.append(c);
+            colourIndex++;
+        }
+
+        return builder.toString();
+    }
+
     public static void sendConsoleMessage(String message) {
         Bukkit.getConsoleSender().sendMessage(colourise(message));
     }
 
+    public static boolean isCustomColour(String colour) {
+        return colour.startsWith("%");
+    }
+
     // Validates if a string is a valid hex colour.
     public static boolean isValidHexColour(String toValidate) {
-        // If it replaces the regex to nothing, then it's a valid colour.
-        return toValidate.replaceFirst("#[a-fA-F0-9]{6}", "").equals("");
+        return Pattern.compile("#[a-fA-F0-9]{6}").matcher(toValidate).matches();
     }
 
     public static String createHexColour(String hexString) {
@@ -44,91 +120,56 @@ public class GeneralUtils {
             return colourise("&f");
         }
 
+        hexString = hexString.replace("&", "");
         return net.md_5.bungee.api.ChatColor.of(hexString).toString();
     }
 
-    public static boolean verifyRainbowSequence(String seq, ConfigUtils configUtils) {
-        return verifyRainbowSequence(seq, false, configUtils);
-    }
-
-    public static boolean verifyRainbowSequence(String seq, boolean replace, ConfigUtils configUtils) {
+    public static boolean verifyRainbowSequence(List<String> seq) {
         List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
-        String[] chars = seq.split("");
 
         boolean verify = true;
         // Hex flag to check for legacy availability.
         boolean hexFlag = false;
-        for (int i = 0; i < chars.length; i++) {
-            String c = chars[i];
-
+        for (String part : seq) {
             // Handle hex colours in the rainbow sequence.
-            if (c.equals("#")) {
+            if (part.startsWith("#")) {
                 hexFlag = true;
 
-                if (seq.length() < i + 7) {
+                if (part.length() != 7) {
                     verify = false;
                     break;
                 }
-
-                String hexSubstring = seq.substring(i, i + 7);
-
-                if (!GeneralUtils.isValidHexColour(hexSubstring)) {
+                else if (!GeneralUtils.isValidHexColour(part)) {
                     verify = false;
                     break;
-                }
-                else {
-                    i += 6;
                 }
             }
-            else {
-                if (!cols.contains(c)) {
-                    verify = false;
-                    break;
-                }
+            else if (!cols.contains(part)) {
+                verify = false;
+                break;
             }
         }
 
-        if (hexFlag && verify && CompatabilityUtils.isMaterialLegacy()) {
+        if (hexFlag && verify && CompatabilityUtils.isHexLegacy()) {
             verify = false;
-        }
-
-        if (replace && !verify) {
-            configUtils.setSetting("rainbow-sequence", "abcde");
         }
 
         return verify;
     }
 
-    public static String getRainbowSequenceText(char[] sequence, String sequenceString) {
-        // Only need to manually colour the new one.
-        StringBuilder builder = new StringBuilder();
+    public static List<String> parseRainbowColour(String toParse) {
+        Pattern pattern = Pattern.compile("&u\\[(([0-9a-f],)|(#[0-9a-fA-F]{6},))*([0-9a-f]|(#[0-9a-fA-F]{6}))]");
+        Matcher matcher = pattern.matcher(toParse);
 
-        // Use a skip counter to handle hex colours.
-        int hexCounter = 0;
-        String currentHexColour = null;
+        if (matcher.matches()) {
+            int start = toParse.indexOf('[');
+            String innerPart = toParse.substring(start + 1, toParse.length() - 1);
+            String[] colours = innerPart.split(",");
 
-        for (int i = 0; i < sequence.length; i++) {
-            char c = sequence[i];
-
-            if (c == '#') {
-                hexCounter = 6;
-                currentHexColour = sequenceString.substring(i, i + 7);
-
-                builder.append(currentHexColour);
-                builder.append(c);
-            }
-            else if (hexCounter > 0) {
-                hexCounter--;
-
-                builder.append(currentHexColour);
-                builder.append(c);
-            }
-            else {
-                builder.append("&").append(c).append(c);
-            }
+            return Arrays.asList(colours);
         }
 
-        return colourise(builder.toString());
+        return null;
     }
 
     // Returns whether a String is different when colourised.
@@ -139,8 +180,12 @@ public class GeneralUtils {
 
     // Applies a color string (like the one the MainClass.getUtils().getColor(uuid) method returns) to a message,
     // optionally taking into account the color override setting.
-    public static String colouriseMessage(String colour, String message, boolean checkOverride, ConfigUtils configUtils) {
+    public String colouriseMessage(String colour, String message, boolean checkOverride) {
         String colourisedMessage = message;
+
+        if (isCustomColour(colour)) {
+            colour = customColoursManager.getCustomColour(colour);
+        }
 
         // Check the override if the coloured message is different.
         if (checkOverride && isDifferentWhenColourised(message)) {
@@ -159,59 +204,7 @@ public class GeneralUtils {
             }
         }
 
-        if (colour.contains("rainbow")) {
-            String rseq = (String) configUtils.getSetting("rainbow-sequence");
-
-            if (!verifyRainbowSequence(rseq, configUtils)) {
-                configUtils.setSetting("rainbow-sequence", "abcde");
-                rseq = "abcde";
-            }
-
-            String mods = colour.replace("rainbow", "");
-            char[] colours = rseq.toCharArray();
-            int[] colourOffsets = new int[colours.length];
-            char[] msgchars = message.toCharArray();
-            int currentColourIndex = 0;
-
-            // Find the colour offsets - this accounts for hex colours.
-            int offsetIndex = 0;
-            for (int i = 0; i < colours.length; i++) {
-                char c = colours[i];
-                colourOffsets[offsetIndex] = i;
-                offsetIndex++;
-
-                // Add six characters for a hex colour.
-                if (c == '#') {
-                    i += 6;
-                }
-            }
-
-            StringBuilder builder = new StringBuilder();
-
-            for (char c : msgchars) {
-                int colourIndex = colourOffsets[currentColourIndex];
-                char colourChar = colours[colourIndex];
-
-                if (colourChar == '#') {
-                    builder.append(rseq, colourIndex, colourIndex + 7);
-                }
-                else {
-                    builder.append('&').append(colourChar);
-                }
-
-                builder.append(mods);
-                builder.append(c);
-
-                currentColourIndex++;
-                if (currentColourIndex == offsetIndex) {
-                    currentColourIndex = 0;
-                }
-            }
-
-            return GeneralUtils.colourise(builder.toString());
-        }
-
-        return GeneralUtils.colourise(colour) + colourisedMessage;
+        return GeneralUtils.colourise(colour + colourisedMessage);
     }
 
     public static char[] getAvailableColours(Player player) {
@@ -242,7 +235,7 @@ public class GeneralUtils {
 
     // Replaces a set-colour-message including if rainbow is in the colour.
     // This is a clever (if I say so myself) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
-    public static String colourSetMessage(String originalMessage, String colour, ConfigUtils configUtils, Messages M) {
+    public String colourSetMessage(String originalMessage, String colour) {
         String placeholder = originalMessage.contains("[color]") ? "[color]" : originalMessage.contains("[color-text]") ? "[color-text]" : null;
 
         // If there is no placeholder present, we don't need to do anything.
@@ -252,17 +245,16 @@ public class GeneralUtils {
 
         // If the color-text placeholder is present, set colour to the text equivalent.
         if (placeholder.equals("[color-text]")) {
-            colour = GeneralUtils.getTextEquivalent(colour, M, configUtils);
+            colour = getTextEquivalent(colour);
         }
 
         // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
-        if (colour.contains("rainbow")) {
+        if (colour.contains("&u") || colour.contains("%")) {
             String finalString;
 
             // The message up to the colour placeholder.
             String firstPart = originalMessage.substring(0, originalMessage.indexOf(placeholder));
             // The message past the colour placeholder.
-
             String lastPart = originalMessage.substring(originalMessage.indexOf(placeholder) + placeholder.length());
 
             // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
@@ -272,10 +264,10 @@ public class GeneralUtils {
                 // The part of the message past the placeholder that *is* colour-changed, if any.
                 String toAdd = lastPart.substring(lastPart.indexOf(ChatColor.COLOR_CHAR + ""));
 
-                finalString = firstPart + GeneralUtils.colouriseMessage(colour, toColour, false, configUtils) + toAdd;
+                finalString = firstPart + colouriseMessage(colour, toColour, false) + toAdd;
             }
             else {
-                finalString = firstPart + GeneralUtils.colouriseMessage(colour, lastPart, false, configUtils);
+                finalString = firstPart + colouriseMessage(colour, lastPart, false);
             }
 
             return finalString;
@@ -286,14 +278,10 @@ public class GeneralUtils {
     }
 
     // Returns the text equivalent of a string of colours or modifiers.
-    public static String getTextEquivalent(String str, Messages M, ConfigUtils configUtils) {
+    // TODO: Rewrite this, it's very broken at the moment from rainbows & custom colours.
+    public String getTextEquivalent(String colour) {
         StringBuilder builder = new StringBuilder();
-        String stripped = str.replaceAll("&", "");
-
-        if (stripped.contains("rainbow")) {
-            builder.append(colouriseMessage("rainbow", M.RAINBOW, false, configUtils)).append("&r");
-            stripped = stripped.replace("rainbow", "");
-        }
+        String stripped = colour.replaceAll("&", "");
 
         char[] chars = stripped.toCharArray();
 
@@ -317,7 +305,7 @@ public class GeneralUtils {
         return colourise(builder.toString());
     }
 
-    public static void checkDefault(UUID uuid, ConfigUtils configUtils) {
+    public void checkDefault(UUID uuid) {
         long currentCode = configUtils.getCurrentDefaultCode();
         long playerCode = configUtils.getDefaultCode(uuid);
 

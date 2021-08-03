@@ -15,6 +15,7 @@ public class GUI {
 
     private final GUIManager manager;
     private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
     private final Messages M;
 
     private final String guiName;
@@ -30,9 +31,10 @@ public class GUI {
     private ItemStack modifierInactive;
     private ItemStack hexColorsNotSupported;
 
-    public GUI(GUIManager manager, String guiName, ConfigurationSection config, ConfigUtils configUtils, Messages M) {
+    public GUI(GUIManager manager, String guiName, ConfigurationSection config, ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
         this.manager = manager;
         this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
         this.M = M;
         this.guiName = guiName;
 
@@ -306,10 +308,18 @@ public class GUI {
                             player.sendMessage(M.PREFIX + M.GUI_COLOR_ALREADY_SET);
                         }
                         else {
-                            parts[0] = clicked.getData();
-                            ChatColorCommand.setColorFromArgs(uuid, parts, configUtils);
+                            String colour;
 
-                            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
+                            if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
+                                colour = colourFromParts(clicked.getData(), new ArrayList<>());
+                            }
+                            else {
+                                colour = colourFromParts(clicked.getData(), modifierParts);
+                            }
+
+                            configUtils.setColour(uuid, colour);
+
+                            player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid)));
                             manager.openGUI(player, guiName); // Refresh GUI.
                         }
                     }
@@ -318,13 +328,17 @@ public class GUI {
                 }
 
                 case MODIFIER: {
-                    Material clickedMaterial = item.getType();
-
                     // Have to check lore here for compatability with older versions (dyes are the same material in legacy).
                     if (GUIUtils.colouriseList(modifierUnavailable.getItemMeta().getLore()).equals(item.getItemMeta().getLore())) {
                         player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", item.getItemMeta().getDisplayName()));
                     }
                     else {
+                        if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
+                            // TODO: CANT CHANGE MODS ON CUSTOM
+                            player.sendMessage("CANT CHANGE MODS ON CUSTOM COLOURS");
+                            return;
+                        }
+
                         List<String> clickedLore = item.getItemMeta().getLore();
 
                         if (GUIUtils.colouriseList(modifierActive.getItemMeta().getLore()).equals(clickedLore)) {
@@ -334,10 +348,10 @@ public class GUI {
                             modifierParts.add(clicked.getData());
                         }
 
-                        modifierParts.add(0, colourPart);
-                        ChatColorCommand.setColorFromArgs(uuid, modifierParts.toArray(new String[] {}), configUtils);
+                        String colour = colourFromParts(colourPart, modifierParts);
+                        configUtils.setColour(uuid, colour);
 
-                        player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid), configUtils, M));
+                        player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid)));
                         manager.openGUI(player, guiName);
                     }
 
@@ -350,6 +364,23 @@ public class GUI {
                 }
             }
         }
+    }
+
+    private String colourFromParts(String colourPart, List<String> modifierParts) {
+        StringBuilder builder = new StringBuilder();
+
+        if (GeneralUtils.isCustomColour(colourPart)) {
+            builder.append(colourPart);
+        }
+        else {
+            builder.append('&').append(colourPart);
+        }
+
+        for (String modPart : modifierParts) {
+            builder.append('&').append(modPart);
+        }
+
+        return builder.toString();
     }
 
 }

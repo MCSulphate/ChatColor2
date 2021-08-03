@@ -11,6 +11,7 @@ import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.*;
@@ -32,7 +33,9 @@ public class ChatColor extends JavaPlugin {
 
     private HandlersManager handlersManager;
     private ConfigsManager configsManager;
+    private CustomColoursManager customColoursManager;
     private ConfigUtils configUtils;
+    private GeneralUtils generalUtils;
     private GUIManager guiManager;
     private ConfirmationsManager confirmationsManager;
     private AutoSaveScheduler saveScheduler;
@@ -79,7 +82,7 @@ public class ChatColor extends JavaPlugin {
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(this, configUtils, M).register();
+            new PlaceholderAPIHook(this, configUtils, generalUtils, M).register();
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
         else {
@@ -106,9 +109,11 @@ public class ChatColor extends JavaPlugin {
 
         handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
+        customColoursManager = new CustomColoursManager(configsManager);
         configUtils = new ConfigUtils(configsManager);
+        generalUtils = new GeneralUtils(configUtils, customColoursManager, M);
         M = new Messages(configUtils);
-        guiManager = new GUIManager(configsManager, configUtils, M);
+        guiManager = new GUIManager(configsManager, configUtils, generalUtils, M);
         confirmationsManager = new ConfirmationsManager();
 
         boolean setSaveInterval = false;
@@ -130,14 +135,17 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupCommands() {
-        getCommand("chatcolor").setExecutor(new ChatColorCommand(M, configUtils, confirmationsManager, configsManager, handlersManager, guiManager));
+        getCommand("chatcolor").setExecutor(new ChatColorCommand(
+                M, generalUtils, configUtils, confirmationsManager, configsManager, handlersManager,
+                guiManager, customColoursManager
+        ));
 
-        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configUtils));
+        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configUtils, generalUtils));
     }
 
     private void setupListeners() {
-        manager.registerEvents(new PlayerJoinListener(M, configUtils, configsManager), this);
-        manager.registerEvents(new ChatListener(configUtils), this);
+        manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, configsManager), this);
+        manager.registerEvents(new ChatListener(configUtils, generalUtils), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(guiManager, this);
     }
@@ -256,6 +264,12 @@ public class ChatColor extends JavaPlugin {
             saveResource("gui.yml", true);
         }
 
+        File customColours = new File(dataFolder, "custom-colors.yml");
+
+        if (!customColours.exists()) {
+            saveResource("custom-colors.yml", true);
+        }
+
         return true;
     }
 
@@ -326,7 +340,7 @@ public class ChatColor extends JavaPlugin {
                 // If not, set the message and save the config.
                 // Yes, this ruins the formatting, but at least the plugin works.
                 currentConfig.set(key, defaultConfig.getString(key));
-                configsManager.saveConfig("messages.yml");
+                configsManager.saveConfig(Config.MESSAGES);
 
                 console.sendMessage(M.PREFIX + GeneralUtils.colourise("&eAdded new message: &a" + key));
                 needsReload = true;
@@ -357,7 +371,7 @@ public class ChatColor extends JavaPlugin {
             if (!currentConfig.contains("settings." + key)) {
                 // If not, set the default and save the config.
                 currentConfig.set("settings." + key, defaultConfig.get("settings." + key));
-                configsManager.saveConfig("config.yml");
+                configsManager.saveConfig(Config.MAIN_CONFIG);
             }
         }
     }

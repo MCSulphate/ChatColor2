@@ -16,13 +16,15 @@ import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
 
-    private Messages M;
-    private ConfigUtils configUtils;
-    private ConfigsManager configsManager;
+    private final Messages M;
+    private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
+    private final ConfigsManager configsManager;
 
-    public PlayerJoinListener(Messages M, ConfigUtils configUtils, ConfigsManager configsManager) {
+    public PlayerJoinListener(Messages M, ConfigUtils configUtils, GeneralUtils generalUtils, ConfigsManager configsManager) {
         this.M = M;
         this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
         this.configsManager = configsManager;
     }
 
@@ -38,15 +40,9 @@ public class PlayerJoinListener implements Listener {
 
         // Update the player list and check their default colour.
         configUtils.updatePlayerListEntry(player.getName(), uuid);
-        GeneralUtils.checkDefault(uuid, configUtils);
+        generalUtils.checkDefault(uuid);
 
         if ((boolean) configUtils.getSetting("join-message")) {
-            if (configUtils.getColour(uuid).contains("rainbow")) {
-                // Make sure the sequence is valid.
-                String rseq = (String) configUtils.getSetting("rainbow-sequence");
-                GeneralUtils.verifyRainbowSequence(rseq, true, configUtils);
-            }
-
             // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
             String groupColour = configUtils.getGroupColour(player);
             String colour = configUtils.getColour(uuid);
@@ -58,7 +54,7 @@ public class PlayerJoinListener implements Listener {
                 }
             }
 
-            player.sendMessage(M.PREFIX + GeneralUtils.colourSetMessage(M.CURRENT_COLOR, colour, configUtils, M));
+            player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.CURRENT_COLOR, colour));
         }
 
         if (GeneralUtils.check(player)) {

@@ -8,7 +8,6 @@ settings:
   join-message: true
   confirm-timeout: 10
   default-color: '&f'
-  rainbow-sequence: 'abcde'
   command-name: 'chatcolor'
   force-group-colors: true
   default-color-enabled: true

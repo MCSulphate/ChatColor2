@@ -50,6 +50,9 @@ public class GUIUtils {
                 if (item.getData().startsWith("#")) {
                     return GeneralUtils.checkPermission(player, "chatcolor.use-hex-codes");
                 }
+                else if (item.getData().startsWith("%")) {
+                    return GeneralUtils.checkPermission(player, "chatcolor.custom." + item.getData().replace("%", ""));
+                }
                 else {
                     return GeneralUtils.checkPermission(player, "chatcolor.color." + item.getData());
                 }

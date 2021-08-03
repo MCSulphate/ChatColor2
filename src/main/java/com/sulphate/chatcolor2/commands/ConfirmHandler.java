@@ -14,14 +14,16 @@ import com.sulphate.chatcolor2.utils.Messages;
 
 public class ConfirmHandler extends Handler {
 
-    private Messages M;
-    private ConfirmationsManager confirmationsManager;
-    private ConfigUtils configUtils;
+    private final Messages M;
+    private final ConfirmationsManager confirmationsManager;
+    private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
 
-    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils) {
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils, GeneralUtils generalUtils) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
         this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
     }
 
     @Override
@@ -108,15 +110,7 @@ public class ConfirmHandler extends Handler {
                 String value = (String) scheduler.getValue();
 
                 configUtils.createNewDefaultColour(value);
-                valueString = GeneralUtils.colouriseMessage(value, "this", false, configUtils);
-                break;
-            }
-
-            case "rainbow-sequence": {
-                String value = (String) scheduler.getValue();
-
-                configUtils.setSetting("rainbow-sequence", value);
-                valueString = GeneralUtils.getRainbowSequenceText(value.toCharArray(), value);
+                valueString = generalUtils.colouriseMessage(value, "this", false);
                 break;
             }
 

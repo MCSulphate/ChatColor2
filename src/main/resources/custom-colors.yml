@@ -1,0 +1,4 @@
+# Format:
+# <custom-color-name>: <color>
+blue-rainbow: '&u[#0000ff,#0066ff,#3399ff,#66ccff]'
+bright-rainbow: '&u[a,b,c,d,e]'

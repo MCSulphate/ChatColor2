@@ -8,13 +8,15 @@ import java.util.UUID;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 
-    private ChatColor plugin;
-    private ConfigUtils configUtils;
-    private Messages M;
+    private final ChatColor plugin;
+    private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
+    private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, Messages M) {
+    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
         this.plugin = plugin;
         this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
         this.M = M;
     }
 
@@ -69,13 +71,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             case "full_color_text": {
                 String colour = configUtils.getColour(uuid);
 
-                return GeneralUtils.getTextEquivalent(colour, M, configUtils);
+                return generalUtils.getTextEquivalent(colour);
             }
 
             case "full_color_text_plain": {
                 String colour = configUtils.getColour(uuid);
 
-                return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour, M, configUtils));
+                return org.bukkit.ChatColor.stripColor(generalUtils.getTextEquivalent(colour));
             }
 
             case "modifiers": {
@@ -88,22 +90,24 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             case "modifiers_text": {
                 String colour = configUtils.getColour(uuid);
 
+                // TODO: Fix this for custom & custom rainbows
                 if (colour.contains("rainbow")) {
-                    return GeneralUtils.getTextEquivalent(colour.replace("rainbow", ""), M, configUtils);
+                    return generalUtils.getTextEquivalent(colour.replace("rainbow", ""));
                 }
                 else {
-                    return GeneralUtils.getTextEquivalent(colour.substring(2), M, configUtils);
+                    return generalUtils.getTextEquivalent(colour.substring(2));
                 }
             }
 
             case "modifiers_text_plain": {
                 String colour = configUtils.getColour(uuid);
 
+                // TODO: Fix this for custom & custom rainbows
                 if (colour.contains("rainbow")) {
-                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.replace("rainbow", ""), M, configUtils));
+                    return org.bukkit.ChatColor.stripColor(generalUtils.getTextEquivalent(colour.replace("rainbow", "")));
                 }
                 else {
-                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.substring(2), M, configUtils));
+                    return org.bukkit.ChatColor.stripColor(generalUtils.getTextEquivalent(colour.substring(2)));
                 }
             }
 
@@ -117,22 +121,24 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             case "color_text": {
                 String colour = configUtils.getColour(uuid);
 
+                // TODO: Fix this for custom & custom rainbows
                 if (colour.contains("rainbow")) {
-                    return GeneralUtils.getTextEquivalent("rainbow", M, configUtils);
+                    return generalUtils.getTextEquivalent("rainbow");
                 }
                 else {
-                    return GeneralUtils.getTextEquivalent(colour.substring(0, 2), M, configUtils);
+                    return generalUtils.getTextEquivalent(colour.substring(0, 2));
                 }
             }
 
             case "color_text_plain": {
                 String colour = configUtils.getColour(uuid);
 
+                // TODO: Fix this for custom & custom rainbows
                 if (colour.contains("rainbow")) {
-                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent("rainbow", M, configUtils));
+                    return org.bukkit.ChatColor.stripColor(generalUtils.getTextEquivalent("rainbow"));
                 }
                 else {
-                    return org.bukkit.ChatColor.stripColor(GeneralUtils.getTextEquivalent(colour.substring(0, 2), M, configUtils));
+                    return org.bukkit.ChatColor.stripColor(generalUtils.getTextEquivalent(colour.substring(0, 2)));
                 }
             }
 

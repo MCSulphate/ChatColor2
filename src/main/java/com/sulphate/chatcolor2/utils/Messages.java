@@ -54,6 +54,9 @@ public class Messages {
     public String NO_HEX_PERMISSIONS;
     public String HEX_ACCESS;
     public String NO_HEX_SUPPORT;
+    public String CANNOT_MODIFY_CUSTOM_COLOR;
+    public String NO_CUSTOM_COLOR_PERMISSIONS;
+    public String INVALID_CUSTOM_COLOR;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -155,6 +158,9 @@ public class Messages {
         NO_HEX_PERMISSIONS = getAndColourise("no-hex-permissions");
         HEX_ACCESS = getAndColourise("hex-access");
         NO_HEX_SUPPORT = getAndColourise("no-hex-support");
+        CANNOT_MODIFY_CUSTOM_COLOR = getAndColourise("cannot-modify-custom-color");
+        NO_CUSTOM_COLOR_PERMISSIONS = getAndColourise("no-custom-color-permissions");
+        INVALID_CUSTOM_COLOR = getAndColourise("invalid-custom-color");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");

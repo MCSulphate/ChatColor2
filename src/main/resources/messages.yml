@@ -42,6 +42,9 @@ modifier-already-in-color: '&cThat modifier is already in your color.'
 no-hex-permissions: '&cYou do not have permission to use hex codes.'
 hex-access: '&eYou have access to hex codes.'
 no-hex-support: '&cHex colours are not supported on Minecraft versions less than 1.16.'
+cannot-modify-custom-color: '&cYou cannot modify a custom color.'
+no-custom-color-permissions: '&cYou do not have permission to use that custom color.'
+invalid-custom-color: '&cThat custom color does not exist.'
 
 # Group-Color Messages
 group-color-exists: '&cThat group color already exists!'

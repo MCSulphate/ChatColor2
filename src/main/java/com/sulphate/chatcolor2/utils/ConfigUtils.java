@@ -37,8 +37,8 @@ public class ConfigUtils {
 
     // Sets a setting.
     public void setSetting(String key, Object value) {
-        configsManager.getConfig("config.yml").set("settings." + key, value);
-        configsManager.saveConfig("config.yml");
+        configsManager.getConfig(Config.MAIN_CONFIG).set("settings." + key, value);
+        configsManager.saveConfig(Config.MAIN_CONFIG);
     }
 
     // Gets a player's colour (config must be loaded).
@@ -102,8 +102,8 @@ public class ConfigUtils {
         // Current millis time will always be unique.
         long code = (System.currentTimeMillis() / 1000);
 
-        setAndSave("config.yml", "default.code", code);
-        setAndSave("config.yml", "default.color", colour);
+        setAndSave(Config.MAIN_CONFIG, "default.code", code);
+        setAndSave(Config.MAIN_CONFIG, "default.color", colour);
     }
 
     // Attempts to get a player's UUID from their name, from the playerlist.
@@ -121,12 +121,12 @@ public class ConfigUtils {
 
     // Updates a player's playerlist entry.
     public void updatePlayerListEntry(String name, UUID uuid) {
-        setAndSave("player-list.yml", name, uuid.toString());
+        setAndSave(Config.PLAYER_LIST, name, uuid.toString());
     }
 
     // Gets a list of group colours.
     public HashMap<String, String> getGroupColours() {
-        YamlConfiguration config = configsManager.getConfig("groups.yml");
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
         HashMap<String, String> returnValue = new HashMap<>();
 
         // Fill the HashMap with the group colours.
@@ -145,12 +145,12 @@ public class ConfigUtils {
 
     // Adds a new group colour.
     public void addGroupColour(String name, String colour) {
-        setAndSave("groups.yml", name, colour);
+        setAndSave(Config.GROUPS, name, colour);
     }
 
     // Removes a group colour.
     public void removeGroupColour(String name) {
-        setAndSave("groups.yml", name, null);
+        setAndSave(Config.GROUPS, name, null);
     }
 
     // Returns the group colour, if any, that a player has.

@@ -10,14 +10,14 @@ import com.sulphate.chatcolor2.utils.Messages;
 
 public class ConfirmScheduler {
 
-    private Messages M;
-    private ConfirmationsManager confirmationsManager;
-    private ConfigUtils configUtils;
+    private final Messages M;
+    private final ConfirmationsManager confirmationsManager;
+    private final ConfigUtils configUtils;
 
-    private Player player;
+    private final Player player;
     private int id;
-    private String type;
-    private Object value;
+    private final String type;
+    private final Object value;
 
     public ConfirmScheduler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils, Player player, String type, Object value) {
         this.M = M;

@@ -1,7 +1,7 @@
 # GUI Config Format Guide
 #
 # NOTE: All materials must be 1.16 materials. They will be automatically
-#       converted into other version's materials.
+#       converted into other versions materials.
 #
 #       See here for 1.16:
 #       https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
@@ -14,6 +14,8 @@
 #
 # NOTE: color-unavailable, modifier-unavailable, modifier-inactive, modifier-active
 #       can all be left out if not needed.
+#
+# NOTE: Please carefully read the format, it includes everything you need for creating a GUI.
 #
 # <inventory name>:
 #   title: [inventory title (colors supported) titles MUST be unique]
@@ -189,11 +191,11 @@ main:
       name: "&fWhite"
       material: WHITE_STAINED_GLASS_PANE
 
-    22:
-      type: COLOR
-      data: rainbow
-      name: "&aR&ba&ci&dn&eb&ao&bw"
-      material: GLASS_PANE
+    27:
+      type: INVENTORY
+      data: custom
+      name: '&6View Custom Colors'
+      material: GOLD_BLOCK
 
     29:
       type: MODIFIER
@@ -222,11 +224,11 @@ main:
 
     35:
       type: INVENTORY
-      data: test
+      data: hex
       name: "&bView Hex Colors"
       material: DIAMOND_BLOCK
 
-test:
+hex:
   title: '&9Hex Colors'
   size: 36
 
@@ -234,61 +236,61 @@ test:
     10:
       type: COLOR
       data: '#FFFFFF'
-      name: '#FFFFFFWhite'
+      name: '&#FFFFFFWhite'
       material: WHITE_STAINED_GLASS_PANE
 
     11:
       type: COLOR
       data: '#F2F2F2'
-      name: '#F2F2F2Light Gray 1'
+      name: '&#F2F2F2Light Gray 1'
       material: LIGHT_GRAY_STAINED_GLASS_PANE
 
     12:
       type: COLOR
       data: '#E6E6E6'
-      name: '#E6E6E6Light Gray 2'
+      name: '&#E6E6E6Light Gray 2'
       material: LIGHT_GRAY_STAINED_GLASS_PANE
 
     13:
       type: COLOR
       data: '#D9D9D9'
-      name: '#D9D9D9Light Gray 3'
+      name: '&#D9D9D9Light Gray 3'
       material: LIGHT_GRAY_STAINED_GLASS_PANE
 
     14:
       type: COLOR
       data: '#BFBFBF'
-      name: '#BFBFBFGray 1'
+      name: '&#BFBFBFGray 1'
       material: GRAY_STAINED_GLASS_PANE
 
     15:
       type: COLOR
       data: '#A6A6A6'
-      name: '#A6A6A6Gray 2'
+      name: '&#A6A6A6Gray 2'
       material: GRAY_STAINED_GLASS_PANE
 
     16:
       type: COLOR
       data: '#8C8C8C'
-      name: '#8C8C8CGray 3'
+      name: '&#8C8C8CGray 3'
       material: GRAY_STAINED_GLASS_PANE
 
     21:
       type: COLOR
       data: '#666666'
-      name: '#666666Dark Gray 1'
+      name: '&#666666Dark Gray 1'
       material: BLACK_STAINED_GLASS_PANE
 
     22:
       type: COLOR
       data: '#4D4D4D'
-      name: '#4D4D4DDark Gray 2'
+      name: '&#4D4D4DDark Gray 2'
       material: BLACK_STAINED_GLASS_PANE
 
     23:
       type: COLOR
       data: '#333333'
-      name: '#333333Dark Gray 3'
+      name: '&#333333Dark Gray 3'
       material: BLACK_STAINED_GLASS_PANE
 
     35:
@@ -296,3 +298,26 @@ test:
       data: main
       name: "&bView Normal Colors"
       material: GOLD_BLOCK
+
+custom:
+  title: '&9Custom Colors'
+  size: 36
+
+  items:
+    12:
+      type: COLOR
+      data: '%bright-rainbow'
+      name: '&aB&br&ci&dg&eh&at &bR&ca&di&en&ab&bo&cw'
+      material: GLASS
+
+    14:
+      type: COLOR
+      data: '%blue-rainbow'
+      name: '&#0000ffB&#0066ffl&#3399ffu&#66ccffe &#0000ffR&#0066ffa&#3399ffi&#66ccffn&#0000ffb&#0066ffo&#3399ffw'
+      material: BLUE_STAINED_GLASS
+
+    35:
+      type: INVENTORY
+      data: main
+      name: '&bView Normal Colors'
+      material: DIAMOND_BLOCK
