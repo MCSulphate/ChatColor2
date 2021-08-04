@@ -22,6 +22,10 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEvent(AsyncPlayerChatEvent e) {
+        if (!(boolean) configUtils.getSetting("modify-chat")) {
+            return;
+        }
+
         Player player = e.getPlayer();
         String message = e.getMessage();
         UUID uuid = player.getUniqueId();

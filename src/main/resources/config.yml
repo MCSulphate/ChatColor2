@@ -11,6 +11,7 @@ settings:
   command-name: 'chatcolor'
   force-group-colors: true
   default-color-enabled: true
+  modify-chat: true
 default:
   code: '1'
   color: '&f'
