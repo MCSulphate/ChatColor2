@@ -82,7 +82,7 @@ public class ChatColor extends JavaPlugin {
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(this, configUtils, generalUtils, M).register();
+            new PlaceholderAPIHook(this, configUtils, generalUtils, customColoursManager, M).register();
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
         else {
@@ -285,6 +285,10 @@ public class ChatColor extends JavaPlugin {
 
         // Iterating up to first version's length, as the version string may be shorter.
         for (int i = 0; i < parts1.length; i++) {
+            if (i == parts2.length) {
+                return true;
+            }
+
             int intPart1 = Integer.parseInt(parts1[i]);
             int intPart2 = Integer.parseInt(parts2[i]);
 

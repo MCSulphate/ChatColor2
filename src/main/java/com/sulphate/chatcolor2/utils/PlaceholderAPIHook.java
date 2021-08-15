@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 
@@ -11,12 +12,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     private final ChatColor plugin;
     private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final CustomColoursManager customColoursManager;
     private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
+    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
         this.plugin = plugin;
         this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.customColoursManager = customColoursManager;
         this.M = M;
     }
 
@@ -60,12 +63,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 // Return the player's full colour, including modifiers. Does not work for rainbow colour!
                 String colour = configUtils.getColour(uuid);
 
-                if (colour.contains("rainbow")) {
-                    return "";
+                if (GeneralUtils.isCustomColour(colour)) {
+                    colour = customColoursManager.getCustomColour(colour);
                 }
-                else {
-                    return GeneralUtils.colourise(colour);
-                }
+
+                return GeneralUtils.colourise(colour);
             }
 
             case "full_color_text": {

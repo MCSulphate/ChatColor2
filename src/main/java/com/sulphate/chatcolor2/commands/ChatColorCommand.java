@@ -674,6 +674,7 @@ public class ChatColorCommand implements CommandExecutor {
                 }
                 else if (!player.isOp() && !player.hasPermission("chatcolor.custom." + colour.replace("%", ""))) {
                     player.sendMessage(M.NO_CUSTOM_COLOR_PERMISSIONS);
+                    return false;
                 }
                 else if (args.length > 1) {
                     player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
