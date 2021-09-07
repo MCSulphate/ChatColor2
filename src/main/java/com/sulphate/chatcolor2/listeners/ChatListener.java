@@ -20,7 +20,7 @@ public class ChatListener implements Listener {
         this.generalUtils = generalUtils;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEvent(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         String message = e.getMessage();
