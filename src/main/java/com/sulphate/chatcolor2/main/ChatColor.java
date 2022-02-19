@@ -58,7 +58,7 @@ public class ChatColor extends JavaPlugin {
         //Checking if Metrics is allowed for this plugin
         boolean metrics = getConfig().getBoolean("stats");
         if (metrics) {
-            new Metrics(this);
+            new Metrics(this, 826);
         }
 
         // Setup objects. commands & listeners.
@@ -71,7 +71,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Custom colours v2.0!");
+            message = message.replace("[version-description]", "Customisable listener priority!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
