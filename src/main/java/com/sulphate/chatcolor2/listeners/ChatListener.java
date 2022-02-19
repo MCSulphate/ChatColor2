@@ -2,6 +2,8 @@ package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,10 +16,12 @@ public class ChatListener implements Listener {
 
     private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final Messages M;
 
-    public ChatListener(ConfigUtils configUtils, GeneralUtils generalUtils) {
+    public ChatListener(ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
         this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.M = M;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -39,6 +43,15 @@ public class ChatListener implements Listener {
                 message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
             }
         }
+
+        if (!player.hasPermission("chatcolor.use-hex-codes") && GeneralUtils.containsHexColour(message)) {
+            while (GeneralUtils.isDifferentWhenColourised(message)) {
+                message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
+            }
+
+            player.sendMessage(M.NO_HEX_PERMISSIONS);
+        }
+
 
         // Check if they have a group colour, and if it should be enforced.
         String groupColour = configUtils.getGroupColour(player);

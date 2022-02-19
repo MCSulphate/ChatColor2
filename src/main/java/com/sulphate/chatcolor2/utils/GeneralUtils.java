@@ -44,6 +44,13 @@ public class GeneralUtils {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    public static boolean containsHexColour(String message) {
+        Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
+        Matcher matcher = hexPattern.matcher(message);
+
+        return matcher.find();
+    }
+
     private static String colouriseRainbow(String message) {
         Pattern pattern = Pattern.compile("(&u\\[[^\\[\\]]+])((&[klmno])*)?");
         Matcher matcher = pattern.matcher(message);

@@ -334,8 +334,7 @@ public class GUI {
                     }
                     else {
                         if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
-                            // TODO: CANT CHANGE MODS ON CUSTOM
-                            player.sendMessage("CANT CHANGE MODS ON CUSTOM COLOURS");
+                            player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
                             return;
                         }
 

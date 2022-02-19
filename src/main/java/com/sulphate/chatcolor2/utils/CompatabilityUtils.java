@@ -76,6 +76,9 @@ public class CompatabilityUtils {
         else if (materialName.contains("STAINED_GLASS_PANE")) {
             return Material.getMaterial("STAINED_GLASS_PANE");
         }
+        else if (materialName.contains("STAINED_GLASS")) {
+            return Material.getMaterial("GLASS");
+        }
         else if (materialName.contains("GLASS_PANE")) {
             return Material.getMaterial("THIN_GLASS");
         }
