@@ -48,8 +48,6 @@ public class ChatListener implements Listener {
             while (GeneralUtils.isDifferentWhenColourised(message)) {
                 message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
             }
-
-            player.sendMessage(M.NO_HEX_PERMISSIONS);
         }
 
 

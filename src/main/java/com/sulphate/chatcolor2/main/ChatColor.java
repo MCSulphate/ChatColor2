@@ -20,7 +20,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventException;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -144,8 +150,18 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupListeners() {
+        EventPriority chatPriority = EventPriority.valueOf((String) configUtils.getSetting("event-priority"));
+        Listener chatListener = new ChatListener(configUtils, generalUtils, M);
+        EventExecutor executor = (listener, event) -> {
+            if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
+                ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
+            }
+        };
+
+        // Attempt to register
+        manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
+
         manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, configsManager), this);
-        manager.registerEvents(new ChatListener(configUtils, generalUtils, M), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(guiManager, this);
     }

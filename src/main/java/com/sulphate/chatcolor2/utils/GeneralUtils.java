@@ -211,7 +211,7 @@ public class GeneralUtils {
             }
         }
 
-        return GeneralUtils.colourise(colour + colourisedMessage);
+        return colourise(colour + colourisedMessage);
     }
 
     public static char[] getAvailableColours(Player player) {

@@ -1,6 +1,7 @@
 version: 1.12.2
 stats: true
 settings:
+  event-priority: LOWEST
   auto-save: true
   save-interval: 10
   color-override: false

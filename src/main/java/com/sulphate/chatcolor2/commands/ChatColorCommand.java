@@ -461,7 +461,7 @@ public class ChatColorCommand implements CommandExecutor {
             String colour = configUtils.getColour(player.getUniqueId());
 
             if (GeneralUtils.isCustomColour(colour)) {
-                player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
+                player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
                 return false;
             }
 
@@ -597,11 +597,11 @@ public class ChatColorCommand implements CommandExecutor {
                 }
                 else if (GeneralUtils.isCustomColour(colour)) {
                     if (customColoursManager.getCustomColour(colour) == null) {
-                        player.sendMessage(M.INVALID_CUSTOM_COLOR);
+                        player.sendMessage(M.PREFIX + M.INVALID_CUSTOM_COLOR);
                         return false;
                     }
                     else if (args.length > 2) {
-                        player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
+                        player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
                         return false;
                     }
                 }
@@ -669,15 +669,15 @@ public class ChatColorCommand implements CommandExecutor {
             }
             else if (GeneralUtils.isCustomColour(colour)) {
                 if (customColoursManager.getCustomColour(colour) == null) {
-                    player.sendMessage(M.INVALID_CUSTOM_COLOR);
+                    player.sendMessage(M.PREFIX + M.INVALID_CUSTOM_COLOR);
                     return false;
                 }
                 else if (!player.isOp() && !player.hasPermission("chatcolor.custom." + colour.replace("%", ""))) {
-                    player.sendMessage(M.NO_CUSTOM_COLOR_PERMISSIONS);
+                    player.sendMessage(M.PREFIX + M.NO_CUSTOM_COLOR_PERMISSIONS);
                     return false;
                 }
                 else if (args.length > 1) {
-                    player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
+                    player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
                     return false;
                 }
             }

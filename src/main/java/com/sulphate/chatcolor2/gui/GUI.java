@@ -279,6 +279,10 @@ public class GUI {
     }
 
     void onClick(Player player, ItemStack item, int slot) {
+        if (item == null) {
+            return;
+        }
+
         GUIItem clicked = items.get(slot);
 
         if (clicked != null) {
@@ -334,7 +338,7 @@ public class GUI {
                     }
                     else {
                         if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
-                            player.sendMessage(M.CANNOT_MODIFY_CUSTOM_COLOR);
+                            player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
                             return;
                         }
 
