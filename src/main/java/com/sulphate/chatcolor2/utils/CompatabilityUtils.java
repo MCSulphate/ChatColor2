@@ -21,7 +21,9 @@ public class CompatabilityUtils {
 
     public static void init() {
         // Parse minor version to check for hex compatability.
-        String version = Bukkit.getVersion().replace("(", "").replace(")", "");
+        String version = Bukkit.getBukkitVersion();
+        version = version.substring(0, version.indexOf('-'));
+
         int dotIndex = version.indexOf('.');
         float minorVersion = Float.parseFloat(version.substring(dotIndex + 1));
 

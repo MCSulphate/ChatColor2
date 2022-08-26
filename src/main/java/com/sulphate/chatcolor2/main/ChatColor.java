@@ -77,7 +77,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Customisable listener priority!");
+            message = message.replace("[version-description]", "Add custom colors from ingame + bug fixes.");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -116,7 +116,7 @@ public class ChatColor extends JavaPlugin {
         handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
         customColoursManager = new CustomColoursManager(configsManager);
-        configUtils = new ConfigUtils(configsManager);
+        configUtils = new ConfigUtils(configsManager, customColoursManager);
         generalUtils = new GeneralUtils(configUtils, customColoursManager, M);
         M = new Messages(configUtils);
         guiManager = new GUIManager(configsManager, configUtils, generalUtils, M);

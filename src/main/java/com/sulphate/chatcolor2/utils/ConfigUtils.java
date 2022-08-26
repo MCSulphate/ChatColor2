@@ -1,6 +1,7 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -14,10 +15,12 @@ import java.util.UUID;
 
 public class ConfigUtils {
 
-    private ConfigsManager configsManager;
+    private final ConfigsManager configsManager;
+    private final CustomColoursManager customColoursManager;
 
-    public ConfigUtils(ConfigsManager configsManager) {
+    public ConfigUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager) {
         this.configsManager = configsManager;
+        this.customColoursManager = customColoursManager;
     }
 
     // Returns the list of startup messages.
@@ -54,6 +57,12 @@ public class ConfigUtils {
 
         // If it's empty and default colour is enabled, set it to the default.
         if (newColour.equals("") && (boolean) getSetting("default-color-enabled")) {
+            newColour = getCurrentDefaultColour();
+        }
+
+        // If they have a custom colour, make sure it still exists.
+        if (newColour.startsWith("%") && customColoursManager.getCustomColour(colour) == null) {
+            // Otherwise, set to default.
             newColour = getCurrentDefaultColour();
         }
 

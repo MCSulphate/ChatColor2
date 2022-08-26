@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
@@ -24,7 +25,6 @@ public class ChatListener implements Listener {
         this.M = M;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
     public void onEvent(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
         String message = e.getMessage();

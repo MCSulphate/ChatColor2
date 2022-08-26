@@ -21,19 +21,46 @@ public class CustomColoursManager {
         reload();
     }
 
-    public boolean addCustomColour(String name, String colour) {
+    // Returns the actual name (inclusive of %).
+    public String addCustomColour(String name, String colour) {
         if (customColoursMap.containsKey(name)) {
-            return false;
+            return null;
+        }
+        else if (!name.startsWith("%")) {
+            name = '%' + name;
         }
 
         customColoursMap.put(name, colour);
-        config.set(name, colour);
+        config.set(name.substring(1), colour); // Substring call to remove the %
         configsManager.saveConfig(Config.CUSTOM_COLOURS);
-        return true;
+        return name;
+    }
+
+    // Returns the removed colour.
+    public String removeCustomColour(String name) {
+        if (!customColoursMap.containsKey(name)) {
+            return null;
+        }
+        else if (!name.startsWith("%")) {
+            name = '%' + name;
+        }
+
+        String removedColour = customColoursMap.remove(name);
+        config.set(name.substring(1), null);
+        configsManager.saveConfig(Config.CUSTOM_COLOURS);
+        return removedColour;
     }
 
     public String getCustomColour(String name) {
+        if (!name.startsWith("%")) {
+            name = '%' + name;
+        }
+
         return customColoursMap.get(name);
+    }
+
+    public Map<String, String> getCustomColours() {
+        return customColoursMap;
     }
 
     public void reload() {

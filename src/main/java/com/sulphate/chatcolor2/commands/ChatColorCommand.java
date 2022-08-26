@@ -17,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatColorCommand implements CommandExecutor {
 
@@ -56,7 +58,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return true;
             }
 
-            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group");
+            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group", "custom");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
                     case "confirm": {
@@ -188,6 +190,34 @@ public class ChatColorCommand implements CommandExecutor {
                         }
 
                         return true;
+                    }
+
+                    case "custom": {
+                        String subCommand = args[1];
+
+                        if (subCommand.equals("list")) {
+                            s.sendMessage(M.PREFIX + M.CUSTOM_COLORS_LIST);
+
+                            Map<String, String> customColours = customColoursManager.getCustomColours();
+                            for (String colourName : customColours.keySet()) {
+                                s.sendMessage(generalUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName)));
+                            }
+
+                            return true;
+                        }
+                        else if (subCommand.equals("add")) {
+                            String actualName = customColoursManager.addCustomColour(args[2], args[3]);
+                            s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_ADDED.replace("[color-name]", actualName), args[3]));
+
+                            return true;
+                        }
+                        else if (subCommand.equals("remove")) {
+                            String colourName = args[2].startsWith("%") ? args[2] : '%' + args[2];
+                            String removedColour = customColoursManager.removeCustomColour(colourName);
+
+                            s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_REMOVED.replace("[color-name]", colourName), removedColour));
+                            return true;
+                        }
                     }
                 }
             }
@@ -567,6 +597,54 @@ public class ChatColorCommand implements CommandExecutor {
             else {
                 player.sendMessage(M.PREFIX + M.INVALID_COMMAND);
                 return false;
+            }
+        }
+
+        if (args[0].equalsIgnoreCase("custom")) {
+            if (!player.isOp() && !player.hasPermission("chatcolor.admin")) {
+                player.sendMessage(M.NO_PERMISSIONS);
+                return false;
+            }
+
+            if (args.length >= 2 && args[1].equalsIgnoreCase("list")) {
+                return true;
+            }
+
+            if (args.length < 3) {
+                player.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
+                return false;
+            }
+
+            String subCommand = args[1];
+            String colourName = args[2];
+            switch (subCommand) {
+                case "add": {
+                    if (args.length < 4) {
+                        player.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
+                        return false;
+                    }
+
+                    // Check the colour doesn't already exist.
+                    if (customColoursManager.getCustomColour(colourName) != null) {
+                        player.sendMessage(M.PREFIX + M.CUSTOM_COLOR_EXISTS);
+                        return false;
+                    }
+
+                    if (!isValidCustomColourString(args[3])) {
+                        player.sendMessage(M.PREFIX + M.INCORRECT_CUSTOM_COLOR);
+                        return false;
+                    }
+
+                    return true;
+                }
+                case "remove": {
+                    if (customColoursManager.getCustomColour(colourName) == null) {
+                        player.sendMessage(M.PREFIX + M.INVALID_CUSTOM_COLOR);
+                        return false;
+                    }
+
+                    return true;
+                }
             }
         }
 
@@ -1152,6 +1230,13 @@ public class ChatColorCommand implements CommandExecutor {
         }
 
         return null;
+    }
+
+    private boolean isValidCustomColourString(String customColourString) {
+        Pattern pattern = Pattern.compile("^&([a-f0-9]|u\\[#[0-9a-f]{6}(,#[0-9a-f]{6})])(&[k-o])*$");
+        Matcher matcher = pattern.matcher(customColourString);
+
+        return matcher.find();
     }
 
 }

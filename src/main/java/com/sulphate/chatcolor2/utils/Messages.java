@@ -57,6 +57,12 @@ public class Messages {
     public String CANNOT_MODIFY_CUSTOM_COLOR;
     public String NO_CUSTOM_COLOR_PERMISSIONS;
     public String INVALID_CUSTOM_COLOR;
+    public String CUSTOM_COLOR_EXISTS;
+    public String INCORRECT_CUSTOM_COLOR;
+    public String CUSTOM_COLORS_LIST;
+    public String CUSTOM_COLOR_FORMAT;
+    public String CUSTOM_COLOR_ADDED;
+    public String CUSTOM_COLOR_REMOVED;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -161,6 +167,12 @@ public class Messages {
         CANNOT_MODIFY_CUSTOM_COLOR = getAndColourise("cannot-modify-custom-color");
         NO_CUSTOM_COLOR_PERMISSIONS = getAndColourise("no-custom-color-permissions");
         INVALID_CUSTOM_COLOR = getAndColourise("invalid-custom-color");
+        CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");
+        INCORRECT_CUSTOM_COLOR = getAndColourise("incorrect-custom-color");
+        CUSTOM_COLORS_LIST = getAndColourise("custom-colors-list");
+        CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
+        CUSTOM_COLOR_ADDED = getAndColourise("custom-color-added");
+        CUSTOM_COLOR_REMOVED = getAndColourise("custom-color-removed");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");
