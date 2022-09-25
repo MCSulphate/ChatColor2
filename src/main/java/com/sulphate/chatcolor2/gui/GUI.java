@@ -1,6 +1,5 @@
 package com.sulphate.chatcolor2.gui;
 
-import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -150,36 +149,51 @@ public class GUI {
                     int inventorySlot = Integer.parseInt(key);
                     ConfigurationSection itemSection = itemsSection.getConfigurationSection(key);
                     ItemType type = ItemType.valueOf(itemSection.getString("type"));
+                    ItemStack item = null;
+                    String name = null;
+
+                    List<String> extraLore = itemSection.getStringList("lore");
+
+                    if (extraLore.size() > 0) {
+                        Bukkit.broadcastMessage("Found lore for item " + key);
+                    }
 
                     switch (type) {
-                        case INVENTORY:
-                        case COLOR: {
-                            ItemStack item;
+                        case FILLER:
+                            // Blank name.
+                            name = "&r";
+                            extraLore = null;
 
+                        case COLOR:
                             if (CompatabilityUtils.isHexLegacy() && GeneralUtils.isValidHexColour(itemSection.getString("data"))) {
                                 item = hexColorsNotSupported.clone();
                             }
-                            else if (CompatabilityUtils.isMaterialLegacy()) {
+
+                        case INVENTORY:
+                            if (CompatabilityUtils.isMaterialLegacy()) {
                                 item = CompatabilityUtils.getColouredItem(itemSection.getString("material"));
                             }
-                            else {
+                            // null check in case it hit the hex legacy block in COLOR (don't want to override).
+                            else if (item == null) {
                                 item = new ItemStack(Material.getMaterial(itemSection.getString("material")));
                             }
 
-                            InventoryUtils.setDisplayName(item, itemSection.getString("name"));
+                            if (name == null) {
+                                name = itemSection.getString("name");
+                            }
 
-                            items.put(inventorySlot, new GUIItem(type, itemSection.getString("data"), item));
+                            InventoryUtils.setDisplayName(item, name);
+
+                            items.put(inventorySlot, new GUIItem(type, itemSection.getString("data"), item, extraLore));
                             continue;
-                        }
 
-                        case MODIFIER: {
+                        case MODIFIER:
                             // For modifiers, just start with the inactive item.
-                            ItemStack item = modifierInactive.clone();
+                            item = modifierInactive.clone();
                             InventoryUtils.setDisplayName(item, itemSection.getString("name"));
 
-                            items.put(inventorySlot, new GUIItem(type, itemSection.getString("data"), item));
+                            items.put(inventorySlot, new GUIItem(type, itemSection.getString("data"), item, extraLore));
                             continue;
-                        }
 
                         default:
                             GeneralUtils.sendConsoleMessage("&6[ChatColor] &eWarning: Invalid item type for item " + key + " in GUI " + title + ", please check the config.");
@@ -195,6 +209,14 @@ public class GUI {
 
     boolean loaded() {
         return colourUnavailable != null;
+    }
+
+    private void updateExtraLore(GUIItem item, ItemStack inventoryItem) {
+        if (item.hasExtraLore()) {
+            List<String> lore = InventoryUtils.getLore(inventoryItem);
+            lore.addAll(item.getExtraLore());
+            InventoryUtils.setLore(inventoryItem, lore);
+        }
     }
 
     void open(Player player) {
@@ -228,6 +250,7 @@ public class GUI {
                             InventoryUtils.setLore(inventoryItem, colourInactive);
                         }
 
+                        updateExtraLore(item, inventoryItem);
                         inventory.setItem(slot, inventoryItem);
                         break;
                     }
@@ -240,6 +263,7 @@ public class GUI {
                             ItemStack original = inventoryItem;
                             inventoryItem = modifierActive.clone();
 
+                            updateExtraLore(item, inventoryItem);
                             InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
                         }
 
@@ -247,8 +271,11 @@ public class GUI {
                         break;
                     }
 
+                    case FILLER:
                     case INVENTORY:
-                        inventory.setItem(slot, item.getItem());
+                        ItemStack inventoryItem = item.getItem().clone();
+                        updateExtraLore(item, inventoryItem);
+                        inventory.setItem(slot, inventoryItem);
                         break;
                 }
             }
@@ -257,6 +284,8 @@ public class GUI {
                     case COLOR: {
                         ItemStack original = item.getItem();
                         ItemStack inventoryItem = colourUnavailable.clone();
+
+                        updateExtraLore(item, inventoryItem);
                         InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
 
                         inventory.setItem(slot, inventoryItem);
@@ -266,6 +295,8 @@ public class GUI {
                     case MODIFIER: {
                         ItemStack original = item.getItem();
                         ItemStack inventoryItem = modifierUnavailable.clone();
+
+                        updateExtraLore(item, inventoryItem);
                         InventoryUtils.setDisplayName(inventoryItem, original.getItemMeta().getDisplayName());
 
                         inventory.setItem(slot, inventoryItem);
@@ -278,6 +309,18 @@ public class GUI {
         player.openInventory(inventory);
     }
 
+    private void removeExtraLore(List<String> lore, GUIItem item) {
+        // Workaround for the extra lore, remove the same number of entries as extra lore
+        // from the item's lore list.
+        if (item.hasExtraLore()) {
+            List<String> extraLore = item.getExtraLore();
+
+            for (int i = 0; i < extraLore.size(); i++) {
+                lore.remove(lore.size() - 1);
+            }
+        }
+    }
+
     void onClick(Player player, ItemStack item, int slot) {
         if (item == null) {
             return;
@@ -287,6 +330,11 @@ public class GUI {
 
         if (clicked != null) {
             ItemType type = clicked.getType();
+
+            if (type.equals(ItemType.FILLER)) {
+                return;
+            }
+
             String chatColour = configUtils.getColour(player.getUniqueId());
 
             if (chatColour.startsWith("&")) {
@@ -306,7 +354,8 @@ public class GUI {
                         player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", item.getItemMeta().getDisplayName()));
                     }
                     else {
-                        List<String> clickedLore = item.getItemMeta().getLore();
+                        List<String> clickedLore = InventoryUtils.getLore(item);
+                        removeExtraLore(clickedLore, clicked);
 
                         if (clickedLore.equals(GUIUtils.colouriseList(colourActive))) {
                             player.sendMessage(M.PREFIX + M.GUI_COLOR_ALREADY_SET);
@@ -314,7 +363,7 @@ public class GUI {
                         else {
                             String colour;
 
-                            if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
+                            if (GeneralUtils.isCustomColour(clicked.getData())) {
                                 colour = colourFromParts(clicked.getData(), new ArrayList<>());
                             }
                             else {
@@ -332,9 +381,12 @@ public class GUI {
                 }
 
                 case MODIFIER: {
+                    List<String> clickedLore = InventoryUtils.getLore(item);
+                    removeExtraLore(clickedLore, clicked);
+
                     // Have to check lore here for compatability with older versions (dyes are the same material in legacy).
-                    if (GUIUtils.colouriseList(modifierUnavailable.getItemMeta().getLore()).equals(item.getItemMeta().getLore())) {
-                        player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", item.getItemMeta().getDisplayName()));
+                    if (GUIUtils.colouriseList(InventoryUtils.getLore(modifierUnavailable)).equals(clickedLore)) {
+                        player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", InventoryUtils.getDisplayName(item)));
                     }
                     else {
                         if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
@@ -342,9 +394,7 @@ public class GUI {
                             return;
                         }
 
-                        List<String> clickedLore = item.getItemMeta().getLore();
-
-                        if (GUIUtils.colouriseList(modifierActive.getItemMeta().getLore()).equals(clickedLore)) {
+                        if (GUIUtils.colouriseList(InventoryUtils.getLore(modifierActive)).equals(clickedLore)) {
                             modifierParts.remove(clicked.getData());
                         }
                         else {

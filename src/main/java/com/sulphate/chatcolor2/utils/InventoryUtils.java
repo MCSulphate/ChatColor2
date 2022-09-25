@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class InventoryUtils {
     public static String getDisplayName(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         return meta.hasDisplayName() ? meta.getDisplayName() : GeneralUtils.colourise("&f" + formatMaterialName(item.getType()));
+    }
+
+    public static List<String> getLore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta.hasLore() ? meta.getLore() : new ArrayList<>();
     }
 
     public static void setDisplayName(ItemStack item, String displayName) {

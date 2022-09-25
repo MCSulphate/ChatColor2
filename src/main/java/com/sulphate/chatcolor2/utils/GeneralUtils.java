@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 
 public class GeneralUtils {
 
+    private enum SpecialColorType {
+        RAINBOW,
+        GRADIENT
+    }
+
     private final ConfigUtils configUtils;
     private final CustomColoursManager customColoursManager;
     private final Messages M;
@@ -25,7 +30,10 @@ public class GeneralUtils {
     public static String colourise(String message) {
         // Attempt to colourise any rainbow text.
         if (message.contains("&u")) {
-            message = colouriseRainbow(message);
+            message = colouriseSpecial(message, SpecialColorType.RAINBOW);
+        }
+        else if (message.contains("&g")) {
+            message = colouriseSpecial(message, SpecialColorType.GRADIENT);
         }
 
         // Replace hex colour codes with the correct hex colour(s).
@@ -51,30 +59,36 @@ public class GeneralUtils {
         return matcher.find();
     }
 
-    private static String colouriseRainbow(String message) {
-        Pattern pattern = Pattern.compile("(&u\\[[^\\[\\]]+])((&[klmno])*)?");
+    private static String colouriseSpecial(String message, SpecialColorType type) {
+        Pattern pattern = Pattern.compile("(&[ug]\\[[^\\[\\]]+])((&[klmno])*)?");
         Matcher matcher = pattern.matcher(message);
 
         if (matcher.find()) {
-            String unparsedRainbow = matcher.group(1);
+            String unparsedSpecial = matcher.group(1);
             String mods = matcher.group(2);
 
+            List<String> parsedSpecial = parseSpecialColour(unparsedSpecial);
 
-            List<String> parsedRainbow = parseRainbowColour(unparsedRainbow);
+            // Replace with the actual message content.
             message = message.substring(matcher.end());
+
+            if (type.equals(SpecialColorType.GRADIENT)) {
+                // Further parse the gradient colours to create the full set.
+                parsedSpecial = createGradientColour(parsedSpecial, message.length());
+            }
 
             if (message.isEmpty()) {
                 return message;
             }
 
             message = pattern.matcher(message).replaceAll("");
-            return applyRainbow(parsedRainbow, mods, message);
+            return applySpecial(parsedSpecial, mods, message);
         }
 
         return message;
     }
 
-    private static String applyRainbow(List<String> colours, String mods, String text) {
+    private static String applySpecial(List<String> colours, String mods, String text) {
         int colourIndex = 0;
         StringBuilder builder = new StringBuilder();
 
@@ -121,7 +135,7 @@ public class GeneralUtils {
         return Pattern.compile("#[a-fA-F0-9]{6}").matcher(toValidate).matches();
     }
 
-    public static String createHexColour(String hexString) {
+    private static String createHexColour(String hexString) {
         // Safe fallback to white colour if hex is not supported.
         if (CompatabilityUtils.isHexLegacy()) {
             return colourise("&f");
@@ -164,8 +178,8 @@ public class GeneralUtils {
         return verify;
     }
 
-    public static List<String> parseRainbowColour(String toParse) {
-        Pattern pattern = Pattern.compile("&u\\[(([0-9a-f],)|(#[0-9a-fA-F]{6},))*([0-9a-f]|(#[0-9a-fA-F]{6}))]");
+    private static List<String> parseSpecialColour(String toParse) {
+        Pattern pattern = Pattern.compile("&[ug]\\[(([0-9a-f],)|(#[0-9a-fA-F]{6},))*([0-9a-f]|(#[0-9a-fA-F]{6}))]");
         Matcher matcher = pattern.matcher(toParse);
 
         if (matcher.matches()) {
@@ -177,6 +191,142 @@ public class GeneralUtils {
         }
 
         return null;
+    }
+
+    private static List<String> createGradientColour(List<String> colours, int gradientLength) {
+        // If the message is <= in length to the number of gradient points, just return the list.
+        if (gradientLength <= colours.size()) {
+            return colours;
+        }
+
+        List<String> result = new ArrayList<>();
+
+        // Number of steps between each colour in the list.
+        int stepsBetween = Math.floorDiv(gradientLength, colours.size());
+        // The number of gradient sections.
+        int gradientSections = colours.size() - 1;
+        // The number of colours that will be created.
+        int numColsCreated = colours.size() + (stepsBetween * gradientSections);
+        // The number of colours over/under the required amount.
+        int numColsDifference = numColsCreated - gradientLength;
+
+        boolean removeMiddle = false;
+        boolean createMiddle = false;
+
+        if (numColsDifference != 0) {
+            // If there's only one lacking, add a middle colour.
+            if (numColsDifference == -1) {
+                createMiddle = true;
+            }
+            // If there's one too many, remove the middle.
+            else if (numColsDifference == 1) {
+                removeMiddle = true;
+            }
+            // If the difference is equal (positive or negative) to the gradient section count, add/remove a step.
+            else if (numColsDifference == gradientSections) { // Too many colours
+                stepsBetween -= 1;
+            }
+            else if (numColsDifference == -gradientSections) { // Too few colours
+                stepsBetween += 1;
+            }
+            // As a last-ditch effort, just increase the steps if negative or ignore if positive.
+            // This will happen for large messages, based on how many gradient sections there are.
+            else if (numColsDifference < 0) {
+                while (numColsDifference < 0) {
+                    stepsBetween += 1;
+
+                    numColsCreated = colours.size() + (stepsBetween * gradientSections);
+                    numColsDifference = numColsCreated - gradientLength;
+                }
+            }
+        }
+
+        for (int i = 1; i < colours.size(); i++) {
+            String startColour = colours.get(i - 1);
+            String endColour = colours.get(i);
+
+            // Only add the start colour if it's the first time, the others get added as an end colour.
+            if (i == 1) {
+                result.add(startColour);
+            }
+
+            result.addAll(createColoursBetween(startColour, endColour, stepsBetween));
+            result.add(endColour);
+        }
+
+        // Remove the middle colour.
+        if (removeMiddle) {
+            result.remove((int) Math.ceil((float) result.size() / 2));
+        }
+
+        // Create a new colour using the two colours in the middle, and add it.
+        if (createMiddle) {
+            String middleLeft = result.get(result.size() / 2 - 1);
+            String middleRight = result.get(result.size() / 2);
+            String middleColour = createColoursBetween(middleLeft, middleRight, 1).get(0);
+
+            result.add(result.size() / 2, middleColour);
+        }
+
+        return result;
+    }
+
+    private static class HexColour {
+
+        final int r;
+        final int g;
+        final int b;
+
+        HexColour(String textFormat) {
+            textFormat = textFormat.substring(1);
+
+            int r = Integer.parseInt(textFormat.substring(0, 2), 16);
+            int g = Integer.parseInt(textFormat.substring(2, 4), 16);
+            int b = Integer.parseInt(textFormat.substring(4), 16);
+
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+
+        HexColour(int r, int g, int b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+
+        private String padHex(String hex) {
+            while (hex.length() < 2) {
+                hex = "0" + hex;
+            }
+
+            return hex;
+        }
+
+        String toTextFormat() {
+
+
+            return '#' + padHex(Integer.toHexString(r)) + padHex(Integer.toHexString(g)) + padHex(Integer.toHexString(b));
+        }
+
+    }
+
+    private static List<String> createColoursBetween(String startColour, String endColour, int steps) {
+        List<String> result = new ArrayList<>();
+        HexColour start = new HexColour(startColour);
+        HexColour end = new HexColour(endColour);
+
+        // Add a step, as otherwise the last step will be equal to the end colour.
+        int rStepAmount = (end.r - start.r) / (steps + 1);
+        int gStepAmount = (end.g - start.g) / (steps + 1);
+        int bStepAmount = (end.b - start.b) / (steps + 1);
+
+        for (int i = 0; i < steps; i++) {
+            HexColour nextColour = new HexColour(start.r + rStepAmount * (i + 1), start.g + gStepAmount * (i + 1), start.b + bStepAmount * (i + 1));
+            result.add(nextColour.toTextFormat());
+        }
+
+        return result;
     }
 
     // Returns whether a String is different when colourised.
@@ -256,7 +406,7 @@ public class GeneralUtils {
         }
 
         // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
-        if (colour.contains("&u") || colour.contains("%")) {
+        if (colour.contains("&u") || colour.contains("&g") || colour.contains("%")) {
             String finalString;
 
             // The message up to the colour placeholder.

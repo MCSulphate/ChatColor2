@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 
 public class Messages {
     
-    private ConfigUtils utils;
+    private final ConfigUtils utils;
     
     public Messages(ConfigUtils utils) {
         this.utils = utils;
@@ -26,7 +26,6 @@ public class Messages {
     public String COMMAND_EXISTS;
     public String COLORS;
     public String MODIFIERS;
-    public String RAINBOW;
 
     // Command-Related Messages
     public String HELP;
@@ -87,15 +86,9 @@ public class Messages {
 
     // GUI-Related Messages and Strings
     public String INVALID_GUI;
-    public String GUI_TITLE;
     public String GUI_COLOR_ALREADY_SET;
     public String GUI_UNAVAILABLE;
     public String GUI_AVAILABLE;
-    public String GUI_ACTIVE;
-    public String GUI_CLICK_TO_TOGGLE;
-    public String GUI_CLICK_TO_SELECT;
-    public String GUI_SELECTED;
-    public String GUI_INACTIVE;
 
     // Colour Strings
     public String BLACK;
@@ -136,7 +129,6 @@ public class Messages {
         COMMAND_EXISTS = getAndColourise("command-exists");
         COLORS = getAndColourise("colors");
         MODIFIERS = getAndColourise("modifiers");
-        RAINBOW = getAndColourise("rainbow");
 
         // Command-Related Messages
         HELP = getAndColourise("help");
@@ -197,15 +189,9 @@ public class Messages {
 
         // GUI-Related Messages and Strings
         INVALID_GUI = getAndColourise("invalid-gui");
-        GUI_TITLE = getAndColourise("gui-title");
         GUI_COLOR_ALREADY_SET = getAndColourise("gui-color-already-set");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");
         GUI_AVAILABLE = getAndColourise("gui-available");
-        GUI_ACTIVE = getAndColourise("gui-active");
-        GUI_CLICK_TO_TOGGLE = getAndColourise("gui-click-to-toggle");
-        GUI_CLICK_TO_SELECT = getAndColourise("gui-click-to-select");
-        GUI_SELECTED = getAndColourise("gui-selected");
-        GUI_INACTIVE = getAndColourise("gui-inactive");
 
         // Colour Strings
         BLACK = getAndColourise("black");

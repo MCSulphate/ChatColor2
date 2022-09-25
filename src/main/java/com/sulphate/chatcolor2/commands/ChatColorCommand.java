@@ -602,7 +602,7 @@ public class ChatColorCommand implements CommandExecutor {
 
         if (args[0].equalsIgnoreCase("custom")) {
             if (!player.isOp() && !player.hasPermission("chatcolor.admin")) {
-                player.sendMessage(M.NO_PERMISSIONS);
+                player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
             }
 

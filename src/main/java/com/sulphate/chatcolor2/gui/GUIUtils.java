@@ -44,6 +44,7 @@ public class GUIUtils {
 
     public static boolean checkPermission(Player player, GUIItem item) {
         // TODO: When new custom colours is implemented, check permission accordingly.
+        // I think the above TODO is done??
 
         switch (item.getType()) {
             case COLOR:

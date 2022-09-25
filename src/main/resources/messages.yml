@@ -14,7 +14,6 @@ prefix: '&5&l[&6Chat&aC&bo&cl&do&er&5&l] &e'
 command-exists: '&cThat command already exists!'
 colors: 'Colors'
 modifiers: 'Modifiers'
-rainbow: 'Rainbow'
 
 # Command-Related Messages
 help: '&eType &c/chatcolor cmdhelp &eto see valid colors, modifiers and settings!'
@@ -75,15 +74,9 @@ invalid-sequence: '&e[sequence] &cis an invalid colour sequence!'
 
 # GUI-Related Messages and Strings
 invalid-gui: '&cTried to open a non-existant GUI ([name]), please report this to an admin.'
-gui-title: '&9Color Picker GUI'
 gui-color-already-set: '&cColour already selected!'
 gui-unavailable: '&cUnavailable'
 gui-available: '&aAvailable'
-gui-active: '&aActive'
-gui-click-to-toggle: '&eClick to Toggle'
-gui-click-to-select: '&eClick to Select'
-gui-selected: '&aSelected'
-gui-inactive: '&7Inactive'
 
 # Color Strings
 black: 'Black'

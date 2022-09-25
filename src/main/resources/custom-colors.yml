@@ -2,3 +2,4 @@
 # <custom-color-name>: <color>
 blue-rainbow: '&u[#0000ff,#0066ff,#3399ff,#66ccff]'
 bright-rainbow: '&u[a,b,c,d,e]'
+red-gradient: '&g[#ff1a1a,#ff8080,#ff1a1a]'

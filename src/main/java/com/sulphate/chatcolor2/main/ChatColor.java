@@ -20,8 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -47,7 +45,7 @@ public class ChatColor extends JavaPlugin {
     private AutoSaveScheduler saveScheduler;
     private Messages M;
 
-    private ConsoleCommandSender console = Bukkit.getConsoleSender();
+    private final ConsoleCommandSender console = Bukkit.getConsoleSender();
     private PluginManager manager;
 
     @Override
@@ -77,7 +75,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Add custom colors from ingame + bug fixes.");
+            message = message.replace("[version-description]", "Gradient colours & placeholders fixes");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -117,8 +115,8 @@ public class ChatColor extends JavaPlugin {
         configsManager = new ConfigsManager();
         customColoursManager = new CustomColoursManager(configsManager);
         configUtils = new ConfigUtils(configsManager, customColoursManager);
-        generalUtils = new GeneralUtils(configUtils, customColoursManager, M);
         M = new Messages(configUtils);
+        generalUtils = new GeneralUtils(configUtils, customColoursManager, M);
         guiManager = new GUIManager(configsManager, configUtils, generalUtils, M);
         confirmationsManager = new ConfirmationsManager();
 
