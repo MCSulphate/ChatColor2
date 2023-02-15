@@ -154,10 +154,6 @@ public class GUI {
 
                     List<String> extraLore = itemSection.getStringList("lore");
 
-                    if (extraLore.size() > 0) {
-                        Bukkit.broadcastMessage("Found lore for item " + key);
-                    }
-
                     switch (type) {
                         case FILLER:
                             // Blank name.
