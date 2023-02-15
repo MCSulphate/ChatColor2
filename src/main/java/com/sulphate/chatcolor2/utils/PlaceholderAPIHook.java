@@ -3,6 +3,7 @@ package com.sulphate.chatcolor2.utils;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -57,12 +58,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         UUID uuid = player.getUniqueId();
+        String colour = configUtils.getColour(uuid);
 
         switch (identifier) {
             case "full_color": {
                 // Return the player's full colour, including modifiers. Does not work for rainbow colour!
-                String colour = configUtils.getColour(uuid);
-
                 if (GeneralUtils.isCustomColour(colour)) {
                     colour = customColoursManager.getCustomColour(colour);
                 }
@@ -71,17 +71,51 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "modifiers": {
-                String colour = configUtils.getColour(uuid);
-                String modPart = colour.substring(2);
+                if (GeneralUtils.isCustomColour(colour)) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
+
+                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+                String modPart = colour.substring(modifiersStartIndex + 1);
 
                 return GeneralUtils.colourise(modPart);
             }
 
             case "color": {
-                String colour = configUtils.getColour(uuid);
-                String colourPart = colour.substring(0, 2);
+                if (GeneralUtils.isCustomColour(colour)) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
 
-                return GeneralUtils.colourise(colourPart);
+                // Remove any modifiers (start index = second & symbol).
+                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+                if (modifiersStartIndex != -1) {
+                    colour = colour.substring(0, modifiersStartIndex + 1);
+                }
+
+                return GeneralUtils.colourise(colour);
+            }
+
+            case "color_name": {
+                // Remove any modifiers (start index = second & symbol).
+                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+                if (modifiersStartIndex != -1) {
+                    colour = colour.substring(0, modifiersStartIndex + 1);
+                }
+
+                return colour.replaceAll("&", "");
+            }
+
+            case "modifier_names": {
+                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+                if (modifiersStartIndex == -1) {
+                    return "";
+                }
+                else {
+                    return colour.substring(modifiersStartIndex + 1).replaceAll("&", "");
+                }
             }
 
             default: {
