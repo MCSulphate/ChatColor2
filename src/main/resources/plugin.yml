@@ -10,3 +10,101 @@ commands:
   chatcolor:
     description: main command for ChatColor 2.
     usage: /<command> [player] <color> [modifiers]
+
+permissions:
+  chatcolor.use:
+    description: Allows basic use of the plugin.
+  chatcolor.use-color-codes:
+    description: Allows use of legacy color codes in messages.
+  chatcolor.use-hex-codes:
+    description: Allows use of hex color codes in messages.
+
+  chatcolor.gui:
+    description: Allows use of the ChatColor GUI.
+
+  chatcolor.color.0:
+    description: Allows the player to use the black color.
+  chatcolor.color.1:
+    description: Allows the player to use the dark blue color.
+  chatcolor.color.2:
+    description: Allows the player to use the dark green color.
+  chatcolor.color.3:
+    description: Allows the player to use the dark aqua color.
+  chatcolor.color.4:
+    description: Allows the player to use the dark red color.
+  chatcolor.color.5:
+    description: Allows the player to use the dark purple color.
+  chatcolor.color.6:
+    description: Allows the player to use the gold color.
+  chatcolor.color.7:
+    description: Allows the player to use the gray color.
+  chatcolor.color.8:
+    description: Allows the player to use the dark gray color.
+  chatcolor.color.9:
+    description: Allows the player to use the blue color.
+  chatcolor.color.a:
+    description: Allows the player to use the green color.
+  chatcolor.color.b:
+    description: Allows the player to use the aqua color.
+  chatcolor.color.c:
+    description: Allows the player to use the red color.
+  chatcolor.color.d:
+    description: Allows the player to use the light purple color.
+  chatcolor.color.e:
+    description: Allows the player to use the yellow color.
+  chatcolor.color.f:
+    description: Allows the player to use the white color.
+  chatcolor.color.*:
+    description: Allows the player to use any color.
+    children:
+      chatcolor.color.0: true
+      chatcolor.color.1: true
+      chatcolor.color.2: true
+      chatcolor.color.3: true
+      chatcolor.color.4: true
+      chatcolor.color.5: true
+      chatcolor.color.6: true
+      chatcolor.color.7: true
+      chatcolor.color.8: true
+      chatcolor.color.9: true
+      chatcolor.color.a: true
+      chatcolor.color.b: true
+      chatcolor.color.c: true
+      chatcolor.color.d: true
+      chatcolor.color.e: true
+      chatcolor.color.f: true
+
+  chatcolor.modifier.k:
+    description: Allows the player to use the obfuscated modifier.
+  chatcolor.modifier.l:
+    description: Allows the player to use the bold modifier.
+  chatcolor.modifier.m:
+    description: Allows the player to use the strikethrough modifier.
+  chatcolor.modifier.n:
+    description: Allows the player to use the underline modifier.
+  chatcolor.modifier.o:
+    description: Allows the player to use the italic modifier.
+  chatcolor.modifier.*:
+    description: Allows the player to use any modifier.
+    children:
+      chatcolor.modifier.k: true
+      chatcolor.modifier.l: true
+      chatcolor.modifier.m: true
+      chatcolor.modifier.n: true
+      chatcolor.modifier.o: true
+
+  chatcolor.change.self:
+    description: Allows the player to change their own color.
+  chatcolor.change.others:
+    description: Allows the player to change other players' colors.
+  chatcolor.change.*:
+    description: Wildcard permission, allows the player to change their own and other players' colors.
+    children:
+      chatcolor.change.self: true
+      chatcolor.change.others: true
+
+  chatcolor.admin:
+    description: Allows the player to use ChatColor admin commands.
+
+  chatcolor.custom.*:
+    description: Allows the player to use all custom colors.

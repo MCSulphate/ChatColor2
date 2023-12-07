@@ -304,8 +304,6 @@ public class GeneralUtils {
         }
 
         String toTextFormat() {
-
-
             return '#' + padHex(Integer.toHexString(r)) + padHex(Integer.toHexString(g)) + padHex(Integer.toHexString(b));
         }
 
