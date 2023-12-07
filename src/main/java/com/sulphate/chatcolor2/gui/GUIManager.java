@@ -60,9 +60,7 @@ public class GUIManager implements Listener {
         }
         else {
             // Close inventory to show *something* happened.
-            if (player.getOpenInventory() != null) {
-                player.closeInventory();
-            }
+            player.closeInventory();
 
             player.sendMessage(M.PREFIX + M.INVALID_GUI.replace("[name]", guiName));
             GeneralUtils.sendConsoleMessage("&6[ChatColor] &eWarning: Tried to open an invalid GUI: " + guiName);
@@ -72,9 +70,17 @@ public class GUIManager implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
+        GUI openGui = openGUIs.get(player);
 
-        if (openGUIs.containsKey(player)) {
+        if (openGui != null) {
             event.setCancelled(true);
+
+            // Ensure that they've not clicked outside the ChatColor GUI itself.
+            // Fixes a bug where click items in the player's inventory would select colours without the correct permissions.
+            if (event.getRawSlot() >= openGui.getSize()) {
+                return;
+            }
+
             openGUIs.get(player).onClick(player, event.getCurrentItem(), event.getSlot());
         }
     }

@@ -203,6 +203,10 @@ public class GUI {
         }
     }
 
+    public int getSize() {
+        return size;
+    }
+
     boolean loaded() {
         return colourUnavailable != null;
     }
