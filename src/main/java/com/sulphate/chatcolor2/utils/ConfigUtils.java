@@ -56,7 +56,7 @@ public class ConfigUtils {
         }
 
         // If it's empty and default colour is enabled, set it to the default.
-        if (newColour.equals("") && (boolean) getSetting("default-color-enabled")) {
+        if (newColour.isEmpty() && (boolean) getSetting("default-color-enabled")) {
             newColour = getCurrentDefaultColour();
         }
 
@@ -133,6 +133,11 @@ public class ConfigUtils {
         setAndSave(Config.PLAYER_LIST, name, uuid.toString());
     }
 
+    public Set<String> getGroupColourNames() {
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
+        return config.getKeys(false);
+    }
+
     // Gets a list of group colours.
     public HashMap<String, String> getGroupColours() {
         YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
@@ -149,7 +154,7 @@ public class ConfigUtils {
 
     // Returns whether a group colour exists.
     public boolean groupColourExists(String name) {
-        return getGroupColours().containsKey(name);
+        return getGroupColourNames().contains(name);
     }
 
     // Adds a new group colour.
@@ -164,6 +169,7 @@ public class ConfigUtils {
 
     // Returns the group colour, if any, that a player has.
     public String getGroupColour(Player player) {
+        Set<String> groupColourNames = getGroupColourNames();
         HashMap<String, String> groupColours = getGroupColours();
 
         // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
@@ -173,11 +179,12 @@ public class ConfigUtils {
         }
 
         // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
-        for (String key : groupColours.keySet()) {
+        for (String groupName : groupColourNames) {
             // Not checking for OP, that would cause the first colour to always be chosen.
-            Permission permission = new Permission("chatcolor.group." + key, PermissionDefault.FALSE);
+            Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
+
             if (player.hasPermission(permission)) {
-                return groupColours.get(key);
+                return groupColours.get(groupName);
             }
         }
 

@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -46,7 +47,7 @@ public class ChatColorCommand implements CommandExecutor {
         this.customColoursManager = customColoursManager;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         int argsno = args.length;
 
         if (sender instanceof Player) {
@@ -153,8 +154,10 @@ public class ChatColorCommand implements CommandExecutor {
                         if (args[1].equals("list")) {
                             s.sendMessage(M.PREFIX + M.GROUP_COLOR_LIST);
 
-                            HashMap<String, String> groupColours = configUtils.getGroupColours();
-                            for (String colourName : groupColours.keySet()) {
+                            Set<String> groupColourNames = configUtils.getGroupColourNames();
+                            Map<String, String> groupColours = configUtils.getGroupColours();
+
+                            for (String colourName : groupColourNames) {
                                 s.sendMessage(generalUtils.colourSetMessage(M.GROUP_COLOR_FORMAT.replace("[color-name]", colourName), groupColours.get(colourName)));
                             }
 
@@ -195,28 +198,29 @@ public class ChatColorCommand implements CommandExecutor {
                     case "custom": {
                         String subCommand = args[1];
 
-                        if (subCommand.equals("list")) {
-                            s.sendMessage(M.PREFIX + M.CUSTOM_COLORS_LIST);
+                        switch (subCommand) {
+                            case "list":
+                                s.sendMessage(M.PREFIX + M.CUSTOM_COLORS_LIST);
 
-                            Map<String, String> customColours = customColoursManager.getCustomColours();
-                            for (String colourName : customColours.keySet()) {
-                                s.sendMessage(generalUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName)));
-                            }
+                                Map<String, String> customColours = customColoursManager.getCustomColours();
+                                for (String colourName : customColours.keySet()) {
+                                    s.sendMessage(generalUtils.colourSetMessage(M.CUSTOM_COLOR_FORMAT.replace("[color-name]", colourName), customColours.get(colourName)));
+                                }
 
-                            return true;
-                        }
-                        else if (subCommand.equals("add")) {
-                            String actualName = customColoursManager.addCustomColour(args[2], args[3]);
-                            s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_ADDED.replace("[color-name]", actualName), args[3]));
+                                return true;
 
-                            return true;
-                        }
-                        else if (subCommand.equals("remove")) {
-                            String colourName = args[2].startsWith("%") ? args[2] : '%' + args[2];
-                            String removedColour = customColoursManager.removeCustomColour(colourName);
+                            case "add":
+                                String actualName = customColoursManager.addCustomColour(args[2], args[3]);
+                                s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_ADDED.replace("[color-name]", actualName), args[3]));
 
-                            s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_REMOVED.replace("[color-name]", colourName), removedColour));
-                            return true;
+                                return true;
+
+                            case "remove":
+                                String colourName = args[2].startsWith("%") ? args[2] : '%' + args[2];
+                                String removedColour = customColoursManager.removeCustomColour(colourName);
+
+                                s.sendMessage(generalUtils.colourSetMessage(M.PREFIX + M.CUSTOM_COLOR_REMOVED.replace("[color-name]", colourName), removedColour));
+                                return true;
                         }
                     }
                 }
@@ -1097,13 +1101,9 @@ public class ChatColorCommand implements CommandExecutor {
 
                 // Make sure no other plugin has this command set.
                 for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
-                    if (p.getDescription().getCommands() != null) {
-
-                        if (p.getDescription().getCommands().containsKey(cmd)) {
-                            player.sendMessage(M.PREFIX + M.COMMAND_EXISTS);
-                            return;
-                        }
-
+                    if (p.getDescription().getCommands().containsKey(cmd)) {
+                        player.sendMessage(M.PREFIX + M.COMMAND_EXISTS);
+                        return;
                     }
                 }
 
@@ -1188,7 +1188,7 @@ public class ChatColorCommand implements CommandExecutor {
             for (int i = 10; i < words.size(); i++) {
                 // The chars representing the colours can just be added to from 'a'.
                 char colorChar = 'a';
-                colorChar += (i - 10);
+                colorChar += (char) (i - 10);
 
                 String currentWord = words.get(i);
                 if (colour.equals(currentWord)) {
@@ -1214,7 +1214,7 @@ public class ChatColorCommand implements CommandExecutor {
         if (mods.contains(s)) {
             for (int i = 0; i < mods.size(); i++) {
                 char modChar = 'k';
-                modChar += i;
+                modChar += (char) i;
 
                 String currentMod = mods.get(i);
                 if (currentMod.equals(s)) {

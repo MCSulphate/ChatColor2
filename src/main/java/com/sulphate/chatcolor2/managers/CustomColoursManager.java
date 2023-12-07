@@ -52,6 +52,10 @@ public class CustomColoursManager {
     }
 
     public String getCustomColour(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+
         if (!name.startsWith("%")) {
             name = '%' + name;
         }
