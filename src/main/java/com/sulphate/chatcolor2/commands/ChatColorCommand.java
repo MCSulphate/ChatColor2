@@ -1233,7 +1233,9 @@ public class ChatColorCommand implements CommandExecutor {
     }
 
     private boolean isValidCustomColourString(String customColourString) {
-        Pattern pattern = Pattern.compile("^&([a-f0-9]|u\\[#[0-9a-f]{6}(,#[0-9a-f]{6})])(&[k-o])*$");
+        // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
+        // context as to why it's *not* a valid colour if it isn't.
+        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|u\\[#[0-9a-f]{6}(,#[0-9a-f]{6})])(&[k-o])*$");
         Matcher matcher = pattern.matcher(customColourString);
 
         return matcher.find();
