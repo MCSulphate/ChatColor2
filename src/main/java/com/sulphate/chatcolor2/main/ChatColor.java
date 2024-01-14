@@ -75,7 +75,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "To be added :smile:");
+            message = message.replace("[version-description]", "Command improvements (rainbows & gradients), bug fixes.");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
