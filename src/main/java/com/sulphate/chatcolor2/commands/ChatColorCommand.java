@@ -1169,7 +1169,7 @@ public class ChatColorCommand implements CommandExecutor {
     }
 
     public static String getColour(String str) {
-        String colour = str.toLowerCase();
+        String colour = str.startsWith("%") ? str : str.toLowerCase();
 
         if (colour.equals("default") || GeneralUtils.isCustomColour(colour)) {
             return colour;
@@ -1235,10 +1235,10 @@ public class ChatColorCommand implements CommandExecutor {
     private boolean isValidCustomColourString(String customColourString) {
         // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
         // context as to why it's *not* a valid colour if it isn't.
-        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|u\\[#[0-9a-f]{6}(,#[0-9a-f]{6})])(&[k-o])*$");
+        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|[ug]\\[#[0-9a-f]{6}(,#[0-9a-f]{6})*])(&[k-o])*$");
         Matcher matcher = pattern.matcher(customColourString);
 
-        return matcher.find();
+        return matcher.matches();
     }
 
 }

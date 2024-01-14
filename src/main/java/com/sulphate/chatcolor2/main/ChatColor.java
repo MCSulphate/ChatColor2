@@ -75,7 +75,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Gradient colours & GUI tweaks");
+            message = message.replace("[version-description]", "To be added :smile:");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
