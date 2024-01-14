@@ -167,8 +167,12 @@ public class ConfigUtils {
         setAndSave(Config.GROUPS, name, null);
     }
 
-    // Returns the group colour, if any, that a player has.
     public String getGroupColour(Player player) {
+        return getGroupColour(player, false);
+    }
+
+    // Returns the group colour, if any, that a player has. returnName is to allow the group name placeholder to work.
+    public String getGroupColour(Player player, boolean returnName) {
         Set<String> groupColourNames = getGroupColourNames();
         HashMap<String, String> groupColours = getGroupColours();
 
@@ -184,7 +188,8 @@ public class ConfigUtils {
             Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
 
             if (player.hasPermission(permission)) {
-                return groupColours.get(groupName);
+                // Allows for group name placeholder.
+                return returnName ? groupName : groupColours.get(groupName);
             }
         }
 

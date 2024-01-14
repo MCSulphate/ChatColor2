@@ -169,23 +169,9 @@ public class ChatColorCommand implements CommandExecutor {
                         String name = args[2];
 
                         if (action.equals("add")) {
-                            String colour = getColour(args[3]);
-                            String modifiers = "";
-
-                            // Build the modifiers.
-                            if (args.length > 4) {
-                                StringBuilder modifiersBuilder = new StringBuilder();
-
-                                for (int i = 4; i < args.length; i++) {
-                                    modifiersBuilder.append(getModifier(args[i]));
-                                }
-
-                                modifiers = modifiersBuilder.toString();
-                            }
-
-                            String fullColour = colour + modifiers;
-                            configUtils.addGroupColour(name, fullColour);
-                            s.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.ADDED_GROUP_COLOR.replace("[color-name]", name), fullColour));
+                            String colour = args[3];
+                            configUtils.addGroupColour(name, colour);
+                            s.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.ADDED_GROUP_COLOR.replace("[color-name]", name), colour));
                         }
                         else if (action.equals("remove")) {
                             configUtils.removeGroupColour(name);
@@ -235,12 +221,17 @@ public class ChatColorCommand implements CommandExecutor {
                 }
 
                 String result;
+                String colour = args[1];
 
                 // Check if it's being set back to default.
-                if (args[1].equals("default")) {
-                    String colour = configUtils.getDefaultColourForPlayer(uuid);
+                if (colour.equals("default")) {
+                    colour = configUtils.getDefaultColourForPlayer(uuid);
                     configUtils.setColour(uuid, colour);
 
+                    result = colour;
+                }
+                else if (colour.startsWith("&u") || colour.startsWith("&g")) {
+                    configUtils.setColour(uuid, colour);
                     result = colour;
                 }
                 else {
@@ -270,10 +261,16 @@ public class ChatColorCommand implements CommandExecutor {
                 String result;
 
                 // Check if they want to go back to their default.
-                if (args[0].equals("default")) {
-                    String colour = configUtils.getDefaultColourForPlayer(s.getUniqueId());
+                String colour = args[0];
+
+                if (colour.equals("default")) {
+                    colour = configUtils.getDefaultColourForPlayer(s.getUniqueId());
                     configUtils.setColour(s.getUniqueId(), colour);
 
+                    result = colour;
+                }
+                else if (colour.startsWith("&u") || colour.startsWith("&g")) {
+                    configUtils.setColour(s.getUniqueId(), colour);
                     result = colour;
                 }
                 else {
@@ -559,9 +556,13 @@ public class ChatColorCommand implements CommandExecutor {
                 }
 
                 // Check the colour is valid.
-                String colour = getColour(args[3]);
+                String colour = args[3];
 
-                if (colour == null) {
+                if (GeneralUtils.isCustomColour(colour) && customColoursManager.getCustomColour(colour) == null) {
+                    player.sendMessage(M.INVALID_CUSTOM_COLOR);
+                    return false;
+                }
+                else if (!isValidColourString(colour)) {
                     player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", args[3]));
                     return false;
                 }
@@ -569,20 +570,6 @@ public class ChatColorCommand implements CommandExecutor {
                 else if (CompatabilityUtils.isHexLegacy() && GeneralUtils.isValidHexColour(colour)) {
                     player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
                     return false;
-                }
-                else if (GeneralUtils.isCustomColour(colour) && customColoursManager.getCustomColour(colour) == null) {
-                    player.sendMessage(M.INVALID_CUSTOM_COLOR);
-                    return false;
-                }
-
-                // Check all modifiers, if there are any.
-                if (args.length > 4) {
-                    for (int i = 4; i < args.length; i++) {
-                        if (getModifier(args[i]) == null) {
-                            player.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
-                            return false;
-                        }
-                    }
                 }
 
                 return true;
@@ -633,9 +620,8 @@ public class ChatColorCommand implements CommandExecutor {
                         player.sendMessage(M.PREFIX + M.CUSTOM_COLOR_EXISTS);
                         return false;
                     }
-
-                    if (!isValidCustomColourString(args[3])) {
-                        player.sendMessage(M.PREFIX + M.INCORRECT_CUSTOM_COLOR);
+                    else if (!isValidColourString(args[3])) {
+                        player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", args[3]));
                         return false;
                     }
 
@@ -669,7 +655,24 @@ public class ChatColorCommand implements CommandExecutor {
                 return false;
             }
 
-            String colour = getColour(args[1]);
+            String colour = args[1];
+
+            // Allows for setting rainbows & gradients from a command.
+            if (colour.startsWith("&u") || colour.startsWith("&g")) {
+                if (!player.hasPermission("chatcolor.special")) {
+                    player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+                    return false;
+                }
+                else if (!isValidColourString(colour)) {
+                    player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", colour));
+                    return false;
+                }
+
+                return true;
+            }
+            else {
+                colour = getColour(colour);
+            }
 
             if (colour != null) {
                 // Check for hex support, if necessary.
@@ -732,7 +735,25 @@ public class ChatColorCommand implements CommandExecutor {
             return false;
         }
 
-        String colour = getColour(args[0]);
+        String colour = args[0];
+
+        // Allows for setting rainbows & gradients from a command.
+        if (colour.startsWith("&u") || colour.startsWith("&g")) {
+            if (!player.hasPermission("chatcolor.special")) {
+                player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+                return false;
+            }
+            else if (!isValidColourString(colour)) {
+                player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", colour));
+                return false;
+            }
+
+            return true;
+        }
+        else {
+            colour = getColour(colour);
+        }
+
         if (colour != null) {
             if (!checkPermission(player, "chatcolor.change.self")) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
@@ -1181,19 +1202,13 @@ public class ChatColorCommand implements CommandExecutor {
         List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.gray", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
 
         if (words.contains(colour)) {
-            if (words.indexOf(colour) < 10) {
+            int wordIndex = words.indexOf(colour);
+
+            if (wordIndex < 10) {
                 return "&" + words.indexOf(colour);
             }
-
-            for (int i = 10; i < words.size(); i++) {
-                // The chars representing the colours can just be added to from 'a'.
-                char colorChar = 'a';
-                colorChar += (char) (i - 10);
-
-                String currentWord = words.get(i);
-                if (colour.equals(currentWord)) {
-                    return "&" + colorChar;
-                }
+            else {
+                return "&" + ('a' + (wordIndex - 10));
             }
         }
 
@@ -1232,7 +1247,7 @@ public class ChatColorCommand implements CommandExecutor {
         return null;
     }
 
-    private boolean isValidCustomColourString(String customColourString) {
+    private boolean isValidColourString(String customColourString) {
         // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
         // context as to why it's *not* a valid colour if it isn't.
         Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|[ug]\\[#[0-9a-f]{6}(,#[0-9a-f]{6})*])(&[k-o])*$");

@@ -118,6 +118,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
             }
 
+            case "group": {
+                String groupName = configUtils.getGroupColour(player, true);
+                return groupName == null ? "None" : groupName;
+            }
+
             default: {
                 // Check if it is a valid <colour>_available identifier.
                 if (identifier.matches("^[0-9abcdef]_available$")) {

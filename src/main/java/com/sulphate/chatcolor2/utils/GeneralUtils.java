@@ -132,6 +132,11 @@ public class GeneralUtils {
 
     // Validates if a string is a valid hex colour.
     public static boolean isValidHexColour(String toValidate) {
+        // Allows this to be used with legacy colour functionality.
+        if (toValidate.startsWith("&")) {
+            toValidate = toValidate.substring(1);
+        }
+
         return Pattern.compile("#[a-fA-F0-9]{6}").matcher(toValidate).matches();
     }
 
