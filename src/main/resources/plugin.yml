@@ -1,6 +1,6 @@
 name: ChatColor2
 main: com.sulphate.chatcolor2.main.ChatColor
-version: 1.13.3
+version: ${project.version}
 api-version: "1.13"
 author: Sulphate
 

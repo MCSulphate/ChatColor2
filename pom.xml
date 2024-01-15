@@ -4,7 +4,7 @@
 
   <groupId>me.sulphate</groupId>
   <artifactId>ChatColor2</artifactId>
-  <version>1.13.3</version>
+  <version>1.13.4</version>
   <name>ChatColor2</name>
 
   <properties>
@@ -56,6 +56,13 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
