@@ -68,7 +68,7 @@ nothing-to-confirm: '&cYou have nothing to confirm!'
 already-set: '&cThat value is already set!'
 is-currently: '&c[setting] &eis currently: &c[value]'
 to-change: 'You are changing it to: &c[value]'
-change-success: 'Success! &b[setting] has been set to &b[value].'
+change-success: 'Success! &b[setting] &ehas been set to &b[value].'
 configs-reset: 'Configs reset!'
 invalid-sequence: '&e[sequence] &cis an invalid colour sequence!'
 

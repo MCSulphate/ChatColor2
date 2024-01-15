@@ -137,6 +137,14 @@ public class ConfirmHandler extends Handler {
                 valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
+
+            case "command-opens-gui": {
+                boolean value = (boolean) scheduler.getValue();
+
+                configUtils.setSetting("command-opens-gui", value);
+                valueString = value ? "&aTRUE" : "&cFALSE";
+                break;
+            }
         }
 
         sender.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", GeneralUtils.colourise(valueString)));

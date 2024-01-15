@@ -12,7 +12,7 @@ settings:
   command-name: 'chatcolor'
   force-group-colors: true
   default-color-enabled: true
-
+  command-opens-gui: false
 default:
   code: '1'
   color: '&f'
