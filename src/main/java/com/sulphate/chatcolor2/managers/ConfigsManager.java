@@ -58,7 +58,7 @@ public class ConfigsManager {
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        configs.put(uuid.toString() + ".yml", config);
+        configs.put(uuid + ".yml", config);
     }
 
     // Saves a player config.

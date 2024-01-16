@@ -199,13 +199,13 @@ public class ChatColor extends JavaPlugin {
             saveResource("config.yml", true);
         }
         else {
-            // Check if the old config version is less than 1.7.9:
+            // Check if the old config version is less than 1.14 (SQL Update):
             // If it is, backup the old config and load the new format.
             YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(config);
             String version = currentConfig.getString("version");
             String latest = getDescription().getVersion();
 
-            if (!compareVersions(version, "1.7.9")) {
+            if (!compareVersions(version, "1.14")) {
                 if (!backupOldConfig()) return false;
                 saveResource("config.yml", true);
 

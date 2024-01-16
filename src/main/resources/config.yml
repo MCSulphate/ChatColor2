@@ -1,5 +1,13 @@
 version: ${project.version}
 stats: true
+storage:
+  type: "yaml"
+  database:
+    address: "127.0.0.1"
+    port: "3306"
+    name: "database_name"
+    user: "database_user"
+    password: "database_password"
 settings:
   event-priority: LOWEST
   auto-save: true
