@@ -1,12 +1,13 @@
 package com.sulphate.chatcolor2.commands;
 
+import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
@@ -16,12 +17,18 @@ public class ConfirmHandler extends Handler {
 
     private final Messages M;
     private final ConfirmationsManager confirmationsManager;
+    private final ConfigsManager configsManager;
+    private final CustomColoursManager customColoursManager;
+    private final GUIManager guiManager;
     private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
 
-    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigUtils configUtils, GeneralUtils generalUtils) {
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, ConfigUtils configUtils, GeneralUtils generalUtils) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
+        this.configsManager = configsManager;
+        this.customColoursManager = customColoursManager;
+        this.guiManager = guiManager;
         this.configUtils = configUtils;
         this.generalUtils = generalUtils;
     }
@@ -39,115 +46,86 @@ public class ConfirmHandler extends Handler {
         }
 
         ConfirmScheduler scheduler = confirmationsManager.getSchedulerForPlayer(sender);
-        String type = scheduler.getType();
+        Setting setting = scheduler.getSetting();
         scheduler.cancelScheduler();
 
         String valueString = "";
 
-        switch(type) {
-            case "auto-save": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("auto-save", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
-                break;
-            }
-
-            case "save-interval": {
-                int value = (int) scheduler.getValue();
-
-                configUtils.setSetting("save-interval", value);
-                // Update the save scheduler with the new interval.
-                ChatColor.getPlugin().getSaveScheduler().setSaveInterval(value);
-                valueString = value + "";
-                break;
-            }
-
-            case "color-override": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("color-override", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
-                break;
-            }
-
-            case "reset": {
+        switch(setting.getDataType()) {
+            case NONE: {
                 // Overwrite configs with default ones.
                 ChatColor.getPlugin().saveResource("config.yml", true);
                 ChatColor.getPlugin().saveResource("messages.yml", true);
                 ChatColor.getPlugin().saveResource("groups.yml", true);
+                ChatColor.getPlugin().saveResource("custom-colors.yml", true);
+                ChatColor.getPlugin().saveResource("gui.yml", true);
+
+                configsManager.loadAllConfigs();
                 M.reloadMessages();
+                guiManager.reload();
+                customColoursManager.reload();
+
+                // Re-load player configs to avoid plugin inoperation.
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    configsManager.loadPlayerConfig(player.getUniqueId());
+                }
 
                 sender.sendMessage(M.PREFIX + M.CONFIGS_RESET);
                 return true;
             }
 
-            case "notify-others": {
+            case BOOLEAN: {
                 boolean value = (boolean) scheduler.getValue();
 
-                configUtils.setSetting("notify-others", value);
+                configUtils.setSetting(setting.getName(), value);
                 valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
 
-            case "join-message": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("join-message", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
-                break;
-            }
-
-            case "confirm-timeout": {
+            case INTEGER: {
                 int value = (int) scheduler.getValue();
 
-                configUtils.setSetting("confirm-timeout", value);
-                valueString = "&b" + value;
+                configUtils.setSetting(setting.getName(), value);
+                valueString = String.valueOf(value);
+
+                // Update the save scheduler with the new interval.
+                if (setting.getName().equals("save-interval")) {
+                    ChatColor.getPlugin().getSaveScheduler().setSaveInterval(value);
+                }
+
                 break;
             }
 
-            case "default-color": {
+            // The actual updating of these types is the same, bar the exception of default-color.
+            case COMMAND_NAME:
+            case STRING: {
                 String value = (String) scheduler.getValue();
 
-                configUtils.createNewDefaultColour(value);
+                configUtils.setSetting(setting.getName(), value);
+                valueString = value;
+
+                if (setting.getName().equals("default-color")) {
+                    configUtils.createNewDefaultColour(value);
+                }
+
+                break;
+            }
+
+            case COLOUR_STRING: {
+                String value = (String) scheduler.getValue();
+
+                configUtils.setSetting(setting.getName(), value);
                 valueString = generalUtils.colouriseMessage(value, "this", false);
-                break;
-            }
 
-            case "command-name": {
-                String value = (String) scheduler.getValue();
+                if (setting.getName().equals("default-color")) {
+                    configUtils.createNewDefaultColour(value);
+                }
 
-                configUtils.setSetting("command-name", value);
-                valueString = "&b" + value;
-                break;
-            }
-
-            case "force-group-colors": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("force-group-colors", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
-                break;
-            }
-
-            case "default-color-enabled": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("default-color-enabled", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
-                break;
-            }
-
-            case "command-opens-gui": {
-                boolean value = (boolean) scheduler.getValue();
-
-                configUtils.setSetting("command-opens-gui", value);
-                valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
         }
 
-        sender.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", type).replace("[value]", GeneralUtils.colourise(valueString)));
+        sender.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", setting.getName()).replace("[value]", GeneralUtils.colourise(valueString)));
         return true;
     }
 

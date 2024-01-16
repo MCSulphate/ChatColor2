@@ -1,0 +1,37 @@
+package com.sulphate.chatcolor2.commands;
+
+public enum Setting {
+
+    AUTO_SAVE(SettingDataType.BOOLEAN),
+    SAVE_INTERVAL(SettingDataType.INTEGER),
+    COLOR_OVERRIDE(SettingDataType.BOOLEAN),
+    NOTIFY_OTHERS(SettingDataType.BOOLEAN),
+    JOIN_MESSAGE(SettingDataType.BOOLEAN),
+    CONFIRM_TIMEOUT(SettingDataType.INTEGER),
+    DEFAULT_COLOR(SettingDataType.COLOUR_STRING),
+    COMMAND_NAME(SettingDataType.COMMAND_NAME),
+    FORCE_GROUP_COLORS(SettingDataType.BOOLEAN),
+    DEFAULT_COLOR_ENABLED(SettingDataType.BOOLEAN),
+    COMMAND_OPENS_GUI(SettingDataType.BOOLEAN),
+    RESET(SettingDataType.NONE);
+
+    private final SettingDataType dataType;
+
+    Setting(SettingDataType dataType) {
+        this.dataType = dataType;
+    }
+
+    public SettingDataType getDataType() {
+        return dataType;
+    }
+
+    public String getName() {
+        return name().replaceAll("_", "-").toLowerCase();
+    }
+
+    public static Setting getSetting(String name) {
+        name = name.replaceAll("-", "_").toUpperCase();
+        return Setting.valueOf(name);
+    }
+
+}

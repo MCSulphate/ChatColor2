@@ -73,7 +73,8 @@ public class Messages {
     public String GROUP_COLOR_FORMAT;
 
     // Confirmation and Settings Messages
-    public String CONFIRM;
+    public String CONFIRM_ARE_YOU_SURE;
+    public String CONFIRM_FINALISE;
     public String DID_NOT_CONFIRM;
     public String ALREADY_CONFIRMING;
     public String NOTHING_TO_CONFIRM;
@@ -176,7 +177,8 @@ public class Messages {
         GROUP_COLOR_FORMAT = getAndColourise("group-color-format");
 
         // Confirmation and Settings Messages
-        CONFIRM = getAndColourise("confirm");
+        CONFIRM_ARE_YOU_SURE = getAndColourise("confirm-are-you-sure");
+        CONFIRM_FINALISE = getAndColourise("confirm-finalise");
         DID_NOT_CONFIRM = getAndColourise("did-not-confirm");
         ALREADY_CONFIRMING = getAndColourise("already-confirming");
         NOTHING_TO_CONFIRM = getAndColourise("nothing-to-confirm");

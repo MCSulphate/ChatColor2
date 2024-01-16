@@ -7,7 +7,7 @@ settings:
   color-override: false
   notify-others: true
   join-message: true
-  confirm-timeout: 10
+  confirm-timeout: 15
   default-color: '&f'
   command-name: 'chatcolor'
   force-group-colors: true

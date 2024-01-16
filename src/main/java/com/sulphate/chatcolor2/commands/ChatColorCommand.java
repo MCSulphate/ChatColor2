@@ -107,8 +107,11 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "reset": {
-                        s.sendMessage(M.PREFIX + M.CONFIRM);
-                        ChatColor.getPlugin().createConfirmScheduler(s, "reset", null);
+                        s.sendMessage("");
+                        s.sendMessage(M.PREFIX + M.CONFIRM_ARE_YOU_SURE);
+                        s.sendMessage(M.PREFIX + M.CONFIRM_FINALISE);
+
+                        ChatColor.getPlugin().createConfirmScheduler(s, Setting.RESET, null);
                         return true;
                     }
 
@@ -946,257 +949,115 @@ public class ChatColorCommand implements CommandExecutor {
         String trueVal = GeneralUtils.colourise("&aTRUE");
         String falseVal = GeneralUtils.colourise("&cFALSE");
 
-        String setting = args[1];
         String currentValueString = "";
-        String valueString = "";
+        String newValueString = "";
         Object value = null;
 
-        switch (args[1]) {
+        Setting setting = Setting.getSetting(args[1]);
+        String rawValue = args[2];
 
-            case "auto-save": {
+        switch (setting.getDataType()) {
+            case BOOLEAN: {
                 boolean val;
 
                 try {
-                    val = Boolean.parseBoolean(args[2]);
+                    val = Boolean.parseBoolean(rawValue);
                 }
                 catch (Exception e) {
                     player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
                     return;
                 }
 
-                boolean autosave = (boolean) configUtils.getSetting("auto-save");
+                boolean current = (boolean) configUtils.getSetting(setting.getName());
 
-                if (val == autosave) {
+                if (val == current) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);
                     return;
                 }
 
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
+                currentValueString = current ? trueVal : falseVal;
+                newValueString = val ? trueVal : falseVal;
                 value = val;
                 break;
             }
 
-            case "save-interval": {
+            case INTEGER: {
                 int val;
 
                 try {
-                    val = Integer.parseInt(args[2]);
+                    val = Integer.parseInt(rawValue);
                 }
-                catch (NumberFormatException ex) {
+                catch (Exception ex) {
                     player.sendMessage(M.PREFIX + M.NEEDS_NUMBER);
                     return;
                 }
 
-                int saveInterval = (int) configUtils.getSetting("save-interval");
+                int current = (int) configUtils.getSetting(setting.getName());
 
-                if (val == saveInterval) {
+                if (val == current) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);
                     return;
                 }
 
-                currentValueString = saveInterval + "";
-                valueString = val + "";
+                currentValueString = String.valueOf(current);
+                newValueString = String.valueOf(val);
                 value = val;
                 break;
             }
 
-            case "color-override": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
-                    return;
-                }
-
-                boolean override = (boolean) configUtils.getSetting("color-override");
-
-                if (val == override) {
-                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
-                    return;
-                }
-
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
-                break;
-            }
-
-            case "notify-others": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
-                    return;
-                }
-
-                boolean notify = (boolean) configUtils.getSetting("notify-others");
-
-                if (val == notify) {
-                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
-                    return;
-                }
-
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
-                break;
-            }
-
-            case "join-message": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
-                    return;
-                }
-
-                boolean notify = (boolean) configUtils.getSetting("join-message");
-
-                if (val == notify) {
-                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
-                    return;
-                }
-
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
-                break;
-            }
-
-            case "confirm-timeout": {
-                int val;
-
-                try {
-                    val = Integer.parseInt(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_NUMBER);
-                    return;
-                }
-
-                currentValueString = (int) configUtils.getSetting("confirm-timeout") + "";
-                valueString = val + "";
-                value = val;
-                break;
-            }
-
-            case "default-color": {
-                String colour = args[2];
-
-                if (!isValidColourString(colour)) {
-                    player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", colour));
-                    return;
-                }
-
-                currentValueString = configUtils.getCurrentDefaultColour();
-                // The only place in the plugin that 'this' is needed - no point in having a message for this (pardon the pun).
-                valueString = generalUtils.colouriseMessage(colour, "this", true);
-                value = colour;
-                break;
-            }
-
-            case "command-name": {
-                String cmd = args[2];
-
+            case COMMAND_NAME: {
                 // Make sure no other plugin has this command set.
-                for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
-                    if (p.getDescription().getCommands().containsKey(cmd)) {
+                for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                    if (plugin.getDescription().getCommands().containsKey(rawValue)) {
                         player.sendMessage(M.PREFIX + M.COMMAND_EXISTS);
                         return;
                     }
                 }
 
-                currentValueString = (String) configUtils.getSetting("command-name");
-                value = valueString = cmd;
-                break;
+                // Fall through to String now.
             }
+            case STRING: {
+                String current = (String) configUtils.getSetting(setting.getName());
 
-            case "force-group-colors": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
-                    return;
-                }
-
-                boolean notify = (boolean) configUtils.getSetting("force-group-colors");
-
-                if (val == notify) {
+                if (rawValue.equals(current)) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);
                     return;
                 }
 
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
+                currentValueString = current;
+                newValueString = rawValue;
+                value = rawValue;
                 break;
             }
 
-            case "default-color-enabled": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
+            case COLOUR_STRING: {
+                if (!isValidColourString(rawValue)) {
+                    player.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", rawValue));
                     return;
                 }
 
-                boolean enabled = (boolean) configUtils.getSetting("default-color-enabled");
+                String current = configUtils.getCurrentDefaultColour();
 
-                if (val == enabled) {
+                if (rawValue.equals(current)) {
                     player.sendMessage(M.PREFIX + M.ALREADY_SET);
                     return;
                 }
 
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
+                currentValueString = generalUtils.colouriseMessage(current, "this", false);
+                newValueString = generalUtils.colouriseMessage(rawValue, "this", false);
+                value = rawValue;
                 break;
             }
 
-            case "command-opens-gui": {
-                boolean val;
-
-                try {
-                    val = Boolean.parseBoolean(args[2]);
-                }
-                catch (Exception e) {
-                    player.sendMessage(M.PREFIX + M.NEEDS_BOOLEAN);
-                    return;
-                }
-
-                boolean enabled = (boolean) configUtils.getSetting("command-opens-gui");
-
-                if (val == enabled) {
-                    player.sendMessage(M.PREFIX + M.ALREADY_SET);
-                    return;
-                }
-
-                currentValueString = val ? falseVal : trueVal;
-                valueString = val ? trueVal : falseVal;
-                value = val;
-                break;
-            }
         }
 
-        player.sendMessage(M.PREFIX + M.IS_CURRENTLY.replace("[setting]", setting).replace("[value]", currentValueString));
-        player.sendMessage(M.PREFIX + M.TO_CHANGE.replace("[value]", valueString));
-        player.sendMessage(M.PREFIX + M.CONFIRM);
+        player.sendMessage("");
+        player.sendMessage(M.PREFIX + M.IS_CURRENTLY.replace("[setting]", setting.getName()).replace("[value]", currentValueString));
+        player.sendMessage(M.PREFIX + M.TO_CHANGE.replace("[value]", newValueString));
+
+        player.sendMessage("");
+        player.sendMessage(M.PREFIX + M.CONFIRM_ARE_YOU_SURE);
+        player.sendMessage(M.PREFIX + M.CONFIRM_FINALISE);
 
         ChatColor.getPlugin().createConfirmScheduler(player, setting, value);
     }
@@ -1261,8 +1122,8 @@ public class ChatColorCommand implements CommandExecutor {
 
     private boolean isValidColourString(String customColourString) {
         // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
-        // context as to why it's *not* a valid colour if it isn't.
-        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|[ug]\\[#[0-9a-f]{6}(,#[0-9a-f]{6})*])(&[k-o])*$");
+        // context as to why it's *not* a valid colour if it isn't. God I love/hate regex.
+        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|[ug]\\[(#[0-9a-f]{6}|[0-9a-f])(,(#[0-9a-f]{6}|[0-9a-f]))*])(&[k-o])*$");
         Matcher matcher = pattern.matcher(customColourString);
 
         return matcher.matches();

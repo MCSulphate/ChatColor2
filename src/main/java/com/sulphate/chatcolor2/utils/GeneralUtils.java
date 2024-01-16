@@ -283,6 +283,11 @@ public class GeneralUtils {
         final int b;
 
         HexColour(String textFormat) {
+            // If it's a character, then it's a legacy colour code. Convert it.
+            if (textFormat.length() == 1) {
+                textFormat = LegacyHexMap.getHexForLegacyColour(textFormat.charAt(0));
+            }
+
             textFormat = textFormat.substring(1);
 
             int r = Integer.parseInt(textFormat.substring(0, 2), 16);
@@ -349,7 +354,7 @@ public class GeneralUtils {
 
         // Check the override if the coloured message is different.
         if (checkOverride && isDifferentWhenColourised(message)) {
-            boolean override = ((boolean) configUtils.getSetting("color-override")) && checkOverride;
+            boolean override = ((boolean) configUtils.getSetting("color-override"));
             String colourised = colourise(message);
 
             if (override) {

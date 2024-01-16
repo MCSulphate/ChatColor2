@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
+import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -144,7 +145,7 @@ public class ChatColor extends JavaPlugin {
                 guiManager, customColoursManager
         ));
 
-        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configUtils, generalUtils));
+        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, configUtils, generalUtils));
     }
 
     private void setupListeners() {
@@ -395,8 +396,8 @@ public class ChatColor extends JavaPlugin {
     }
 
     // Adds a player to the confirming list, and starts the scheduler.
-    public void createConfirmScheduler(Player player, String type, Object value) {
-        ConfirmScheduler scheduler = new ConfirmScheduler(M, confirmationsManager, configUtils, player, type, value);
+    public void createConfirmScheduler(Player player, Setting setting, Object value) {
+        ConfirmScheduler scheduler = new ConfirmScheduler(M, confirmationsManager, configUtils, player, setting, value);
         confirmationsManager.addConfirmingPlayer(player, scheduler);
     }
 
