@@ -20,4 +20,6 @@ public interface PlayerDataStore {
 
     boolean saveAllData();
 
+    void shutdown();
+
 }

@@ -1,10 +1,12 @@
 version: ${project.version}
 stats: true
 storage:
+  # Set this to "database" if you want to use SQL.
   type: "yaml"
+  # These settings do nothing if you're not using SQL.
   database:
     address: "127.0.0.1"
-    port: "3306"
+    port: 3306
     name: "database_name"
     user: "database_user"
     password: "database_password"

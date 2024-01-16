@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -44,6 +45,7 @@ public class ChatColor extends JavaPlugin {
     private GUIManager guiManager;
     private ConfirmationsManager confirmationsManager;
     private AutoSaveScheduler saveScheduler;
+    private PlayerDataStore playerDataStore;
     private Messages M;
 
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
@@ -121,22 +123,23 @@ public class ChatColor extends JavaPlugin {
         guiManager = new GUIManager(configsManager, configUtils, generalUtils, M);
         confirmationsManager = new ConfirmationsManager();
 
-        boolean setSaveInterval = false;
-        if (configUtils.getSetting("save-interval") == null) {
-            setSaveInterval = true;
-            saveScheduler = new AutoSaveScheduler(5); // Use the default if the setting is null, set afterwards.
+        // Initialise player data store.
+        String pdcType = getConfig().getString("storage.type");
+
+        if (pdcType != null && pdcType.equals("database")) {
+            // TODO
         }
         else {
-            saveScheduler = new AutoSaveScheduler((int) configUtils.getSetting("save-interval"));
+
         }
+
+
+        int saveInterval = (int) configUtils.getSetting("save-interval");
+
 
         // Scan messages and settings to make sure all are present.
         scanMessages();
         scanSettings();
-
-        if (setSaveInterval) {
-            saveScheduler.setSaveInterval((int) configUtils.getSetting("save-interval"));
-        }
     }
 
     private void setupCommands() {

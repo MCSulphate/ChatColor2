@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.data;
 
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -12,16 +13,22 @@ import java.util.UUID;
 
 public class YamlStorageImpl implements PlayerDataStore {
 
+    private final AutoSaveScheduler saveScheduler;
     private final Map<UUID, PlayerData> dataMap;
 
     private final ConfigsManager configsManager;
     private final ConfigUtils configUtils;
 
-    public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils) {
+    public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval) {
         this.configsManager = configsManager;
         this.configUtils = configUtils;
 
+        saveScheduler = new AutoSaveScheduler(saveInterval);
         dataMap = new HashMap<>();
+    }
+
+    public void updateSaveInterval(int saveInterval) {
+        saveScheduler.setSaveInterval(saveInterval);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class YamlStorageImpl implements PlayerDataStore {
         }
 
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        ChatColor.getPlugin().getSaveScheduler().saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
+        saveScheduler.saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
         data.markClean();
 
         return true;
@@ -94,6 +101,11 @@ public class YamlStorageImpl implements PlayerDataStore {
         }
 
         return true;
+    }
+
+    @Override
+    public void shutdown() {
+        saveScheduler.stop();
     }
 
 }

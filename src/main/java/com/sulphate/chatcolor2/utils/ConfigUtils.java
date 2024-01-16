@@ -1,8 +1,10 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.data.DatabaseConnectionSettings;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -42,6 +44,17 @@ public class ConfigUtils {
     public void setSetting(String key, Object value) {
         configsManager.getConfig(Config.MAIN_CONFIG).set("settings." + key, value);
         configsManager.saveConfig(Config.MAIN_CONFIG);
+    }
+
+    public DatabaseConnectionSettings getDatabaseConnectionSettings() {
+        YamlConfiguration config = configsManager.getConfig(Config.MAIN_CONFIG);
+        ConfigurationSection section = config.getConfigurationSection("storage.database");
+
+        if (section == null) {
+            return null;
+        }
+
+        return new DatabaseConnectionSettings(section);
     }
 
     // Gets a player's colour (config must be loaded).
