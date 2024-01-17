@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.commands;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -45,11 +46,12 @@ public class ChatColorCommand implements CommandExecutor {
     private final HandlersManager handlersManager;
     private final GUIManager guiManager;
     private final CustomColoursManager customColoursManager;
+    private final PlayerDataStore dataStore;
 
     public ChatColorCommand(
             Messages M, GeneralUtils generalUtils, ConfigUtils configUtils, ConfirmationsManager confirmationsManager,
             ConfigsManager configsManager, HandlersManager handlersManager, GUIManager guiManager,
-            CustomColoursManager customColoursManager
+            CustomColoursManager customColoursManager, PlayerDataStore playerDataStore
     ) {
         this.M = M;
         this.generalUtils = generalUtils;
@@ -59,6 +61,7 @@ public class ChatColorCommand implements CommandExecutor {
         this.handlersManager = handlersManager;
         this.guiManager = guiManager;
         this.customColoursManager = customColoursManager;
+        this.dataStore = playerDataStore;
     }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
@@ -153,10 +156,10 @@ public class ChatColorCommand implements CommandExecutor {
                     case "add": {
                         // Add the new modifier to their chat colour.
                         String modifierToAdd = getModifier(args[1]);
-                        String colour = configUtils.getColour(s.getUniqueId());
+                        String colour = dataStore.getColour(s.getUniqueId());
                         String newColour = colour + modifierToAdd;
 
-                        configUtils.setColour(s.getUniqueId(), newColour);
+                        dataStore.setColour(s.getUniqueId(), newColour);
                         s.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, newColour));
                         return true;
                     }
@@ -164,10 +167,10 @@ public class ChatColorCommand implements CommandExecutor {
                     case "remove": {
                         // Remove the modifier from their chat colour.
                         String modifierToRemove = getModifier(args[1]);
-                        String colour = configUtils.getColour(s.getUniqueId());
+                        String colour = dataStore.getColour(s.getUniqueId());
                         String newColour = colour.replace(modifierToRemove, "");
 
-                        configUtils.setColour(s.getUniqueId(), newColour);
+                        dataStore.setColour(s.getUniqueId(), newColour);
                         s.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, newColour));
                         return true;
                     }
@@ -339,7 +342,7 @@ public class ChatColorCommand implements CommandExecutor {
                 }
 
                 String colour = colourFromArgs(args, 1);
-                configUtils.setColour(uuid, colour);
+                dataStore.setColour(uuid, colour);
                 Player target = Bukkit.getPlayer(args[0]);
 
                 if ((boolean) configUtils.getSetting("notify-others") && target != null) {
@@ -361,17 +364,17 @@ public class ChatColorCommand implements CommandExecutor {
 
         if (colour.equals("default")) {
             colour = configUtils.getDefaultColourForPlayer(uuid);
-            configUtils.setColour(uuid, colour);
+            dataStore.setColour(uuid, colour);
 
             result = colour;
         }
         else if (colour.startsWith("&u") || colour.startsWith("&g")) {
-            configUtils.setColour(uuid, colour);
+            dataStore.setColour(uuid, colour);
             result = colour;
         }
         else {
             result = colourFromArgs(args, 0);
-            configUtils.setColour(uuid, result);
+            dataStore.setColour(uuid, result);
         }
 
         return result;
@@ -425,7 +428,7 @@ public class ChatColorCommand implements CommandExecutor {
             else {
                 // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
                 String groupColour = configUtils.getGroupColour(player);
-                String colour = configUtils.getColour(uuid);
+                String colour = dataStore.getColour(uuid);
 
                 if (groupColour != null) {
                     // If it should be forced, set it so.
@@ -502,7 +505,7 @@ public class ChatColorCommand implements CommandExecutor {
                 return false;
             }
 
-            String colour = configUtils.getColour(player.getUniqueId());
+            String colour = dataStore.getColour(player.getUniqueId());
 
             if (GeneralUtils.isCustomColour(colour)) {
                 player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);

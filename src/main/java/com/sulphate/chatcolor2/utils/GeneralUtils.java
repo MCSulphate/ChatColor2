@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,11 +19,13 @@ public class GeneralUtils {
 
     private final ConfigUtils configUtils;
     private final CustomColoursManager customColoursManager;
+    private PlayerDataStore dataStore;
     private final Messages M;
 
-    public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, Messages M) {
+    public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
         this.configUtils = configUtils;
         this.customColoursManager = customColoursManager;
+        this.dataStore = dataStore;
         this.M = M;
     }
 
@@ -472,11 +475,11 @@ public class GeneralUtils {
 
     public void checkDefault(UUID uuid) {
         long currentCode = configUtils.getCurrentDefaultCode();
-        long playerCode = configUtils.getDefaultCode(uuid);
+        long playerCode = dataStore.getDefaultCode(uuid);
 
         if (playerCode != currentCode) {
-            configUtils.setDefaultCode(uuid, currentCode);
-            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
+            dataStore.setDefaultCode(uuid, currentCode);
+            dataStore.setColour(uuid, configUtils.getCurrentDefaultColour());
         }
     }
 

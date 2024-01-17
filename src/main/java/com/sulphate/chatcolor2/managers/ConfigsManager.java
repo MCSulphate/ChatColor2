@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ConfigsManager {
 
-    private HashMap<String, YamlConfiguration> configs;
+    private final HashMap<String, YamlConfiguration> configs;
     private final File PLAYERS_FOLDER = new File(ChatColor.getPlugin().getDataFolder(), "players");
 
     public ConfigsManager() {
@@ -40,7 +40,15 @@ public class ConfigsManager {
 
     // Saves a config.
     public void saveConfig(String configName) {
-        ChatColor.getPlugin().getSaveScheduler().saveConfigWithDelay(configName, getConfig(configName));
+        File file = new File(ChatColor.getPlugin().getDataFolder(), configName);
+        YamlConfiguration config = getConfig(configName);
+
+        try {
+            config.save(file);
+        }
+        catch (IOException ex) {
+            Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&cError: Failed to save a config (" + configName + ")!"));
+        }
     }
 
     // Loads a player config.
@@ -59,11 +67,6 @@ public class ConfigsManager {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         configs.put(uuid + ".yml", config);
-    }
-
-    // Saves a player config.
-    public void savePlayerConfig(UUID uuid) {
-        ChatColor.getPlugin().getSaveScheduler().saveConfigWithDelay("players" + File.separator + uuid.toString() + ".yml", getConfig(uuid.toString() + ".yml"));
     }
 
     // Gets a player config.

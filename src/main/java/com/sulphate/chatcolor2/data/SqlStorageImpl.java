@@ -25,12 +25,12 @@ public class SqlStorageImpl implements PlayerDataStore {
     }
 
     @Override
-    public int getDefaultCode(UUID uuid) {
+    public long getDefaultCode(UUID uuid) {
         return 0;
     }
 
     @Override
-    public void setDefaultCode(UUID uuid, int defaultCode) {
+    public void setDefaultCode(UUID uuid, long defaultCode) {
 
     }
 
@@ -42,6 +42,11 @@ public class SqlStorageImpl implements PlayerDataStore {
     @Override
     public boolean saveAllData() {
         return false;
+    }
+
+    @Override
+    public void shutdown() {
+
     }
 
 }

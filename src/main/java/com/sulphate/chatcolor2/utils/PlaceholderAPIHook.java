@@ -1,10 +1,12 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -12,15 +14,15 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     private final ChatColor plugin;
     private final ConfigUtils configUtils;
-    private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
+    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
         this.plugin = plugin;
         this.configUtils = configUtils;
-        this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.dataStore = dataStore;
         this.M = M;
     }
 
@@ -50,7 +52,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
 
         // Ignore if player is null.
         if (player == null) {
@@ -58,7 +60,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         UUID uuid = player.getUniqueId();
-        String colour = configUtils.getColour(uuid);
+        String colour = dataStore.getColour(uuid);
 
         switch (identifier) {
             case "full_color": {

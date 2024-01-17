@@ -9,6 +9,7 @@ import java.util.*;
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.data.YamlStorageImpl;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -44,7 +45,6 @@ public class ChatColor extends JavaPlugin {
     private GeneralUtils generalUtils;
     private GUIManager guiManager;
     private ConfirmationsManager confirmationsManager;
-    private AutoSaveScheduler saveScheduler;
     private PlayerDataStore playerDataStore;
     private Messages M;
 
@@ -89,7 +89,7 @@ public class ChatColor extends JavaPlugin {
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(this, configUtils, generalUtils, customColoursManager, M).register();
+            new PlaceholderAPIHook(this, configUtils, customColoursManager, playerDataStore, M).register();
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
         else {
@@ -117,25 +117,22 @@ public class ChatColor extends JavaPlugin {
         handlersManager = new HandlersManager();
         configsManager = new ConfigsManager();
         customColoursManager = new CustomColoursManager(configsManager);
-        configUtils = new ConfigUtils(configsManager, customColoursManager);
+        configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);
-        generalUtils = new GeneralUtils(configUtils, customColoursManager, M);
-        guiManager = new GUIManager(configsManager, configUtils, generalUtils, M);
+        generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
+        guiManager = new GUIManager(configsManager, configUtils, generalUtils, playerDataStore, M);
         confirmationsManager = new ConfirmationsManager();
 
         // Initialise player data store.
         String pdcType = getConfig().getString("storage.type");
 
         if (pdcType != null && pdcType.equals("database")) {
-            // TODO
+            // TODO: Create SQL backend implementation
         }
         else {
-
+            int saveInterval = (int) configUtils.getSetting("save-interval");
+            playerDataStore = new YamlStorageImpl(configsManager, configUtils, saveInterval);
         }
-
-
-        int saveInterval = (int) configUtils.getSetting("save-interval");
-
 
         // Scan messages and settings to make sure all are present.
         scanMessages();
@@ -145,15 +142,15 @@ public class ChatColor extends JavaPlugin {
     private void setupCommands() {
         getCommand("chatcolor").setExecutor(new ChatColorCommand(
                 M, generalUtils, configUtils, confirmationsManager, configsManager, handlersManager,
-                guiManager, customColoursManager
+                guiManager, customColoursManager, playerDataStore
         ));
 
-        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, configUtils, generalUtils));
+        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, configUtils, generalUtils, playerDataStore));
     }
 
     private void setupListeners() {
         EventPriority chatPriority = EventPriority.valueOf((String) configUtils.getSetting("event-priority"));
-        Listener chatListener = new ChatListener(configUtils, generalUtils, M);
+        Listener chatListener = new ChatListener(configUtils, generalUtils, playerDataStore);
         EventExecutor executor = (listener, event) -> {
             if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
                 ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
@@ -163,14 +160,14 @@ public class ChatColor extends JavaPlugin {
         // Attempt to register
         manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
 
-        manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, configsManager), this);
+        manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, customColoursManager, playerDataStore), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(guiManager, this);
     }
 
     @Override
     public void onDisable() {
-        saveScheduler.stop();
+        playerDataStore.shutdown();
         plugin = null;
 
         console.sendMessage(M.PREFIX + M.SHUTDOWN.replace("[version]", getDescription().getVersion()));
@@ -178,10 +175,6 @@ public class ChatColor extends JavaPlugin {
 
     public static ChatColor getPlugin() {
         return plugin;
-    }
-
-    public AutoSaveScheduler getSaveScheduler() {
-        return saveScheduler;
     }
 
     private boolean setupConfigs() {

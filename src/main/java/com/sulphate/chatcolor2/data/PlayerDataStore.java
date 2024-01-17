@@ -12,9 +12,9 @@ public interface PlayerDataStore {
 
     void setColour(UUID uuid, String colour);
 
-    int getDefaultCode(UUID uuid);
+    long getDefaultCode(UUID uuid);
 
-    void setDefaultCode(UUID uuid, int defaultCode);
+    void setDefaultCode(UUID uuid, long defaultCode);
 
     boolean savePlayerData(UUID uuid);
 

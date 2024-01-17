@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.gui;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
@@ -22,16 +23,18 @@ public class GUIManager implements Listener {
     private final ConfigsManager configsManager;
     private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
     private final Map<String, GUI> guis;
     private final Map<Player, GUI> openGUIs;
     private final Set<Player> transitioningPlayers;
 
-    public GUIManager(ConfigsManager configsManager, ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
+    public GUIManager(ConfigsManager configsManager, ConfigUtils configUtils, GeneralUtils generalUtils, PlayerDataStore dataStore, Messages M) {
         this.configsManager = configsManager;
         this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.dataStore = dataStore;
         this.M = M;
 
         guis = new HashMap<>();
@@ -108,7 +111,7 @@ public class GUIManager implements Listener {
 
         for (String key : keys) {
             ConfigurationSection guiSection = config.getConfigurationSection(key);
-            GUI gui = new GUI(this, key, guiSection, configUtils, generalUtils, M);
+            GUI gui = new GUI(this, key, guiSection, generalUtils, dataStore, M);
 
             if (gui.loaded()) {
                 guis.put(key, gui);

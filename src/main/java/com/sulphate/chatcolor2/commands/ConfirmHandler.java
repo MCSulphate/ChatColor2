@@ -1,5 +1,7 @@
 package com.sulphate.chatcolor2.commands;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.data.YamlStorageImpl;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -22,8 +24,9 @@ public class ConfirmHandler extends Handler {
     private final GUIManager guiManager;
     private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final PlayerDataStore dataStore;
 
-    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, ConfigUtils configUtils, GeneralUtils generalUtils) {
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, ConfigUtils configUtils, GeneralUtils generalUtils, PlayerDataStore dataStore) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
         this.configsManager = configsManager;
@@ -31,6 +34,7 @@ public class ConfirmHandler extends Handler {
         this.guiManager = guiManager;
         this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.dataStore = dataStore;
     }
 
     @Override
@@ -88,9 +92,9 @@ public class ConfirmHandler extends Handler {
                 configUtils.setSetting(setting.getName(), value);
                 valueString = String.valueOf(value);
 
-                // Update the save scheduler with the new interval.
-                if (setting.getName().equals("save-interval")) {
-                    ChatColor.getPlugin().getSaveScheduler().setSaveInterval(value);
+                // Update the save scheduler with the new interval. Only applicable to the YAML implementation.
+                if (setting.getName().equals("save-interval") && dataStore instanceof YamlStorageImpl) {
+                    ((YamlStorageImpl) dataStore).updateSaveInterval(value);
                 }
 
                 break;

@@ -6,10 +6,10 @@ public class PlayerData {
 
     private final UUID uuid;
     private String colour;
-    private int defaultCode;
+    private long defaultCode;
     private boolean dirty;
 
-    public PlayerData(UUID uuid, String colour, int defaultCode) {
+    public PlayerData(UUID uuid, String colour, long defaultCode) {
         this.uuid = uuid;
         this.colour = colour;
         this.defaultCode = defaultCode;
@@ -27,11 +27,11 @@ public class PlayerData {
         this.colour = colour;
     }
 
-    public int getDefaultCode() {
+    public long getDefaultCode() {
         return defaultCode;
     }
 
-    public void setDefaultCode(int defaultCode) {
+    public void setDefaultCode(long defaultCode) {
         this.defaultCode = defaultCode;
     }
 

@@ -54,7 +54,7 @@ public class YamlStorageImpl implements PlayerDataStore {
         dataMap.put(uuid, new PlayerData(
                 uuid,
                 config.getString("colour"),
-                config.getInt("default-code")
+                config.getLong("default-code")
         ));
 
         return true;
@@ -71,12 +71,12 @@ public class YamlStorageImpl implements PlayerDataStore {
     }
 
     @Override
-    public int getDefaultCode(UUID uuid) {
+    public long getDefaultCode(UUID uuid) {
         return dataMap.get(uuid).getDefaultCode();
     }
 
     @Override
-    public void setDefaultCode(UUID uuid, int defaultCode) {
+    public void setDefaultCode(UUID uuid, long defaultCode) {
         dataMap.get(uuid).setDefaultCode(defaultCode);
     }
 
@@ -89,12 +89,17 @@ public class YamlStorageImpl implements PlayerDataStore {
         }
 
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
+
+        config.set("colour", data.getColour());
+        config.set("default-code", data.getDefaultCode());
+
         saveScheduler.saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
         data.markClean();
 
         return true;
     }
 
+    @Override
     public boolean saveAllData() {
         for (UUID uuid : dataMap.keySet()) {
             savePlayerData(uuid);

@@ -18,11 +18,9 @@ import java.util.UUID;
 public class ConfigUtils {
 
     private final ConfigsManager configsManager;
-    private final CustomColoursManager customColoursManager;
 
-    public ConfigUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager) {
+    public ConfigUtils(ConfigsManager configsManager) {
         this.configsManager = configsManager;
-        this.customColoursManager = customColoursManager;
     }
 
     // Returns the list of startup messages.
@@ -55,56 +53,6 @@ public class ConfigUtils {
         }
 
         return new DatabaseConnectionSettings(section);
-    }
-
-    // Gets a player's colour (config must be loaded).
-    public String getColour(UUID uuid) {
-        YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        String colour = config.getString("color");
-        String newColour = colour;
-
-        // If their colour is null, set it to "".
-        if (colour == null) {
-            newColour = "";
-        }
-
-        // If it's empty and default colour is enabled, set it to the default.
-        if (newColour.isEmpty() && (boolean) getSetting("default-color-enabled")) {
-            newColour = getCurrentDefaultColour();
-        }
-
-        // If they have a custom colour, make sure it still exists.
-        if (newColour.startsWith("%") && customColoursManager.getCustomColour(colour) == null) {
-            // Otherwise, set to default.
-            newColour = getCurrentDefaultColour();
-        }
-
-        // Update their colour if necessary.
-        if (!newColour.equals(colour)) {
-            setColour(uuid, newColour);
-        }
-
-        return newColour;
-    }
-
-    // Sets a player's colour (config must be loaded).
-    public void setColour(UUID uuid, String colour) {
-        YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        config.set("color", colour);
-        configsManager.savePlayerConfig(uuid);
-    }
-
-    // Gets a player's default-code.
-    public long getDefaultCode(UUID uuid) {
-        YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        return config.getLong("default-code");
-    }
-
-    // Sets a player's default-code.
-    public void setDefaultCode(UUID uuid, long code) {
-        YamlConfiguration config = configsManager.getPlayerConfig(uuid);
-        config.set("default-code", code);
-        configsManager.savePlayerConfig(uuid);
     }
 
     // Gets the current default code.
