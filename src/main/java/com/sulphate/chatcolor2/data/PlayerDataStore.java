@@ -1,25 +1,53 @@
 package com.sulphate.chatcolor2.data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-public interface PlayerDataStore {
+public abstract class PlayerDataStore {
 
-    boolean loadPlayerData(String name);
+    protected final Map<UUID, PlayerData> dataMap;
 
-    boolean loadPlayerData(UUID uuid);
+    public PlayerDataStore() {
+        dataMap = new HashMap<>();
+    }
 
-    String getColour(UUID uuid);
+    public abstract boolean loadPlayerData(String name);
 
-    void setColour(UUID uuid, String colour);
+    public abstract boolean loadPlayerData(UUID uuid);
 
-    long getDefaultCode(UUID uuid);
+    public String getColour(UUID uuid) {
+        return dataMap.get(uuid).getColour();
+    }
 
-    void setDefaultCode(UUID uuid, long defaultCode);
+    public void setColour(UUID uuid, String colour) {
+        dataMap.get(uuid).setColour(colour);
+        savePlayerData(uuid);
+    }
 
-    boolean savePlayerData(UUID uuid);
+    public long getDefaultCode(UUID uuid) {
+        return dataMap.get(uuid).getDefaultCode();
+    }
 
-    boolean saveAllData();
+    public void setDefaultCode(UUID uuid, long defaultCode) {
+        dataMap.get(uuid).setDefaultCode(defaultCode);
+        savePlayerData(uuid);
+    }
 
-    void shutdown();
+    public abstract boolean savePlayerData(UUID uuid);
+
+    public boolean saveAllData() {
+         boolean allSucceeded = true;
+
+         for (UUID uuid : dataMap.keySet()) {
+             if (!savePlayerData(uuid)) {
+                 allSucceeded = false;
+             }
+         }
+
+         return allSucceeded;
+     }
+
+    public abstract void shutdown();
 
 }

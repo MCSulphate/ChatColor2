@@ -1,30 +1,27 @@
 package com.sulphate.chatcolor2.data;
 
-import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
-public class YamlStorageImpl implements PlayerDataStore {
+public class YamlStorageImpl extends PlayerDataStore {
 
     private final AutoSaveScheduler saveScheduler;
-    private final Map<UUID, PlayerData> dataMap;
 
     private final ConfigsManager configsManager;
     private final ConfigUtils configUtils;
 
     public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval) {
+        super();
+
         this.configsManager = configsManager;
         this.configUtils = configUtils;
 
         saveScheduler = new AutoSaveScheduler(saveInterval);
-        dataMap = new HashMap<>();
     }
 
     public void updateSaveInterval(int saveInterval) {
@@ -61,28 +58,6 @@ public class YamlStorageImpl implements PlayerDataStore {
     }
 
     @Override
-    public String getColour(UUID uuid) {
-        return dataMap.get(uuid).getColour();
-    }
-
-    @Override
-    public void setColour(UUID uuid, String colour) {
-        dataMap.get(uuid).setColour(colour);
-        savePlayerData(uuid);
-    }
-
-    @Override
-    public long getDefaultCode(UUID uuid) {
-        return dataMap.get(uuid).getDefaultCode();
-    }
-
-    @Override
-    public void setDefaultCode(UUID uuid, long defaultCode) {
-        dataMap.get(uuid).setDefaultCode(defaultCode);
-        savePlayerData(uuid);
-    }
-
-    @Override
     public boolean savePlayerData(UUID uuid) {
         PlayerData data = dataMap.get(uuid);
 
@@ -97,15 +72,6 @@ public class YamlStorageImpl implements PlayerDataStore {
 
         saveScheduler.saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
         data.markClean();
-
-        return true;
-    }
-
-    @Override
-    public boolean saveAllData() {
-        for (UUID uuid : dataMap.keySet()) {
-            savePlayerData(uuid);
-        }
 
         return true;
     }

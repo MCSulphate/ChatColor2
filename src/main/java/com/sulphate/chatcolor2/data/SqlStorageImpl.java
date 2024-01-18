@@ -2,7 +2,11 @@ package com.sulphate.chatcolor2.data;
 
 import java.util.UUID;
 
-public class SqlStorageImpl implements PlayerDataStore {
+public class SqlStorageImpl extends PlayerDataStore {
+
+    public SqlStorageImpl() {
+        super();
+    }
 
     @Override
     public boolean loadPlayerData(String name) {
@@ -15,32 +19,7 @@ public class SqlStorageImpl implements PlayerDataStore {
     }
 
     @Override
-    public String getColour(UUID uuid) {
-        return null;
-    }
-
-    @Override
-    public void setColour(UUID uuid, String colour) {
-
-    }
-
-    @Override
-    public long getDefaultCode(UUID uuid) {
-        return 0;
-    }
-
-    @Override
-    public void setDefaultCode(UUID uuid, long defaultCode) {
-
-    }
-
-    @Override
     public boolean savePlayerData(UUID uuid) {
-        return false;
-    }
-
-    @Override
-    public boolean saveAllData() {
         return false;
     }
 
