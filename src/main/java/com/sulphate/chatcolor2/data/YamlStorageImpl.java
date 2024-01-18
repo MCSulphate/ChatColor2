@@ -31,6 +31,7 @@ public class YamlStorageImpl extends PlayerDataStore {
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
 
         if (config == null) {
+            dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
             return false;
         }
 
@@ -47,7 +48,8 @@ public class YamlStorageImpl extends PlayerDataStore {
     public boolean savePlayerData(UUID uuid) {
         PlayerData data = dataMap.get(uuid);
 
-        if (!data.isDirty()) {
+        // Don't try to save temporary data.
+        if (data.isTemporary() || !data.isDirty()) {
             return true;
         }
 

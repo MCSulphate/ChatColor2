@@ -7,12 +7,22 @@ public class PlayerData {
     private final UUID uuid;
     private String colour;
     private long defaultCode;
+    private boolean isTemporary;
     private boolean dirty;
 
     public PlayerData(UUID uuid, String colour, long defaultCode) {
         this.uuid = uuid;
         this.colour = colour;
         this.defaultCode = defaultCode;
+    }
+
+    // The null colour and negative default code cause the default to be set.
+    public static PlayerData createTemporaryData(UUID uuid) {
+        return new PlayerData(uuid, null, -1);
+    }
+
+    public boolean isTemporary() {
+        return isTemporary;
     }
 
     public UUID getUuid() {

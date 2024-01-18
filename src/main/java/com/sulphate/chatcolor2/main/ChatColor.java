@@ -137,13 +137,12 @@ public class ChatColor extends JavaPlugin {
             ConfigurationSection dbSection = getConfig().getConfigurationSection("storage.database");
 
             if (dbSection == null) {
-                // TODO: Send error message properly
-                console.sendMessage("Uhoh stinky the database config fucked off!!");
+                GeneralUtils.sendConsoleMessage(M.PREFIX + M.MISSING_DB_CONFIG_SECTION);
                 Bukkit.getPluginManager().disablePlugin(this);
                 return;
             }
 
-            playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), configUtils);
+            playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), configUtils, M);
         }
         else {
             int saveInterval = (int) configUtils.getSetting("save-interval");

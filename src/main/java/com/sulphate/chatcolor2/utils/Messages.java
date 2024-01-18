@@ -115,6 +115,18 @@ public class Messages {
     public String STRIKETHROUGH;
     public String UNDERLINED;
     public String ITALIC;
+
+    // Database Messages
+    public String FAILED_TO_INITIALISE_DB;
+    public String FAILED_TO_CONNECT_TO_DB;
+    public String FAILED_TO_CREATE_DB;
+    public String FAILED_TO_CREATE_TABLE;
+    public String FAILED_TO_LOAD_PLAYER_DATA;
+    public String FAILED_TO_CREATE_NEW_PLAYER;
+    public String FAILED_TO_SAVE_PLAYER_DATA;
+    public String FAILED_TO_CLOSE_CONNECTION;
+    public String DB_INITIALISED_SUCCESSFULLY;
+    public String MISSING_DB_CONFIG_SECTION;
     
     public void reloadMessages() {
         // Startup Messages
@@ -219,6 +231,17 @@ public class Messages {
         STRIKETHROUGH = getAndColourise("strikethrough");
         UNDERLINED = getAndColourise("underlined");
         ITALIC = getAndColourise("italic");
+
+        FAILED_TO_INITIALISE_DB = getAndColourise("failed-to-initialise-db");
+        FAILED_TO_CONNECT_TO_DB = getAndColourise("failed-to-connect-to-db");
+        FAILED_TO_CREATE_DB = getAndColourise("failed-to-create-db");
+        FAILED_TO_CREATE_TABLE = getAndColourise("failed-to-create-table");
+        FAILED_TO_LOAD_PLAYER_DATA = getAndColourise("failed-to-load-player-data");
+        FAILED_TO_CREATE_NEW_PLAYER = getAndColourise("failed-to-create-new-player");
+        FAILED_TO_SAVE_PLAYER_DATA = getAndColourise("failed-to-save-player-data");
+        FAILED_TO_CLOSE_CONNECTION = getAndColourise("failed-to-close-connection");
+        DB_INITIALISED_SUCCESSFULLY = getAndColourise("db-initialised-successfully");
+        MISSING_DB_CONFIG_SECTION = getAndColourise("missing-db-config-section");
     }
 
     // Gets and colourises a message from config.
