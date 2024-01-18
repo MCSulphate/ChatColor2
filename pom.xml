@@ -76,13 +76,21 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
+
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>com.sulphate.chatcolor2</shadedPattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.bstats</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>mysql</pattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.mysql</shadedPattern>
             </relocation>
           </relocations>
+
         </configuration>
+
         <executions>
           <execution>
             <phase>package</phase>
@@ -91,6 +99,7 @@
             </goals>
           </execution>
         </executions>
+
       </plugin>
     </plugins>
   </build>

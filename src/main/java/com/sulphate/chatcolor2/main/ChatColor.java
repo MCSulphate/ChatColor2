@@ -8,7 +8,9 @@ import java.util.*;
 
 import com.sulphate.chatcolor2.commands.ChatColorCommand;
 import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.data.DatabaseConnectionSettings;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.data.SqlStorageImpl;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
@@ -16,11 +18,11 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
-import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -131,8 +133,17 @@ public class ChatColor extends JavaPlugin {
         // Initialise player data store.
         String pdcType = getConfig().getString("storage.type");
 
-        if (pdcType != null && pdcType.equals("database")) {
-            // TODO: Create SQL backend implementation
+        if (pdcType != null && pdcType.equals("sql")) {
+            ConfigurationSection dbSection = getConfig().getConfigurationSection("storage.database");
+
+            if (dbSection == null) {
+                // TODO: Send error message properly
+                console.sendMessage("Uhoh stinky the database config fucked off!!");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
+
+            playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), configUtils);
         }
         else {
             int saveInterval = (int) configUtils.getSetting("save-interval");

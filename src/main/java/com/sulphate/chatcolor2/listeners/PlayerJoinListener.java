@@ -2,7 +2,6 @@ package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
@@ -39,6 +38,7 @@ public class PlayerJoinListener implements Listener {
 
         if (!dataStore.loadPlayerData(uuid)) {
             // TODO: Display error message.
+            GeneralUtils.sendConsoleMessage("Couldn't load player data for " + player.getName());
         }
 
         if (dataStore.getColour(uuid) == null) {

@@ -13,30 +13,16 @@ public class YamlStorageImpl extends PlayerDataStore {
     private final AutoSaveScheduler saveScheduler;
 
     private final ConfigsManager configsManager;
-    private final ConfigUtils configUtils;
 
     public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval) {
-        super();
+        super(configUtils);
 
         this.configsManager = configsManager;
-        this.configUtils = configUtils;
-
         saveScheduler = new AutoSaveScheduler(saveInterval);
     }
 
     public void updateSaveInterval(int saveInterval) {
         saveScheduler.setSaveInterval(saveInterval);
-    }
-
-    @Override
-    public boolean loadPlayerData(String name) {
-        UUID uuid = configUtils.getUUIDFromName(name);
-
-        if (uuid == null) {
-            return false;
-        }
-
-        return loadPlayerData(uuid);
     }
 
     @Override
