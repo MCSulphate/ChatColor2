@@ -25,6 +25,7 @@ public class PlayerData {
 
     public void setColour(String colour) {
         this.colour = colour;
+        dirty = true;
     }
 
     public long getDefaultCode() {
@@ -33,6 +34,7 @@ public class PlayerData {
 
     public void setDefaultCode(long defaultCode) {
         this.defaultCode = defaultCode;
+        dirty = true;
     }
 
     public boolean isDirty() {

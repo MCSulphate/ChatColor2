@@ -68,6 +68,7 @@ public class YamlStorageImpl implements PlayerDataStore {
     @Override
     public void setColour(UUID uuid, String colour) {
         dataMap.get(uuid).setColour(colour);
+        savePlayerData(uuid);
     }
 
     @Override
@@ -78,6 +79,7 @@ public class YamlStorageImpl implements PlayerDataStore {
     @Override
     public void setDefaultCode(UUID uuid, long defaultCode) {
         dataMap.get(uuid).setDefaultCode(defaultCode);
+        savePlayerData(uuid);
     }
 
     @Override

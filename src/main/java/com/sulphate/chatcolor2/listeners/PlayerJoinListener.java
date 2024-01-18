@@ -41,7 +41,7 @@ public class PlayerJoinListener implements Listener {
             // TODO: Display error message.
         }
 
-        if (!player.hasPlayedBefore()) {
+        if (dataStore.getColour(uuid) == null) {
             setInitialColour(uuid);
         }
 

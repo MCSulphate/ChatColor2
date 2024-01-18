@@ -78,7 +78,7 @@ public class ChatColor extends JavaPlugin {
 
         for (String message : messages) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Command improvements (rainbows & gradients), bug fixes.");
+            message = message.replace("[version-description]", "Long-awaited SQL update!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -110,6 +110,14 @@ public class ChatColor extends JavaPlugin {
         }
     }
 
+    @Override
+    public void onDisable() {
+        playerDataStore.shutdown();
+        plugin = null;
+
+        console.sendMessage(M.PREFIX + M.SHUTDOWN.replace("[version]", getDescription().getVersion()));
+    }
+
     private void setupObjects() {
         // Init compatability utils.
         CompatabilityUtils.init();
@@ -119,9 +127,6 @@ public class ChatColor extends JavaPlugin {
         customColoursManager = new CustomColoursManager(configsManager);
         configUtils = new ConfigUtils(configsManager);
         M = new Messages(configUtils);
-        generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
-        guiManager = new GUIManager(configsManager, configUtils, generalUtils, playerDataStore, M);
-        confirmationsManager = new ConfirmationsManager();
 
         // Initialise player data store.
         String pdcType = getConfig().getString("storage.type");
@@ -133,6 +138,10 @@ public class ChatColor extends JavaPlugin {
             int saveInterval = (int) configUtils.getSetting("save-interval");
             playerDataStore = new YamlStorageImpl(configsManager, configUtils, saveInterval);
         }
+
+        generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
+        guiManager = new GUIManager(configsManager, configUtils, generalUtils, playerDataStore, M);
+        confirmationsManager = new ConfirmationsManager();
 
         // Scan messages and settings to make sure all are present.
         scanMessages();
@@ -163,14 +172,6 @@ public class ChatColor extends JavaPlugin {
         manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, customColoursManager, playerDataStore), this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(guiManager, this);
-    }
-
-    @Override
-    public void onDisable() {
-        playerDataStore.shutdown();
-        plugin = null;
-
-        console.sendMessage(M.PREFIX + M.SHUTDOWN.replace("[version]", getDescription().getVersion()));
     }
 
     public static ChatColor getPlugin() {
