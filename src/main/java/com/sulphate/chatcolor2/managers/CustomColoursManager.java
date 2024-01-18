@@ -1,7 +1,6 @@
 package com.sulphate.chatcolor2.managers;
 
 import com.sulphate.chatcolor2.utils.Config;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.HashMap;

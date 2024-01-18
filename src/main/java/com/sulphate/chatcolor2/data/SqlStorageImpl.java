@@ -90,6 +90,7 @@ public class SqlStorageImpl extends PlayerDataStore {
         }
 
         GeneralUtils.sendConsoleMessage(M.PREFIX + M.DB_INITIALISED_SUCCESSFULLY);
+        return true;
     }
 
     private boolean databaseExists() throws SQLException {

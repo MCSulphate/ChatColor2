@@ -133,8 +133,7 @@ public class GUI {
             colourActive = null;
             colourInactive = null;
 
-            GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError while parsing GUI " + title + " (not in the items section), please check config format & values are correct.");
-            ex.printStackTrace();
+            GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError while parsing GUI " + title + " (not in the items section), please check config format & values are correct: " + ex.getMessage());
         }
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
@@ -197,8 +196,7 @@ public class GUI {
                     }
                 }
                 catch (Exception ex) {
-                    GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError parsing item " + key + " in GUI " + title + ", please check the config.");
-                    ex.printStackTrace();
+                    GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError parsing item " + key + " in GUI " + title + ", please check the config: " + ex.getMessage());
                 }
             }
         }

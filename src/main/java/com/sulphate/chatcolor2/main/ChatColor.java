@@ -150,7 +150,7 @@ public class ChatColor extends JavaPlugin {
         }
 
         generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
-        guiManager = new GUIManager(configsManager, configUtils, generalUtils, playerDataStore, M);
+        guiManager = new GUIManager(configsManager, generalUtils, playerDataStore, M);
         confirmationsManager = new ConfirmationsManager();
 
         // Scan messages and settings to make sure all are present.
@@ -233,8 +233,7 @@ public class ChatColor extends JavaPlugin {
                         GeneralUtils.sendConsoleMessage("&b[ChatColor] &bInfo: &eCopied legacy groups config to a new file, groups.yml.");
                     }
                     catch (IOException ex) {
-                        ex.printStackTrace();
-                        GeneralUtils.sendConsoleMessage("&b[ChatColor] &cWarning: &eFailed to copy legacy groups config to new file.");
+                        GeneralUtils.sendConsoleMessage("&b[ChatColor] &cWarning: &eFailed to copy legacy groups config to new file: " + ex.getMessage());
                     }
                 }
             }

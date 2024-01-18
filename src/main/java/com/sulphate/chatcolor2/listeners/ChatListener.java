@@ -1,14 +1,9 @@
 package com.sulphate.chatcolor2.listeners;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
-import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
-import com.sulphate.chatcolor2.utils.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 

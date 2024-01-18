@@ -28,11 +28,9 @@ public class Messages {
     public String MODIFIERS;
 
     // Command-Related Messages
-    public String HELP;
     public String NOT_ENOUGH_ARGS;
     public String TOO_MANY_ARGS;
     public String PLAYER_NOT_JOINED;
-    public String PLAYERS_ONLY;
     public String NO_PERMISSIONS;
     public String NO_COLOR_PERMS;
     public String NO_MOD_PERMS;
@@ -57,7 +55,6 @@ public class Messages {
     public String NO_CUSTOM_COLOR_PERMISSIONS;
     public String INVALID_CUSTOM_COLOR;
     public String CUSTOM_COLOR_EXISTS;
-    public String INCORRECT_CUSTOM_COLOR;
     public String CUSTOM_COLORS_LIST;
     public String CUSTOM_COLOR_FORMAT;
     public String CUSTOM_COLOR_ADDED;
@@ -83,7 +80,6 @@ public class Messages {
     public String TO_CHANGE;
     public String CHANGE_SUCCESS;
     public String CONFIGS_RESET;
-    public String INVALID_SEQUENCE;
 
     // GUI-Related Messages and Strings
     public String INVALID_GUI;
@@ -144,11 +140,9 @@ public class Messages {
         MODIFIERS = getAndColourise("modifiers");
 
         // Command-Related Messages
-        HELP = getAndColourise("help");
         NOT_ENOUGH_ARGS = getAndColourise("not-enough-args");
         TOO_MANY_ARGS = getAndColourise("too-many-args");
         PLAYER_NOT_JOINED = getAndColourise("player-not-joined");
-        PLAYERS_ONLY = getAndColourise("players-only");
         NO_PERMISSIONS = getAndColourise("no-permissions");
         NO_COLOR_PERMS = getAndColourise("no-color-perms");
         NO_MOD_PERMS = getAndColourise("no-mod-perms");
@@ -173,7 +167,6 @@ public class Messages {
         NO_CUSTOM_COLOR_PERMISSIONS = getAndColourise("no-custom-color-permissions");
         INVALID_CUSTOM_COLOR = getAndColourise("invalid-custom-color");
         CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");
-        INCORRECT_CUSTOM_COLOR = getAndColourise("incorrect-custom-color");
         CUSTOM_COLORS_LIST = getAndColourise("custom-colors-list");
         CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
         CUSTOM_COLOR_ADDED = getAndColourise("custom-color-added");
@@ -199,7 +192,6 @@ public class Messages {
         TO_CHANGE = getAndColourise("to-change");
         CHANGE_SUCCESS = getAndColourise("change-success");
         CONFIGS_RESET = getAndColourise("configs-reset");
-        INVALID_SEQUENCE = getAndColourise("invalid-sequence");
 
         // GUI-Related Messages and Strings
         INVALID_GUI = getAndColourise("invalid-gui");

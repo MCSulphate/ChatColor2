@@ -19,7 +19,7 @@ public class GeneralUtils {
 
     private final ConfigUtils configUtils;
     private final CustomColoursManager customColoursManager;
-    private PlayerDataStore dataStore;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
     public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
@@ -151,39 +151,6 @@ public class GeneralUtils {
 
         hexString = hexString.replace("&", "");
         return net.md_5.bungee.api.ChatColor.of(hexString).toString();
-    }
-
-    public static boolean verifyRainbowSequence(List<String> seq) {
-        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
-
-        boolean verify = true;
-        // Hex flag to check for legacy availability.
-        boolean hexFlag = false;
-        for (String part : seq) {
-            // Handle hex colours in the rainbow sequence.
-            if (part.startsWith("#")) {
-                hexFlag = true;
-
-                if (part.length() != 7) {
-                    verify = false;
-                    break;
-                }
-                else if (!GeneralUtils.isValidHexColour(part)) {
-                    verify = false;
-                    break;
-                }
-            }
-            else if (!cols.contains(part)) {
-                verify = false;
-                break;
-            }
-        }
-
-        if (hexFlag && verify && CompatabilityUtils.isHexLegacy()) {
-            verify = false;
-        }
-
-        return verify;
     }
 
     private static List<String> parseSpecialColour(String toParse) {

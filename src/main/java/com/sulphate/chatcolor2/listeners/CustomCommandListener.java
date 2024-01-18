@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CustomCommandListener implements Listener {
 
-    private ConfigUtils configUtils;
+    private final ConfigUtils configUtils;
 
     public CustomCommandListener(ConfigUtils configUtils) {
         this.configUtils = configUtils;

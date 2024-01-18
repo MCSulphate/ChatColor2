@@ -18,7 +18,14 @@ public class PlayerData {
 
     // The null colour and negative default code cause the default to be set.
     public static PlayerData createTemporaryData(UUID uuid) {
-        return new PlayerData(uuid, null, -1);
+        PlayerData data = new PlayerData(uuid, null, -1);
+        data.setTemporary();
+
+        return data;
+    }
+
+    private void setTemporary() {
+        isTemporary = true;
     }
 
     public boolean isTemporary() {

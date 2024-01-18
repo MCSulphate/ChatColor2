@@ -21,7 +21,6 @@ import java.util.Set;
 public class GUIManager implements Listener {
 
     private final ConfigsManager configsManager;
-    private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
     private final PlayerDataStore dataStore;
     private final Messages M;
@@ -30,9 +29,8 @@ public class GUIManager implements Listener {
     private final Map<Player, GUI> openGUIs;
     private final Set<Player> transitioningPlayers;
 
-    public GUIManager(ConfigsManager configsManager, ConfigUtils configUtils, GeneralUtils generalUtils, PlayerDataStore dataStore, Messages M) {
+    public GUIManager(ConfigsManager configsManager, GeneralUtils generalUtils, PlayerDataStore dataStore, Messages M) {
         this.configsManager = configsManager;
-        this.configUtils = configUtils;
         this.generalUtils = generalUtils;
         this.dataStore = dataStore;
         this.M = M;
