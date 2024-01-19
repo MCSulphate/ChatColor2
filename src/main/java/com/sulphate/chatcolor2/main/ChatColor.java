@@ -237,9 +237,8 @@ public class ChatColor extends JavaPlugin {
                     }
                 }
             }
-
             // Update the version if it's behind.
-            if (!version.equals(latest)) {
+            else if (!version.equals(latest)) {
                 currentConfig.set("version", latest);
 
                 try {

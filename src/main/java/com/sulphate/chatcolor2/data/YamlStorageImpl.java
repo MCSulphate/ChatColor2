@@ -3,6 +3,7 @@ package com.sulphate.chatcolor2.data;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -36,9 +37,9 @@ public class YamlStorageImpl extends PlayerDataStore {
         }
 
         dataMap.put(uuid, new PlayerData(
-                uuid,
-                config.getString("colour"),
-                config.getLong("default-code")
+            uuid,
+            config.getString("color"),
+            config.getLong("default-code")
         ));
 
         return true;
@@ -55,7 +56,7 @@ public class YamlStorageImpl extends PlayerDataStore {
 
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
 
-        config.set("colour", data.getColour());
+        config.set("color", data.getColour());
         config.set("default-code", data.getDefaultCode());
 
         saveScheduler.saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
