@@ -7,11 +7,11 @@ import com.sulphate.chatcolor2.utils.Messages;
 import java.sql.*;
 import java.util.UUID;
 
-import static com.sulphate.chatcolor2.data.DatabaseConnectionSettings.DATABASE_NAME;
 import static com.sulphate.chatcolor2.data.DatabaseConnectionSettings.TABLE_NAME;
 
 public class SqlStorageImpl extends PlayerDataStore {
 
+    private final DatabaseConnectionSettings settings;
     private final Messages M;
 
     private Connection con;
@@ -19,10 +19,11 @@ public class SqlStorageImpl extends PlayerDataStore {
     public SqlStorageImpl(DatabaseConnectionSettings settings, ConfigUtils configUtils, Messages M) {
         super(configUtils);
 
+        this.settings = settings;
         this.M = M;
 
         try {
-            boolean success = initialiseDatabase(settings);
+            boolean success = initialiseDatabase();
 
             if (!success) {
                 GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_INITIALISE_DB);
@@ -43,8 +44,9 @@ public class SqlStorageImpl extends PlayerDataStore {
         }
     }
 
-    private boolean initialiseDatabase(DatabaseConnectionSettings settings) throws ClassNotFoundException, SQLException {
+    private boolean initialiseDatabase() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
+        String databaseName = settings.getDatabaseName();
 
         try {
             con = DriverManager.getConnection(settings.getConnectionString());
@@ -56,7 +58,7 @@ public class SqlStorageImpl extends PlayerDataStore {
         }
 
         if (!databaseExists()) {
-            boolean success = con.prepareStatement("CREATE DATABASE " + DATABASE_NAME + ";").execute();
+            boolean success = con.prepareStatement("CREATE DATABASE " + databaseName + ";").execute();
 
             if (!success) {
                 GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_DB);
@@ -68,7 +70,7 @@ public class SqlStorageImpl extends PlayerDataStore {
             }
         }
 
-        con.setCatalog(DATABASE_NAME);
+        con.setCatalog(databaseName);
 
         if (!tableExists()) {
             boolean success = con.prepareStatement(
@@ -98,7 +100,7 @@ public class SqlStorageImpl extends PlayerDataStore {
         ResultSet results = metaData.getCatalogs();
 
         while (results.next()) {
-            if (results.getString(1).equals(DATABASE_NAME)) {
+            if (results.getString(1).equals(settings.getDatabaseName())) {
                 return true;
             }
         }
@@ -108,7 +110,7 @@ public class SqlStorageImpl extends PlayerDataStore {
 
     private boolean tableExists() throws SQLException {
         DatabaseMetaData metaData = con.getMetaData();
-        ResultSet results = metaData.getTables(DATABASE_NAME, null, null, new String[] { "TABLE" });
+        ResultSet results = metaData.getTables(settings.getDatabaseName(), null, null, new String[] { "TABLE" });
 
         while (results.next()) {
             String name = results.getString("TABLE_NAME");
