@@ -36,26 +36,25 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        if (!dataStore.loadPlayerData(uuid)) {
-            // TODO: Display error message.
-            GeneralUtils.sendConsoleMessage("Couldn't load player data for " + player.getName());
-        }
+        dataStore.loadPlayerData(uuid, loaded -> {
+            if (loaded) {
+                if (dataStore.getColour(uuid) == null) {
+                    setInitialColour(uuid);
+                }
 
-        if (dataStore.getColour(uuid) == null) {
-            setInitialColour(uuid);
-        }
+                checkCustomColour(uuid);
 
-        checkCustomColour(uuid);
+                // Update the player list and check their default colour.
+                configUtils.updatePlayerListEntry(player.getName(), uuid);
+                generalUtils.checkDefault(uuid);
 
-        // Update the player list and check their default colour.
-        configUtils.updatePlayerListEntry(player.getName(), uuid);
-        generalUtils.checkDefault(uuid);
+                sendJoinMessage(player);
 
-        sendJoinMessage(player);
-
-        if (GeneralUtils.check(player)) {
-            player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
-        }
+                if (GeneralUtils.check(player)) {
+                    player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
+                }
+            }
+        });
     }
 
     private void sendJoinMessage(Player player) {

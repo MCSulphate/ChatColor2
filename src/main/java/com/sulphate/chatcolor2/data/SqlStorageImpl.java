@@ -1,8 +1,10 @@
 package com.sulphate.chatcolor2.data;
 
+import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
+import org.bukkit.Bukkit;
 
 import java.sql.*;
 import java.util.UUID;
@@ -22,6 +24,7 @@ public class SqlStorageImpl extends PlayerDataStore {
         this.settings = settings;
         this.M = M;
 
+
         try {
             boolean success = initialiseDatabase();
 
@@ -30,68 +33,72 @@ public class SqlStorageImpl extends PlayerDataStore {
             }
         }
         catch (ClassNotFoundException | SQLException ex) {
-            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_INITIALISE_DB);
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_INITIALISE_DB + " Error: " + ex.getMessage());
+            tryCloseConnection();
+        }
+    }
 
-            try {
-                if (con != null && !con.isClosed()) {
-                    con.close();
-                    con = null;
-                }
+    private void runAsync(Runnable runnable) {
+        Bukkit.getScheduler().runTaskAsynchronously(ChatColor.getPlugin(), runnable);
+    }
+
+    private void tryCloseConnection() {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+                con = null;
             }
-            catch (SQLException sqlEx) {
-                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CLOSE_CONNECTION.replace("[error]", sqlEx.getMessage()));
-            }
+        }
+        catch (SQLException ex) {
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CLOSE_CONNECTION.replace("[error]", ex.getMessage()));
         }
     }
 
     private boolean initialiseDatabase() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("com.sulphate.chatcolor2.lib.com.mysql.cj.jdbc.Driver");
         String databaseName = settings.getDatabaseName();
 
         try {
             con = DriverManager.getConnection(settings.getConnectionString());
         }
         catch (SQLException ex) {
-            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CONNECT_TO_DB);
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CONNECT_TO_DB.replace("[error]", ex.getMessage()));
             con = null;
             return false;
         }
 
-        if (!databaseExists()) {
-            boolean success = con.prepareStatement("CREATE DATABASE " + databaseName + ";").execute();
-
-            if (!success) {
-                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_DB);
-
-                con.close();
-                con = null;
-
-                return false;
+        try {
+            if (!databaseExists()) {
+                con.prepareStatement("CREATE DATABASE " + databaseName + ";").executeUpdate();
             }
         }
-
-        con.setCatalog(databaseName);
-
-        if (!tableExists()) {
-            boolean success = con.prepareStatement(
-            "CREATE TABLE " + TABLE_NAME + " (" +
-                    "UUID VARCHAR(255) PRIMARY KEY," +
-                    "Colour VARCHAR(255)," +
-                    "DefaultCode BIGINT" +
-                ");"
-            ).execute();
-
-            if (!success) {
-                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_TABLE);
-
-                con.close();
-                con = null;
-
-                return false;
-            }
+        catch (SQLException ex) {
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_DB.replace("[error]", ex.getMessage()));
+            tryCloseConnection();
+            return false;
         }
 
-        GeneralUtils.sendConsoleMessage(M.PREFIX + M.DB_INITIALISED_SUCCESSFULLY);
+        try {
+            con.setCatalog(databaseName);
+
+            if (!tableExists()) {
+                con.prepareStatement(
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        "UUID VARCHAR(255) PRIMARY KEY," +
+                        "Colour VARCHAR(255)," +
+                        "DefaultCode BIGINT" +
+                    ");"
+                ).executeUpdate();
+            }
+
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.DB_INITIALISED_SUCCESSFULLY);
+        }
+        catch (SQLException ex) {
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_TABLE.replace("[error]", ex.getMessage()));
+            tryCloseConnection();
+            return false;
+        }
+
         return true;
     }
 
@@ -123,40 +130,46 @@ public class SqlStorageImpl extends PlayerDataStore {
         return false;
     }
 
+    // The return value passed to the callback is not whether the fetch was successful, but if there is *some* data
+    // that can now be used for the player, including temporary data. It only returns false if the database has not
+    // been initialised.
     @Override
-    public boolean loadPlayerData(UUID uuid) {
+    public void loadPlayerData(UUID uuid, Callback<Boolean> callback) {
         // If the connection failed, use temporary data to prevent further errors.
         if (con == null) {
             dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
-            return true;
+            callback.callback(true);
+            return;
         }
 
-        try {
-            ResultSet results = con.prepareStatement(
-            "SELECT * FROM " + TABLE_NAME + " WHERE UUID='" + uuid + "';"
-            ).executeQuery();
+        runAsync(() -> {
+            try {
+                ResultSet results = con.prepareStatement(
+                        "SELECT * FROM " + TABLE_NAME + " WHERE UUID='" + uuid + "';"
+                ).executeQuery();
 
-            if (results == null || !results.next()) {
-                dataMap.put(uuid, new PlayerData(uuid, null, -1));
-                insertNewPlayer(uuid);
+                if (results == null || !results.next()) {
+                    dataMap.put(uuid, new PlayerData(uuid, null, -1));
+                    insertNewPlayer(uuid);
+                }
+                else {
+                    // Note that we don't call results.next() here as we expect one result and we already called it to check
+                    // that there is a result^^.
+                    String colour = results.getString("Colour");
+                    long defaultCode = results.getLong("DefaultCode");
+
+                    dataMap.put(uuid, new PlayerData(uuid, colour, defaultCode));
+                }
+
+                callback.callback(true);
             }
-            else {
-                // Note that we don't call results.next() here as we expect one result and we already called it to check
-                // that there is a result^^.
-                String colour = results.getString("Colour");
-                long defaultCode = results.getLong("DefaultCode");
+            catch (SQLException ex) {
+                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_LOAD_PLAYER_DATA.replace("[error]", ex.getMessage()));
+                dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
 
-                dataMap.put(uuid, new PlayerData(uuid, colour, defaultCode));
+                callback.callback(true);
             }
-
-            return true;
-        }
-        catch (SQLException ex) {
-            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_LOAD_PLAYER_DATA.replace("[error]", ex.getMessage()));
-            dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
-
-            return false;
-        }
+        });
     }
 
     private void insertNewPlayer(UUID uuid) throws SQLException {
@@ -170,41 +183,40 @@ public class SqlStorageImpl extends PlayerDataStore {
     }
 
     @Override
-    public boolean savePlayerData(UUID uuid) {
+    public void savePlayerData(UUID uuid) {
         PlayerData data = dataMap.get(uuid);
 
         if (data.isTemporary() || !data.isDirty()) {
-            return true;
-        }
-
-        try {
-            int count = con.prepareStatement(
-                String.format("UPDATE %s SET UUID='%s', Colour='%s', DefaultCode=%d WHERE UUID='%s';", TABLE_NAME, uuid, data.getColour(), data.getDefaultCode(), uuid)
-            ).executeUpdate();
-
-            if (count == 0) {
-                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_SAVE_PLAYER_DATA.replace("[error]", "No player data found to update."));
-                return false;
-            }
-        }
-        catch (SQLException ex) {
-            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_SAVE_PLAYER_DATA.replace("[error]", ex.getMessage()));
-            return false;
+            return;
         }
 
         data.markClean();
 
-        return true;
+        runAsync(() -> {
+            try {
+                int count = con.prepareStatement(
+                        String.format("UPDATE %s SET UUID='%s', Colour='%s', DefaultCode=%d WHERE UUID='%s';", TABLE_NAME, uuid, data.getColour(), data.getDefaultCode(), uuid)
+                ).executeUpdate();
+
+                if (count == 0) {
+                    GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_SAVE_PLAYER_DATA.replace("[error]", "No player data found to update."));
+                }
+            }
+            catch (SQLException ex) {
+                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_SAVE_PLAYER_DATA.replace("[error]", ex.getMessage()));
+            }
+        });
     }
 
+    // We don't need to save data to the db as this is done immediately when updating a player.
     @Override
     public void shutdown() {
-        saveAllData();
-
-        try {
-            con.close();
-        } catch (SQLException ex) {
-            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CLOSE_CONNECTION.replace("[error]", ex.getMessage()));
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CLOSE_CONNECTION.replace("[error]", ex.getMessage()));
+            }
         }
     }
 

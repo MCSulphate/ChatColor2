@@ -50,6 +50,8 @@ public class ChatColor extends JavaPlugin {
     private PlayerDataStore playerDataStore;
     private Messages M;
 
+    private PlayerJoinListener joinListener;
+
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
     private PluginManager manager;
 
@@ -106,9 +108,9 @@ public class ChatColor extends JavaPlugin {
             console.sendMessage(M.PREFIX + M.METRICS_ENABLED);
         }
 
-        // Call join event for all online players.
+        // Call a fake join event for each online player.
         for (Player player : Bukkit.getOnlinePlayers()) {
-            manager.callEvent(new PlayerJoinEvent(player, ""));
+            joinListener.onEvent(new PlayerJoinEvent(player, ""));
         }
     }
 
@@ -146,7 +148,7 @@ public class ChatColor extends JavaPlugin {
         }
         else {
             int saveInterval = (int) configUtils.getSetting("save-interval");
-            playerDataStore = new YamlStorageImpl(configsManager, configUtils, saveInterval);
+            playerDataStore = new YamlStorageImpl(configsManager, configUtils, saveInterval, M);
         }
 
         generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
@@ -179,7 +181,8 @@ public class ChatColor extends JavaPlugin {
         // Attempt to register
         manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
 
-        manager.registerEvents(new PlayerJoinListener(M, configUtils, generalUtils, customColoursManager, playerDataStore), this);
+        joinListener = new PlayerJoinListener(M, configUtils, generalUtils, customColoursManager, playerDataStore);
+        manager.registerEvents(joinListener, this);
         manager.registerEvents(new CustomCommandListener(configUtils), this);
         manager.registerEvents(guiManager, this);
     }

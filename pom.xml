@@ -80,12 +80,12 @@
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>com.sulphate.chatcolor2.lib.bstats</shadedPattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.org.bstats</shadedPattern>
             </relocation>
 
             <relocation>
-              <pattern>mysql</pattern>
-              <shadedPattern>com.sulphate.chatcolor2.lib.mysql</shadedPattern>
+              <pattern>com.mysql</pattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.com.mysql</shadedPattern>
             </relocation>
           </relocations>
 

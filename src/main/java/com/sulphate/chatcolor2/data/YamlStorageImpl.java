@@ -3,6 +3,8 @@ package com.sulphate.chatcolor2.data;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -14,11 +16,13 @@ public class YamlStorageImpl extends PlayerDataStore {
     private final AutoSaveScheduler saveScheduler;
 
     private final ConfigsManager configsManager;
+    private final Messages M;
 
-    public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval) {
+    public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval, Messages M) {
         super(configUtils);
 
         this.configsManager = configsManager;
+        this.M = M;
         saveScheduler = new AutoSaveScheduler(saveInterval);
     }
 
@@ -27,13 +31,16 @@ public class YamlStorageImpl extends PlayerDataStore {
     }
 
     @Override
-    public boolean loadPlayerData(UUID uuid) {
+    public void loadPlayerData(UUID uuid, Callback<Boolean> callback) {
         configsManager.loadPlayerConfig(uuid);
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
 
         if (config == null) {
+            GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_LOAD_PLAYER_FILE);
+
             dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
-            return false;
+            callback.callback(true);
+            return;
         }
 
         dataMap.put(uuid, new PlayerData(
@@ -42,16 +49,16 @@ public class YamlStorageImpl extends PlayerDataStore {
             config.getLong("default-code")
         ));
 
-        return true;
+        callback.callback(true);
     }
 
     @Override
-    public boolean savePlayerData(UUID uuid) {
+    public void savePlayerData(UUID uuid) {
         PlayerData data = dataMap.get(uuid);
 
         // Don't try to save temporary data.
         if (data.isTemporary() || !data.isDirty()) {
-            return true;
+            return;
         }
 
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
@@ -61,8 +68,6 @@ public class YamlStorageImpl extends PlayerDataStore {
 
         saveScheduler.saveConfigWithDelay("players" + File.separator + uuid + ".yml", config);
         data.markClean();
-
-        return true;
     }
 
     @Override

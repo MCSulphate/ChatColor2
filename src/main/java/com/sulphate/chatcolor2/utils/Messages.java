@@ -123,6 +123,8 @@ public class Messages {
     public String FAILED_TO_CLOSE_CONNECTION;
     public String DB_INITIALISED_SUCCESSFULLY;
     public String MISSING_DB_CONFIG_SECTION;
+    public String DB_STILL_CONNECTING;
+    public String FAILED_TO_LOAD_PLAYER_FILE;
     
     public void reloadMessages() {
         // Startup Messages
@@ -234,6 +236,8 @@ public class Messages {
         FAILED_TO_CLOSE_CONNECTION = getAndColourise("failed-to-close-connection");
         DB_INITIALISED_SUCCESSFULLY = getAndColourise("db-initialised-successfully");
         MISSING_DB_CONFIG_SECTION = getAndColourise("missing-db-config-section");
+        DB_STILL_CONNECTING = getAndColourise("db-still-connecting");
+        FAILED_TO_LOAD_PLAYER_FILE = getAndColourise("failed-to-load-player-file");
     }
 
     // Gets and colourises a message from config.

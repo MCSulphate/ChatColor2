@@ -17,17 +17,17 @@ public abstract class PlayerDataStore {
         dataMap = new HashMap<>();
     }
 
-    public boolean loadPlayerData(String name) {
+    public void loadPlayerData(String name, Callback<Boolean> callback) {
         UUID uuid = configUtils.getUUIDFromName(name);
 
         if (uuid == null) {
-            return false;
+            callback.callback(false);
         }
 
-        return loadPlayerData(uuid);
+        loadPlayerData(uuid, callback);
     }
 
-    public abstract boolean loadPlayerData(UUID uuid);
+    public abstract void loadPlayerData(UUID uuid, Callback<Boolean> callback);
 
     public String getColour(UUID uuid) {
         return dataMap.get(uuid).getColour();
@@ -47,18 +47,12 @@ public abstract class PlayerDataStore {
         savePlayerData(uuid);
     }
 
-    public abstract boolean savePlayerData(UUID uuid);
+    public abstract void savePlayerData(UUID uuid);
 
-    public boolean saveAllData() {
-         boolean allSucceeded = true;
-
+    public void saveAllData() {
          for (UUID uuid : dataMap.keySet()) {
-             if (!savePlayerData(uuid)) {
-                 allSucceeded = false;
-             }
+             savePlayerData(uuid);
          }
-
-         return allSucceeded;
      }
 
     public abstract void shutdown();
