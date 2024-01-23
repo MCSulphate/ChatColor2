@@ -1,77 +1,65 @@
 package com.sulphate.chatcolor2.managers;
 
 import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
-import org.bukkit.Bukkit;
+import com.sulphate.chatcolor2.utils.Config;
+import com.sulphate.chatcolor2.utils.ConfigUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class ConfigsManager {
 
-    private final HashMap<String, YamlConfiguration> configs;
-    private final File PLAYERS_FOLDER = new File(ChatColor.getPlugin().getDataFolder(), "players");
+    private final ConfigUtils configUtils;
 
-    public ConfigsManager() {
+    private final HashMap<String, YamlConfiguration> configs;
+
+    public ConfigsManager(ConfigUtils configUtils) {
+        this.configUtils = configUtils;
         configs = new HashMap<>();
 
         loadAllConfigs();
-        PLAYERS_FOLDER.mkdir();
+
+        File playersFolder = new File(ChatColor.getPlugin().getDataFolder(), "players");
+        playersFolder.mkdir();
     }
 
     // (re)loads all configs.
     public void loadAllConfigs() {
-        String[] fileNames = { "config.yml", "messages.yml", "player-list.yml", "groups.yml", "gui.yml", "custom-colors.yml" };
         configs.clear();
 
-        for (String fileName : fileNames) {
-            File file = new File(ChatColor.getPlugin().getDataFolder(), fileName);
-            configs.put(fileName, YamlConfiguration.loadConfiguration(file));
+        for (Config config : Config.values()) {
+            String fileName = config.getFilename();
+
+            if (fileName.equals(Config.PLAYER_LIST.getFilename())) {
+                configs.put(fileName, configUtils.getConfigOrCreateBlank(fileName));
+            }
+            else {
+                configs.put(fileName, configUtils.getConfigOrCopyDefault(fileName));
+            }
         }
     }
 
     // Returns a given config.
-    public YamlConfiguration getConfig(String fileName) {
-        return configs.get(fileName);
+    public YamlConfiguration getConfig(Config config) {
+        return configs.get(config.getFilename());
     }
 
     // Saves a config.
-    public void saveConfig(String configName) {
-        File file = new File(ChatColor.getPlugin().getDataFolder(), configName);
-        YamlConfiguration config = getConfig(configName);
-
-        try {
-            config.save(file);
-        }
-        catch (IOException ex) {
-            Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&cError: Failed to save a config (" + configName + ")!"));
-        }
+    public void saveConfig(Config config) {
+        configUtils.saveConfig(config.getFilename());
     }
 
     // Loads a player config.
     public void loadPlayerConfig(UUID uuid) {
-        File file = new File(PLAYERS_FOLDER, uuid.toString() + ".yml");
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            }
-            catch (IOException ex) {
-                Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to create player config file."));
-                return;
-            }
-        }
-
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        configs.put(uuid + ".yml", config);
+        String filePath = "players" + File.separator + uuid + ".yml";
+        configs.put(uuid + ".yml", configUtils.getConfigOrCreateBlank(filePath));
     }
 
     // Gets a player config.
     public YamlConfiguration getPlayerConfig(UUID uuid) {
-        return configs.get(uuid.toString() + ".yml");
+        return configs.get(uuid + ".yml");
     }
 
 }

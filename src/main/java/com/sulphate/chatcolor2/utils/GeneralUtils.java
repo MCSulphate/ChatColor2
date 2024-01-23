@@ -1,10 +1,15 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -17,16 +22,22 @@ public class GeneralUtils {
         GRADIENT
     }
 
-    private final ConfigUtils configUtils;
+    private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
     private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
-        this.configUtils = configUtils;
+    private YamlConfiguration mainConfig;
+    private YamlConfiguration groupsConfig;
+
+    public GeneralUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+        this.configsManager = configsManager;
         this.customColoursManager = customColoursManager;
         this.dataStore = dataStore;
         this.M = M;
+
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
+        groupsConfig = configsManager.getConfig(Config.GROUPS);
     }
 
     // Small utility method to colourise messages.
@@ -324,7 +335,7 @@ public class GeneralUtils {
 
         // Check the override if the coloured message is different.
         if (checkOverride && isDifferentWhenColourised(message)) {
-            boolean override = ((boolean) configUtils.getSetting("color-override"));
+            boolean override = mainConfig.getBoolean(Setting.COLOR_OVERRIDE.getConfigPath());
             String colourised = colourise(message);
 
             if (override) {
@@ -440,13 +451,108 @@ public class GeneralUtils {
         return colourise(builder.toString());
     }
 
+    // Adds a new group colour.
+    public void addGroupColour(String name, String colour) {
+        groupsConfig.set(name, colour);
+        configsManager.saveConfig(Config.GROUPS);
+    }
+
+    // Removes a group colour.
+    public void removeGroupColour(String name) {
+        groupsConfig.set(name, null);
+        configsManager.saveConfig(Config.GROUPS);
+    }
+
+    public String getGroupColour(Player player) {
+        return getGroupColour(player, false);
+    }
+
+    // Returns whether a group colour exists.
+    public boolean groupColourExists(String name) {
+        return getGroupColourNames().contains(name);
+    }
+
+    public Set<String> getGroupColourNames() {
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
+        return config.getKeys(false);
+    }
+
+    // Gets a list of group colours.
+    public HashMap<String, String> getGroupColours() {
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
+        HashMap<String, String> returnValue = new HashMap<>();
+
+        // Fill the HashMap with the group colours.
+        Set<String> keys = config.getKeys(false);
+        for (String key : keys) {
+            returnValue.put(key, config.getString(key));
+        }
+
+        return returnValue;
+    }
+
+    // Returns the group colour, if any, that a player has. returnName is to allow the group name placeholder to work.
+    public String getGroupColour(Player player, boolean returnName) {
+        Set<String> groupColourNames = getGroupColourNames();
+        HashMap<String, String> groupColours = getGroupColours();
+
+        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
+        // If they do, then they would have the first group colour applied to them, always.
+        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.group.*")) {
+            return null;
+        }
+
+        // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
+        for (String groupName : groupColourNames) {
+            // Not checking for OP, that would cause the first colour to always be chosen.
+            Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
+
+            if (player.hasPermission(permission)) {
+                // Allows for group name placeholder.
+                return returnName ? groupName : groupColours.get(groupName);
+            }
+        }
+
+        return null;
+    }
+
+    // Gets the default color for a player, taking into account group color (if they are online).
+    public String getDefaultColourForPlayer(UUID uuid) {
+        String colour = null;
+        Player target = Bukkit.getPlayer(uuid);
+
+        if (target != null) {
+            colour = getGroupColour(target);
+        }
+
+        if (colour == null) {
+            return mainConfig.getString("default.color");
+        }
+        else {
+            return colour;
+        }
+    }
+
     public void checkDefault(UUID uuid) {
-        long currentCode = configUtils.getCurrentDefaultCode();
+        long currentCode = mainConfig.getLong("default.code");
         long playerCode = dataStore.getDefaultCode(uuid);
 
         if (playerCode != currentCode) {
             dataStore.setDefaultCode(uuid, currentCode);
-            dataStore.setColour(uuid, configUtils.getCurrentDefaultColour());
+            dataStore.setColour(uuid, mainConfig.getString("default.color"));
+        }
+    }
+
+    // Attempts to get a player's UUID from their name, from the playerlist.
+    public UUID getUUIDFromName(String name) {
+        YamlConfiguration config = configsManager.getConfig(Config.PLAYER_LIST);
+        String uuid = config.getString(name);
+
+        if (uuid != null) {
+            return UUID.fromString(uuid);
+        }
+        else {
+            return null;
         }
     }
 

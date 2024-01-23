@@ -2,10 +2,8 @@ package com.sulphate.chatcolor2.data;
 
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -18,8 +16,8 @@ public class YamlStorageImpl extends PlayerDataStore {
     private final ConfigsManager configsManager;
     private final Messages M;
 
-    public YamlStorageImpl(ConfigsManager configsManager, ConfigUtils configUtils, int saveInterval, Messages M) {
-        super(configUtils);
+    public YamlStorageImpl(ConfigsManager configsManager, int saveInterval, Messages M) {
+        super();
 
         this.configsManager = configsManager;
         this.M = M;

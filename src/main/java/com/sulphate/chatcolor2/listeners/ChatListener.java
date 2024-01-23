@@ -1,8 +1,11 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -11,14 +14,18 @@ import java.util.UUID;
 
 public class ChatListener implements Listener {
 
-    private final ConfigUtils configUtils;
+    private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
     private final PlayerDataStore dataStore;
 
-    public ChatListener(ConfigUtils configUtils, GeneralUtils generalUtils, PlayerDataStore dataStore) {
-        this.configUtils = configUtils;
+    private YamlConfiguration mainConfig;
+
+    public ChatListener(ConfigsManager configsManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
+        this.configsManager = configsManager;
         this.generalUtils = generalUtils;
         this.dataStore = dataStore;
+
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
     public void onEvent(AsyncPlayerChatEvent e) {
@@ -27,19 +34,19 @@ public class ChatListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         // Check default colour.
-        if ((boolean) configUtils.getSetting("default-color-enabled")) {
+        if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
             generalUtils.checkDefault(uuid);
         }
 
         message = checkColourCodes(message, player);
 
         // Check if they have a group colour, and if it should be enforced.
-        String groupColour = configUtils.getGroupColour(player);
+        String groupColour = generalUtils.getGroupColour(player);
         String colour = dataStore.getColour(uuid);
 
         if (groupColour != null) {
             // If it should be forced, set it so.
-            if ((boolean) configUtils.getSetting("force-group-colors")) {
+            if (mainConfig.getBoolean(Setting.FORCE_GROUP_COLORS.getConfigPath())) {
                 colour = groupColour;
             }
         }

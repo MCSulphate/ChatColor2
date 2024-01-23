@@ -12,14 +12,14 @@ import java.util.UUID;
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     private final ChatColor plugin;
-    private final ConfigUtils configUtils;
+    private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
     private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+    public PlaceholderAPIHook(ChatColor plugin, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
         this.plugin = plugin;
-        this.configUtils = configUtils;
+        this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
         this.dataStore = dataStore;
         this.M = M;
@@ -120,7 +120,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "group": {
-                String groupName = configUtils.getGroupColour(player, true);
+                String groupName = generalUtils.getGroupColour(player, true);
                 return groupName == null ? "None" : groupName;
             }
 

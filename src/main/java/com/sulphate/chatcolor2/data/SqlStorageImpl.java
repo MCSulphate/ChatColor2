@@ -1,7 +1,6 @@
 package com.sulphate.chatcolor2.data;
 
 import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
@@ -18,8 +17,8 @@ public class SqlStorageImpl extends PlayerDataStore {
 
     private Connection con;
 
-    public SqlStorageImpl(DatabaseConnectionSettings settings, ConfigUtils configUtils, Messages M) {
-        super(configUtils);
+    public SqlStorageImpl(DatabaseConnectionSettings settings, Messages M) {
+        super();
 
         this.settings = settings;
         this.M = M;

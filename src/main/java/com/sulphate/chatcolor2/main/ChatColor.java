@@ -41,9 +41,9 @@ public class ChatColor extends JavaPlugin {
     private static ChatColor plugin;
 
     private HandlersManager handlersManager;
+    private ConfigUtils configUtils;
     private ConfigsManager configsManager;
     private CustomColoursManager customColoursManager;
-    private ConfigUtils configUtils;
     private GeneralUtils generalUtils;
     private GUIManager guiManager;
     private ConfirmationsManager confirmationsManager;
@@ -51,6 +51,7 @@ public class ChatColor extends JavaPlugin {
     private Messages M;
 
     private PlayerJoinListener joinListener;
+    private YamlConfiguration config;
 
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
     private PluginManager manager;
@@ -60,11 +61,10 @@ public class ChatColor extends JavaPlugin {
         plugin = this;
         manager = Bukkit.getPluginManager();
 
-        // Create any needed configs.
-        if (!setupConfigs()) {
-            manager.disablePlugin(this);
-            return;
-        }
+        // Setup objects. commands & listeners.
+        setupObjects();
+        setupCommands();
+        setupListeners();
 
         //Checking if Metrics is allowed for this plugin
         boolean metrics = getConfig().getBoolean("stats");
@@ -72,15 +72,8 @@ public class ChatColor extends JavaPlugin {
             new Metrics(this, 826);
         }
 
-        // Setup objects. commands & listeners.
-        setupObjects();
-        setupCommands();
-        setupListeners();
-
         // Startup messages.
-        List<String> messages = configUtils.getStartupMessages();
-
-        for (String message : messages) {
+        for (String message : M.STARTUP_MESSAGES) {
             message = message.replace("[version]", getDescription().getVersion());
             message = message.replace("[version-description]", "Long-awaited SQL update!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
@@ -93,7 +86,7 @@ public class ChatColor extends JavaPlugin {
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(this, configUtils, customColoursManager, playerDataStore, M).register();
+            new PlaceholderAPIHook(this, generalUtils, customColoursManager, playerDataStore, M).register();
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
         else {
@@ -126,17 +119,25 @@ public class ChatColor extends JavaPlugin {
         // Init compatability utils.
         CompatabilityUtils.init();
 
+        configUtils = new ConfigUtils(this, GeneralUtils::sendConsoleMessage);
+        configsManager = new ConfigsManager(configUtils);
+        config = configsManager.getConfig(Config.MAIN_CONFIG);
+
+        // Validate the main config.
+        if (!validateConfig()) {
+            manager.disablePlugin(this);
+            return;
+        }
+
         handlersManager = new HandlersManager();
-        configsManager = new ConfigsManager();
         customColoursManager = new CustomColoursManager(configsManager);
-        configUtils = new ConfigUtils(configsManager);
-        M = new Messages(configUtils);
+        M = new Messages(configsManager);
 
         // Initialise player data store.
-        String pdcType = getConfig().getString("storage.type");
+        String pdcType = config.getString("storage.type");
 
         if (pdcType != null && pdcType.equals("sql")) {
-            ConfigurationSection dbSection = getConfig().getConfigurationSection("storage.database");
+            ConfigurationSection dbSection = config.getConfigurationSection("storage.database");
 
             if (dbSection == null) {
                 GeneralUtils.sendConsoleMessage(M.PREFIX + M.MISSING_DB_CONFIG_SECTION);
@@ -144,14 +145,14 @@ public class ChatColor extends JavaPlugin {
                 return;
             }
 
-            playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), configUtils, M);
+            playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), M);
         }
         else {
-            int saveInterval = (int) configUtils.getSetting("save-interval");
-            playerDataStore = new YamlStorageImpl(configsManager, configUtils, saveInterval, M);
+            int saveInterval = config.getInt(Setting.SAVE_INTERVAL.getConfigPath());
+            playerDataStore = new YamlStorageImpl(configsManager, saveInterval, M);
         }
 
-        generalUtils = new GeneralUtils(configUtils, customColoursManager, playerDataStore, M);
+        generalUtils = new GeneralUtils(configsManager, customColoursManager, playerDataStore, M);
         guiManager = new GUIManager(configsManager, generalUtils, playerDataStore, M);
         confirmationsManager = new ConfirmationsManager();
 
@@ -162,16 +163,16 @@ public class ChatColor extends JavaPlugin {
 
     private void setupCommands() {
         getCommand("chatcolor").setExecutor(new ChatColorCommand(
-                M, generalUtils, configUtils, confirmationsManager, configsManager, handlersManager,
+                M, generalUtils, confirmationsManager, configsManager, handlersManager,
                 guiManager, customColoursManager, playerDataStore
         ));
 
-        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, configUtils, generalUtils, playerDataStore));
+        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils, playerDataStore));
     }
 
     private void setupListeners() {
-        EventPriority chatPriority = EventPriority.valueOf((String) configUtils.getSetting("event-priority"));
-        Listener chatListener = new ChatListener(configUtils, generalUtils, playerDataStore);
+        EventPriority chatPriority = EventPriority.valueOf(config.getString("settings.event-priority"));
+        Listener chatListener = new ChatListener(configsManager, generalUtils, playerDataStore);
         EventExecutor executor = (listener, event) -> {
             if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
                 ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
@@ -181,9 +182,9 @@ public class ChatColor extends JavaPlugin {
         // Attempt to register
         manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
 
-        joinListener = new PlayerJoinListener(M, configUtils, generalUtils, customColoursManager, playerDataStore);
+        joinListener = new PlayerJoinListener(M, configsManager, generalUtils, customColoursManager, playerDataStore);
         manager.registerEvents(joinListener, this);
-        manager.registerEvents(new CustomCommandListener(configUtils), this);
+        manager.registerEvents(new CustomCommandListener(configsManager), this);
         manager.registerEvents(guiManager, this);
     }
 
@@ -191,28 +192,15 @@ public class ChatColor extends JavaPlugin {
         return plugin;
     }
 
-    private boolean setupConfigs() {
+    private boolean validateConfig() {
         File dataFolder = getDataFolder();
-
-        // Create data folder if it doesn't exist.
-        if (!dataFolder.exists()) {
-            if (!dataFolder.mkdir()) {
-                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to create data folder."));
-                return false;
-            }
-        }
-
-        File config = new File(dataFolder, "config.yml");
+        File configFile = new File(dataFolder, "config.yml");
 
         // Save default config if it doesn't exist.
-        if (!config.exists()) {
-            saveResource("config.yml", true);
-        }
-        else {
+        if (configFile.exists()) {
             // Check if the old config version is less than 1.14 (SQL Update):
             // If it is, backup the old config and load the new format.
-            YamlConfiguration currentConfig = YamlConfiguration.loadConfiguration(config);
-            String version = currentConfig.getString("version");
+            String version = config.getString("version");
             String latest = getDescription().getVersion();
 
             if (!compareVersions(version, "1.14")) {
@@ -242,55 +230,9 @@ public class ChatColor extends JavaPlugin {
             }
             // Update the version if it's behind.
             else if (!version.equals(latest)) {
-                currentConfig.set("version", latest);
-
-                try {
-                    currentConfig.save(new File(dataFolder, "config.yml"));
-                }
-                catch (IOException ex) {
-                    console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to save updated config.yml."));
-                    // Not a critical error, continuing.
-                }
+                config.set("version", latest);
+                configsManager.saveConfig(Config.MAIN_CONFIG);
             }
-        }
-
-        File messages = new File(dataFolder, "messages.yml");
-
-        // Save default messages if they don't exist.
-        if (!messages.exists()) {
-            saveResource("messages.yml", true);
-        }
-
-        File groupsFile = new File(dataFolder, "groups.yml");
-
-        // Save default colours file if it doesn't exist.
-        if (!groupsFile.exists()) {
-            saveResource("groups.yml", true);
-        }
-
-        File playerList = new File(dataFolder, "player-list.yml");
-
-        // Create player list if it doesn't exist.
-        if (!playerList.exists()) {
-            try {
-                playerList.createNewFile();
-            }
-            catch (IOException ex) {
-                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cError: Failed to create player list file."));
-                return false;
-            }
-        }
-
-        File guiConfig = new File(dataFolder, "gui.yml");
-
-        if (!guiConfig.exists()) {
-            saveResource("gui.yml", true);
-        }
-
-        File customColours = new File(dataFolder, "custom-colors.yml");
-
-        if (!customColours.exists()) {
-            saveResource("custom-colors.yml", true);
         }
 
         return true;
@@ -357,7 +299,7 @@ public class ChatColor extends JavaPlugin {
         }
 
         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-        YamlConfiguration currentConfig = configsManager.getConfig("messages.yml");
+        YamlConfiguration currentConfig = configsManager.getConfig(Config.MESSAGES);
 
         Set<String> keys = defaultConfig.getKeys(false);
         boolean needsReload = false;
@@ -390,14 +332,13 @@ public class ChatColor extends JavaPlugin {
         }
 
         YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
-        YamlConfiguration currentConfig = configsManager.getConfig("config.yml");
-
         Set<String> keys = defaultConfig.getConfigurationSection("settings").getKeys(false);
+
         for (String key : keys) {
             // Check all settings are present.
-            if (!currentConfig.contains("settings." + key)) {
+            if (!config.contains("settings." + key)) {
                 // If not, set the default and save the config.
-                currentConfig.set("settings." + key, defaultConfig.get("settings." + key));
+                config.set("settings." + key, defaultConfig.get("settings." + key));
                 configsManager.saveConfig(Config.MAIN_CONFIG);
             }
         }
@@ -405,7 +346,7 @@ public class ChatColor extends JavaPlugin {
 
     // Adds a player to the confirming list, and starts the scheduler.
     public void createConfirmScheduler(Player player, Setting setting, Object value) {
-        ConfirmScheduler scheduler = new ConfirmScheduler(M, confirmationsManager, configUtils, player, setting, value);
+        ConfirmScheduler scheduler = new ConfirmScheduler(M, confirmationsManager, configsManager, player, setting, value);
         confirmationsManager.addConfirmingPlayer(player, scheduler);
     }
 

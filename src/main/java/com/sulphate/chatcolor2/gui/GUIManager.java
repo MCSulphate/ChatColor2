@@ -2,7 +2,7 @@ package com.sulphate.chatcolor2.gui;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.configuration.ConfigurationSection;
@@ -104,7 +104,7 @@ public class GUIManager implements Listener {
         guis.clear();
         openGUIs.clear();
 
-        YamlConfiguration config = configsManager.getConfig("gui.yml");
+        YamlConfiguration config = configsManager.getConfig(Config.GUI);
         Set<String> keys = config.getKeys(false);
 
         for (String key : keys) {

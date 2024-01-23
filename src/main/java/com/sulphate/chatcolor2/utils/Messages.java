@@ -1,18 +1,24 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.util.List;
 
 public class Messages {
+
+    private final ConfigsManager configsManager;
+    private YamlConfiguration config;
     
-    private final ConfigUtils utils;
-    
-    public Messages(ConfigUtils utils) {
-        this.utils = utils;
+    public Messages(ConfigsManager configsManager) {
+        this.configsManager = configsManager;
         reloadMessages();
     }
 
     // Startup and Shutdown Messages
+    public List<String> STARTUP_MESSAGES;
     public String METRICS_ENABLED;
     public String METRICS_DISABLED;
     public String PLACEHOLDERS_ENABLED;
@@ -127,7 +133,10 @@ public class Messages {
     public String FAILED_TO_LOAD_PLAYER_FILE;
     
     public void reloadMessages() {
+        config = configsManager.getConfig(Config.MESSAGES);
+
         // Startup Messages
+        STARTUP_MESSAGES = config.getStringList("startup");
         METRICS_ENABLED = getAndColourise("metrics-enabled");
         METRICS_DISABLED = getAndColourise("metrics-disabled");
         PLACEHOLDERS_ENABLED = getAndColourise("placeholders-enabled");
@@ -243,13 +252,13 @@ public class Messages {
     // Gets and colourises a message from config.
     // Also catches missing messages (mainly for dev purposes).
     private String getAndColourise(String key) {
-        String message = utils.getMessage(key);
+        String message = config.getString(key);
 
         if (message == null) {
             Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &6Warning: Message not found: " + key));
             return null;
         }
 
-        return GeneralUtils.colourise(utils.getMessage(key));
+        return GeneralUtils.colourise(message);
     }
 }

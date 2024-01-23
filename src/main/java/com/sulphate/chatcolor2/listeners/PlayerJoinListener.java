@@ -1,10 +1,13 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,17 +21,23 @@ import java.util.UUID;
 public class PlayerJoinListener implements Listener {
 
     private final Messages M;
-    private final ConfigUtils configUtils;
+    private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
     private final PlayerDataStore dataStore;
 
-    public PlayerJoinListener(Messages M, ConfigUtils configUtils, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore) {
+    private YamlConfiguration mainConfig;
+    private YamlConfiguration playerList;
+
+    public PlayerJoinListener(Messages M, ConfigsManager configsManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore) {
         this.M = M;
-        this.configUtils = configUtils;
+        this.configsManager = configsManager;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
         this.dataStore = dataStore;
+
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
+        playerList = configsManager.getConfig(Config.PLAYER_LIST);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -45,7 +54,8 @@ public class PlayerJoinListener implements Listener {
                 checkCustomColour(uuid);
 
                 // Update the player list and check their default colour.
-                configUtils.updatePlayerListEntry(player.getName(), uuid);
+                playerList.set(player.getName(), uuid.toString());
+                configsManager.saveConfig(Config.PLAYER_LIST);
                 generalUtils.checkDefault(uuid);
 
                 sendJoinMessage(player);
@@ -58,14 +68,14 @@ public class PlayerJoinListener implements Listener {
     }
 
     private void sendJoinMessage(Player player) {
-        if ((boolean) configUtils.getSetting("join-message")) {
+        if (mainConfig.getBoolean(Setting.JOIN_MESSAGE.getConfigPath())) {
             // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-            String groupColour = configUtils.getGroupColour(player);
+            String groupColour = generalUtils.getGroupColour(player, false);
             String colour = dataStore.getColour(player.getUniqueId());
 
             if (groupColour != null) {
                 // If it should be forced, set it so.
-                if ((boolean) configUtils.getSetting("force-group-colors")) {
+                if (mainConfig.getBoolean(Setting.FORCE_GROUP_COLORS.getConfigPath())) {
                     colour = groupColour;
                 }
             }
@@ -88,8 +98,8 @@ public class PlayerJoinListener implements Listener {
         String colour = dataStore.getColour(uuid);
 
         if (colour == null) {
-            if ((boolean) configUtils.getSetting("default-color-enabled")) {
-                dataStore.setColour(uuid, configUtils.getCurrentDefaultColour());
+            if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
+                dataStore.setColour(uuid, mainConfig.getString("default.color"));
             }
             else {
                 dataStore.setColour(uuid, "");

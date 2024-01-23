@@ -1,30 +1,15 @@
 package com.sulphate.chatcolor2.data;
 
-import com.sulphate.chatcolor2.utils.ConfigUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public abstract class PlayerDataStore {
 
-    private final ConfigUtils configUtils;
-
     protected final Map<UUID, PlayerData> dataMap;
 
-    public PlayerDataStore(ConfigUtils configUtils) {
-        this.configUtils = configUtils;
+    public PlayerDataStore() {
         dataMap = new HashMap<>();
-    }
-
-    public void loadPlayerData(String name, Callback<Boolean> callback) {
-        UUID uuid = configUtils.getUUIDFromName(name);
-
-        if (uuid == null) {
-            callback.callback(false);
-        }
-
-        loadPlayerData(uuid, callback);
     }
 
     public abstract void loadPlayerData(UUID uuid, Callback<Boolean> callback);
