@@ -41,6 +41,13 @@ public class ConfigUtils {
     }
 
     /**
+     * Clears the config cache. Any further requests to load configs will be read from disk.
+     */
+    public void clearCache() {
+        configCache.clear();
+    }
+
+    /**
      * Prints a formatted error message to the console with a plugin identifier for clarity.
      *
      * @param message The error message to display in console.

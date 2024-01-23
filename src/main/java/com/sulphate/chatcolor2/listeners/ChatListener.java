@@ -5,6 +5,7 @@ import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -12,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
 
-public class ChatListener implements Listener {
+public class ChatListener implements Listener, Reloadable {
 
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
@@ -25,6 +26,10 @@ public class ChatListener implements Listener {
         this.generalUtils = generalUtils;
         this.dataStore = dataStore;
 
+        reload();
+    }
+
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 

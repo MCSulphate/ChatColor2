@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GeneralUtils {
+public class GeneralUtils implements Reloadable {
 
     private enum SpecialColorType {
         RAINBOW,
@@ -36,6 +36,10 @@ public class GeneralUtils {
         this.dataStore = dataStore;
         this.M = M;
 
+        reload();
+    }
+
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
         groupsConfig = configsManager.getConfig(Config.GROUPS);
     }

@@ -7,13 +7,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
 
-public class Messages {
+public class Messages implements Reloadable {
 
     private final ConfigsManager configsManager;
     private YamlConfiguration config;
     
     public Messages(ConfigsManager configsManager) {
         this.configsManager = configsManager;
+        reload();
+    }
+
+    public void reload() {
         reloadMessages();
     }
 

@@ -3,13 +3,14 @@ package com.sulphate.chatcolor2.managers;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ConfigsManager {
+public class ConfigsManager implements Reloadable {
 
     private final ConfigUtils configUtils;
 
@@ -19,14 +20,15 @@ public class ConfigsManager {
         this.configUtils = configUtils;
         configs = new HashMap<>();
 
-        loadAllConfigs();
-
         File playersFolder = new File(ChatColor.getPlugin().getDataFolder(), "players");
         playersFolder.mkdir();
+
+        reload();
     }
 
     // (re)loads all configs.
-    public void loadAllConfigs() {
+    public void reload() {
+        configUtils.clearCache();
         configs.clear();
 
         for (Config config : Config.values()) {

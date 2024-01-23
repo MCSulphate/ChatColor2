@@ -1,16 +1,14 @@
 package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.data.YamlStorageImpl;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
-import com.sulphate.chatcolor2.utils.CompatabilityUtils;
-import com.sulphate.chatcolor2.utils.Config;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
-import com.sulphate.chatcolor2.utils.Messages;
+import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.*;
@@ -23,7 +21,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChatColorCommand implements CommandExecutor {
+public class ChatColorCommand implements CommandExecutor, Reloadable {
 
     private static final List<String> SETTING_NAMES = Arrays.asList(
             "auto-save",
@@ -64,6 +62,10 @@ public class ChatColorCommand implements CommandExecutor {
         this.customColoursManager = customColoursManager;
         this.dataStore = playerDataStore;
 
+        reload();
+    }
+
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
@@ -126,14 +128,17 @@ public class ChatColorCommand implements CommandExecutor {
                     }
 
                     case "reload": {
-                        configsManager.loadAllConfigs();
-                        M.reloadMessages();
-                        guiManager.reload();
-                        customColoursManager.reload();
+                        configsManager.reload();
 
-                        // Re-load player configs to avoid plugin inoperation.
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            configsManager.loadPlayerConfig(player.getUniqueId());
+                        for (Reloadable reloadable : ChatColor.getReloadables()) {
+                            reloadable.reload();
+                        }
+
+                        // Re-load player configs to avoid plugin inoperation, if we are using YAML storage.
+                        if (dataStore instanceof YamlStorageImpl) {
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                configsManager.loadPlayerConfig(player.getUniqueId());
+                            }
                         }
 
                         s.sendMessage(M.PREFIX + M.RELOADED_MESSAGES);

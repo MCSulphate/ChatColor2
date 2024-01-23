@@ -9,6 +9,7 @@ import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player;
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.Messages;
 
-public class ConfirmHandler extends Handler {
+public class ConfirmHandler extends Handler implements Reloadable {
 
     private final Messages M;
     private final ConfirmationsManager confirmationsManager;
@@ -37,6 +38,10 @@ public class ConfirmHandler extends Handler {
         this.generalUtils = generalUtils;
         this.dataStore = dataStore;
 
+        reload();
+    }
+
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
@@ -67,7 +72,7 @@ public class ConfirmHandler extends Handler {
                 ChatColor.getPlugin().saveResource("custom-colors.yml", true);
                 ChatColor.getPlugin().saveResource("gui.yml", true);
 
-                configsManager.loadAllConfigs();
+                configsManager.reload();
                 M.reloadMessages();
                 guiManager.reload();
                 customColoursManager.reload();

@@ -7,6 +7,7 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +19,7 @@ import com.sulphate.chatcolor2.utils.Messages;
 
 import java.util.UUID;
 
-public class PlayerJoinListener implements Listener {
+public class PlayerJoinListener implements Listener, Reloadable {
 
     private final Messages M;
     private final ConfigsManager configsManager;
@@ -36,6 +37,10 @@ public class PlayerJoinListener implements Listener {
         this.customColoursManager = customColoursManager;
         this.dataStore = dataStore;
 
+        reload();
+    }
+
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
         playerList = configsManager.getConfig(Config.PLAYER_LIST);
     }

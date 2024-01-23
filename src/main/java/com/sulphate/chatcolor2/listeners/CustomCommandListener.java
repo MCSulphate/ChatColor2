@@ -3,12 +3,13 @@ package com.sulphate.chatcolor2.listeners;
 import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.Config;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-public class CustomCommandListener implements Listener {
+public class CustomCommandListener implements Listener, Reloadable {
 
     private final ConfigsManager configsManager;
 
@@ -16,7 +17,10 @@ public class CustomCommandListener implements Listener {
 
     public CustomCommandListener(ConfigsManager configsManager) {
         this.configsManager = configsManager;
+        reload();
+    }
 
+    public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 

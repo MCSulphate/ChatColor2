@@ -21,6 +21,7 @@ import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,6 +40,7 @@ import com.sulphate.chatcolor2.commands.ConfirmHandler;
 public class ChatColor extends JavaPlugin {
 
     private static ChatColor plugin;
+    private static Set<Reloadable> reloadables;
 
     private HandlersManager handlersManager;
     private ConfigUtils configUtils;
@@ -56,9 +58,18 @@ public class ChatColor extends JavaPlugin {
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
     private PluginManager manager;
 
+    public static ChatColor getPlugin() {
+        return plugin;
+    }
+
+    public static Set<Reloadable> getReloadables() {
+        return reloadables;
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
+        reloadables = new HashSet<>();
         manager = Bukkit.getPluginManager();
 
         // Setup objects. commands & listeners.
@@ -156,23 +167,28 @@ public class ChatColor extends JavaPlugin {
         guiManager = new GUIManager(configsManager, generalUtils, playerDataStore, M);
         confirmationsManager = new ConfirmationsManager();
 
+        reloadables.add(customColoursManager);
+        reloadables.add(M);
+        reloadables.add(generalUtils);
+        reloadables.add(guiManager);
+
         // Scan messages and settings to make sure all are present.
         scanMessages();
         scanSettings();
     }
 
     private void setupCommands() {
-        getCommand("chatcolor").setExecutor(new ChatColorCommand(
-                M, generalUtils, confirmationsManager, configsManager, handlersManager,
-                guiManager, customColoursManager, playerDataStore
-        ));
+        ChatColorCommand command = new ChatColorCommand(M, generalUtils, confirmationsManager, configsManager,
+                handlersManager, guiManager, customColoursManager, playerDataStore);
+        getCommand("chatcolor").setExecutor(command);
 
+        reloadables.add(command);
         handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils, playerDataStore));
     }
 
     private void setupListeners() {
         EventPriority chatPriority = EventPriority.valueOf(config.getString("settings.event-priority"));
-        Listener chatListener = new ChatListener(configsManager, generalUtils, playerDataStore);
+        ChatListener chatListener = new ChatListener(configsManager, generalUtils, playerDataStore);
         EventExecutor executor = (listener, event) -> {
             if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
                 ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
@@ -183,13 +199,15 @@ public class ChatColor extends JavaPlugin {
         manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
 
         joinListener = new PlayerJoinListener(M, configsManager, generalUtils, customColoursManager, playerDataStore);
-        manager.registerEvents(joinListener, this);
-        manager.registerEvents(new CustomCommandListener(configsManager), this);
-        manager.registerEvents(guiManager, this);
-    }
+        CustomCommandListener commandListener = new CustomCommandListener(configsManager);
 
-    public static ChatColor getPlugin() {
-        return plugin;
+        manager.registerEvents(joinListener, this);
+        manager.registerEvents(commandListener, this);
+        manager.registerEvents(guiManager, this);
+
+        reloadables.add(joinListener);
+        reloadables.add(chatListener);
+        reloadables.add(commandListener);
     }
 
     private boolean validateConfig() {

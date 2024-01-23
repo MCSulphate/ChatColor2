@@ -5,6 +5,7 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GUIManager implements Listener {
+public class GUIManager implements Listener, Reloadable {
 
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
@@ -40,6 +41,28 @@ public class GUIManager implements Listener {
         transitioningPlayers = new HashSet<>();
 
         reload();
+    }
+
+    public void reload() {
+        // Close any open GUIs.
+        for (Player player : openGUIs.keySet()) {
+            player.closeInventory();
+        }
+
+        guis.clear();
+        openGUIs.clear();
+
+        YamlConfiguration config = configsManager.getConfig(Config.GUI);
+        Set<String> keys = config.getKeys(false);
+
+        for (String key : keys) {
+            ConfigurationSection guiSection = config.getConfigurationSection(key);
+            GUI gui = new GUI(this, key, guiSection, generalUtils, dataStore, M);
+
+            if (gui.loaded()) {
+                guis.put(key, gui);
+            }
+        }
     }
 
     public void openGUI(Player player, String guiName) {
@@ -92,28 +115,6 @@ public class GUIManager implements Listener {
 
         if (openGUIs.containsKey(player) && !transitioningPlayers.contains(player)) {
             openGUIs.remove(player);
-        }
-    }
-
-    public void reload() {
-        // Close any open GUIs.
-        for (Player player : openGUIs.keySet()) {
-            player.closeInventory();
-        }
-
-        guis.clear();
-        openGUIs.clear();
-
-        YamlConfiguration config = configsManager.getConfig(Config.GUI);
-        Set<String> keys = config.getKeys(false);
-
-        for (String key : keys) {
-            ConfigurationSection guiSection = config.getConfigurationSection(key);
-            GUI gui = new GUI(this, key, guiSection, generalUtils, dataStore, M);
-
-            if (gui.loaded()) {
-                guis.put(key, gui);
-            }
         }
     }
 
