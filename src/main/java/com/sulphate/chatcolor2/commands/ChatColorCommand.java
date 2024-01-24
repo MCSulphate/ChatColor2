@@ -1096,7 +1096,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 return "&" + words.indexOf(colour);
             }
             else {
-                return "&" + ('a' + (wordIndex - 10));
+                return "&" + (char) ('a' + (wordIndex - 10));
             }
         }
 

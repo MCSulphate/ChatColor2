@@ -2,9 +2,12 @@ package com.sulphate.chatcolor2.data;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class DatabaseConnectionSettings {
 
-    public static final String TABLE_NAME = "players";
+    public static final String TABLE_NAME = "chatcolor_players";
 
     private final String address;
     private final int port;
@@ -25,7 +28,15 @@ public class DatabaseConnectionSettings {
     }
 
     public String getConnectionString() {
-        return String.format("jdbc:mysql://%s:%d?user=%s&password=%s", address, port, databaseUser, databasePassword);
+        try {
+            String user = URLEncoder.encode(databaseUser, "UTF-8").replace("+", "%20");
+            String password = URLEncoder.encode(databasePassword, "UTF-8").replace("+", "%20");
+
+            return String.format("jdbc:mysql://%s:%d?user=%s&password=%s", address, port, user, password);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
