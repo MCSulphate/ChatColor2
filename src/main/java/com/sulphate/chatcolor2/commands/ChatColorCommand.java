@@ -242,7 +242,7 @@ public class ChatColorCommand implements CommandExecutor {
                     configsManager.loadPlayerConfig(uuid);
                 }
 
-                String result = parseAndSetColour(uuid, args);
+                String result = parseAndSetColour(uuid, Arrays.copyOfRange(args, 1, args.length));
 
                 // Notify the player, if necessary.
                 Player target = Bukkit.getPlayer(uuid);
