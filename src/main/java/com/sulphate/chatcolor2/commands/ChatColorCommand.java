@@ -890,7 +890,7 @@ public class ChatColorCommand implements CommandExecutor {
 
         player.sendMessage("");
         player.sendMessage(GeneralUtils.colourise("&eAdmin Permissions:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eAll Admin Commands: 7cchatcolor.admin"));
+        player.sendMessage(GeneralUtils.colourise(" &7- &eAll Admin Commands: &cchatcolor.admin"));
 
         player.sendMessage("");
         player.sendMessage(GeneralUtils.colourise("&eColor Permissions:"));
@@ -908,7 +908,7 @@ public class ChatColorCommand implements CommandExecutor {
         player.sendMessage(GeneralUtils.colourise("&eOther Permissions:"));
         player.sendMessage(GeneralUtils.colourise(" &7- &eChange Own Color: &cchatcolor.change.self"));
         player.sendMessage(GeneralUtils.colourise(" &7- &eChange Other's Color: &cchatcolor.change.others"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eSet a Group Chat Color: &7cchatcolor.group.<color name>"));
+        player.sendMessage(GeneralUtils.colourise(" &7- &eSet a Group Chat Color: &cchatcolor.group.<color name>"));
     }
 
     private void handleSettingsHelp(Player player) {
