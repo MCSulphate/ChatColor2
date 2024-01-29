@@ -1,40 +1,69 @@
 package com.sulphate.chatcolor2.listeners;
 
-import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
-import com.sulphate.chatcolor2.utils.Messages;
-import org.bukkit.Bukkit;
+import com.sulphate.chatcolor2.utils.Reloadable;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
 
-public class ChatListener implements Listener {
+public class ChatListener implements Listener, Reloadable {
 
-    private final ConfigUtils configUtils;
+    private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
-    private final Messages M;
+    private final PlayerDataStore dataStore;
 
-    public ChatListener(ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
-        this.configUtils = configUtils;
+    private YamlConfiguration mainConfig;
+
+    public ChatListener(ConfigsManager configsManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
+        this.configsManager = configsManager;
         this.generalUtils = generalUtils;
-        this.M = M;
+        this.dataStore = dataStore;
+
+        reload();
+    }
+
+    public void reload() {
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
     public void onEvent(AsyncPlayerChatEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+
         Player player = e.getPlayer();
         String message = e.getMessage();
         UUID uuid = player.getUniqueId();
 
         // Check default colour.
-        if ((boolean) configUtils.getSetting("default-color-enabled")) {
+        if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
             generalUtils.checkDefault(uuid);
         }
 
+        message = checkColourCodes(message, player);
+
+        // Check if they have a group colour, and if it should be enforced.
+        String groupColour = generalUtils.getGroupColour(player);
+        String colour = dataStore.getColour(uuid);
+
+        if (groupColour != null) {
+            // If it should be forced, set it so.
+            if (mainConfig.getBoolean(Setting.FORCE_GROUP_COLORS.getConfigPath())) {
+                colour = groupColour;
+            }
+        }
+
+        e.setMessage(generalUtils.colouriseMessage(colour, message, true));
+    }
+
+    private String checkColourCodes(String message, Player player) {
         // If their message contains &, check they have permissions for it, or strip the colour.
         if (!player.hasPermission("chatcolor.use-color-codes")) {
             // A player reported using '&&a' for example, would bypass this. So, loop until it's not different.
@@ -50,19 +79,7 @@ public class ChatListener implements Listener {
             }
         }
 
-
-        // Check if they have a group colour, and if it should be enforced.
-        String groupColour = configUtils.getGroupColour(player);
-        String colour = configUtils.getColour(uuid);
-
-        if (groupColour != null) {
-            // If it should be forced, set it so.
-            if ((boolean) configUtils.getSetting("force-group-colors")) {
-                colour = groupColour;
-            }
-        }
-
-        e.setMessage(generalUtils.colouriseMessage(colour, message, true));
+        return message;
     }
 
 }

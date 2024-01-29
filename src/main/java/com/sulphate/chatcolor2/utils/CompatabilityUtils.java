@@ -2,7 +2,6 @@ package com.sulphate.chatcolor2.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

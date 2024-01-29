@@ -1,36 +1,48 @@
 package com.sulphate.chatcolor2.commands;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.data.YamlStorageImpl;
 import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.utils.Messages;
 
-public class ConfirmHandler extends Handler {
+public class ConfirmHandler extends Handler implements Reloadable {
 
     private final Messages M;
     private final ConfirmationsManager confirmationsManager;
     private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
     private final GUIManager guiManager;
-    private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final PlayerDataStore dataStore;
 
-    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, ConfigUtils configUtils, GeneralUtils generalUtils) {
+    private YamlConfiguration mainConfig;
+
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
         this.configsManager = configsManager;
         this.customColoursManager = customColoursManager;
         this.guiManager = guiManager;
-        this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.dataStore = dataStore;
+
+        reload();
+    }
+
+    public void reload() {
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
     @Override
@@ -60,7 +72,7 @@ public class ConfirmHandler extends Handler {
                 ChatColor.getPlugin().saveResource("custom-colors.yml", true);
                 ChatColor.getPlugin().saveResource("gui.yml", true);
 
-                configsManager.loadAllConfigs();
+                configsManager.reload();
                 M.reloadMessages();
                 guiManager.reload();
                 customColoursManager.reload();
@@ -77,7 +89,7 @@ public class ConfirmHandler extends Handler {
             case BOOLEAN: {
                 boolean value = (boolean) scheduler.getValue();
 
-                configUtils.setSetting(setting.getName(), value);
+                mainConfig.set(setting.getConfigPath(), value);
                 valueString = value ? "&aTRUE" : "&cFALSE";
                 break;
             }
@@ -85,12 +97,12 @@ public class ConfirmHandler extends Handler {
             case INTEGER: {
                 int value = (int) scheduler.getValue();
 
-                configUtils.setSetting(setting.getName(), value);
+                mainConfig.set(setting.getConfigPath(), value);
                 valueString = String.valueOf(value);
 
-                // Update the save scheduler with the new interval.
-                if (setting.getName().equals("save-interval")) {
-                    ChatColor.getPlugin().getSaveScheduler().setSaveInterval(value);
+                // Update the save scheduler with the new interval. Only applicable to the YAML implementation.
+                if (setting.getName().equals("save-interval") && dataStore instanceof YamlStorageImpl) {
+                    ((YamlStorageImpl) dataStore).updateSaveInterval(value);
                 }
 
                 break;
@@ -101,11 +113,11 @@ public class ConfirmHandler extends Handler {
             case STRING: {
                 String value = (String) scheduler.getValue();
 
-                configUtils.setSetting(setting.getName(), value);
+                mainConfig.set(setting.getConfigPath(), value);
                 valueString = value;
 
                 if (setting.getName().equals("default-color")) {
-                    configUtils.createNewDefaultColour(value);
+                    createNewDefaultColour(value);
                 }
 
                 break;
@@ -114,19 +126,28 @@ public class ConfirmHandler extends Handler {
             case COLOUR_STRING: {
                 String value = (String) scheduler.getValue();
 
-                configUtils.setSetting(setting.getName(), value);
+                mainConfig.set(setting.getConfigPath(), value);
                 valueString = generalUtils.colouriseMessage(value, "this", false);
 
                 if (setting.getName().equals("default-color")) {
-                    configUtils.createNewDefaultColour(value);
+                    createNewDefaultColour(value);
                 }
 
                 break;
             }
         }
 
+        configsManager.saveConfig(Config.MAIN_CONFIG);
         sender.sendMessage(M.PREFIX + M.CHANGE_SUCCESS.replace("[setting]", setting.getName()).replace("[value]", GeneralUtils.colourise(valueString)));
         return true;
+    }
+
+    private void createNewDefaultColour(String colour) {
+        // Current millis time will always be unique.
+        long code = (System.currentTimeMillis() / 1000);
+
+        mainConfig.set("default.code", code);
+        mainConfig.set("default.color", colour);
     }
 
 }

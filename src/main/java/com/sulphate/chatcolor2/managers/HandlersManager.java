@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class HandlersManager {
 
-    private Map<Class<? extends Handler>, Handler> handlers;
+    private final Map<Class<? extends Handler>, Handler> handlers;
 
     public HandlersManager() {
         handlers = new HashMap<>();

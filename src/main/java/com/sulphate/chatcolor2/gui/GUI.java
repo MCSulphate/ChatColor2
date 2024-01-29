@@ -1,5 +1,6 @@
 package com.sulphate.chatcolor2.gui;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,8 +14,8 @@ import java.util.*;
 public class GUI {
 
     private final GUIManager manager;
-    private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
     private final String guiName;
@@ -30,10 +31,10 @@ public class GUI {
     private ItemStack modifierInactive;
     private ItemStack hexColorsNotSupported;
 
-    public GUI(GUIManager manager, String guiName, ConfigurationSection config, ConfigUtils configUtils, GeneralUtils generalUtils, Messages M) {
+    public GUI(GUIManager manager, String guiName, ConfigurationSection config, GeneralUtils generalUtils, PlayerDataStore dataStore, Messages M) {
         this.manager = manager;
-        this.configUtils = configUtils;
         this.generalUtils = generalUtils;
+        this.dataStore = dataStore;
         this.M = M;
         this.guiName = guiName;
 
@@ -132,8 +133,7 @@ public class GUI {
             colourActive = null;
             colourInactive = null;
 
-            GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError while parsing GUI " + title + " (not in the items section), please check config format & values are correct.");
-            ex.printStackTrace();
+            GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError while parsing GUI " + title + " (not in the items section), please check config format & values are correct: " + ex.getMessage());
         }
 
         ConfigurationSection itemsSection = config.getConfigurationSection("items");
@@ -196,8 +196,7 @@ public class GUI {
                     }
                 }
                 catch (Exception ex) {
-                    GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError parsing item " + key + " in GUI " + title + ", please check the config.");
-                    ex.printStackTrace();
+                    GeneralUtils.sendConsoleMessage("&6[ChatColor] &cError parsing item " + key + " in GUI " + title + ", please check the config: " + ex.getMessage());
                 }
             }
         }
@@ -221,7 +220,7 @@ public class GUI {
 
     void open(Player player) {
         Inventory inventory = Bukkit.createInventory(null, size, title);
-        String chatColour = configUtils.getColour(player.getUniqueId());
+        String chatColour = dataStore.getColour(player.getUniqueId());
 
         if (chatColour.startsWith("&")) {
             chatColour = chatColour.substring(1);
@@ -335,7 +334,7 @@ public class GUI {
                 return;
             }
 
-            String chatColour = configUtils.getColour(player.getUniqueId());
+            String chatColour = dataStore.getColour(player.getUniqueId());
 
             if (chatColour.startsWith("&")) {
                 chatColour = chatColour.substring(1);
@@ -370,9 +369,9 @@ public class GUI {
                                 colour = colourFromParts(clicked.getData(), modifierParts);
                             }
 
-                            configUtils.setColour(uuid, colour);
+                            dataStore.setColour(uuid, colour);
 
-                            player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid)));
+                            player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, dataStore.getColour(uuid)));
                             manager.openGUI(player, guiName); // Refresh GUI.
                         }
                     }
@@ -389,7 +388,7 @@ public class GUI {
                         player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", InventoryUtils.getDisplayName(item)));
                     }
                     else {
-                        if (GeneralUtils.isCustomColour(configUtils.getColour(uuid))) {
+                        if (GeneralUtils.isCustomColour(dataStore.getColour(uuid))) {
                             player.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
                             return;
                         }
@@ -402,9 +401,9 @@ public class GUI {
                         }
 
                         String colour = colourFromParts(colourPart, modifierParts);
-                        configUtils.setColour(uuid, colour);
+                        dataStore.setColour(uuid, colour);
 
-                        player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, configUtils.getColour(uuid)));
+                        player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, dataStore.getColour(uuid)));
                         manager.openGUI(player, guiName);
                     }
 

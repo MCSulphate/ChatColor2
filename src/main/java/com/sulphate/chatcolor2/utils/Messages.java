@@ -1,18 +1,28 @@
 package com.sulphate.chatcolor2.utils;
 
 import com.sulphate.chatcolor2.main.ChatColor;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-public class Messages {
+import java.util.List;
+
+public class Messages implements Reloadable {
+
+    private final ConfigsManager configsManager;
+    private YamlConfiguration config;
     
-    private final ConfigUtils utils;
-    
-    public Messages(ConfigUtils utils) {
-        this.utils = utils;
+    public Messages(ConfigsManager configsManager) {
+        this.configsManager = configsManager;
+        reload();
+    }
+
+    public void reload() {
         reloadMessages();
     }
 
     // Startup and Shutdown Messages
+    public List<String> STARTUP_MESSAGES;
     public String METRICS_ENABLED;
     public String METRICS_DISABLED;
     public String PLACEHOLDERS_ENABLED;
@@ -28,11 +38,9 @@ public class Messages {
     public String MODIFIERS;
 
     // Command-Related Messages
-    public String HELP;
     public String NOT_ENOUGH_ARGS;
     public String TOO_MANY_ARGS;
     public String PLAYER_NOT_JOINED;
-    public String PLAYERS_ONLY;
     public String NO_PERMISSIONS;
     public String NO_COLOR_PERMS;
     public String NO_MOD_PERMS;
@@ -57,7 +65,6 @@ public class Messages {
     public String NO_CUSTOM_COLOR_PERMISSIONS;
     public String INVALID_CUSTOM_COLOR;
     public String CUSTOM_COLOR_EXISTS;
-    public String INCORRECT_CUSTOM_COLOR;
     public String CUSTOM_COLORS_LIST;
     public String CUSTOM_COLOR_FORMAT;
     public String CUSTOM_COLOR_ADDED;
@@ -83,7 +90,6 @@ public class Messages {
     public String TO_CHANGE;
     public String CHANGE_SUCCESS;
     public String CONFIGS_RESET;
-    public String INVALID_SEQUENCE;
 
     // GUI-Related Messages and Strings
     public String INVALID_GUI;
@@ -115,9 +121,26 @@ public class Messages {
     public String STRIKETHROUGH;
     public String UNDERLINED;
     public String ITALIC;
+
+    // Database Messages
+    public String FAILED_TO_INITIALISE_DB;
+    public String FAILED_TO_CONNECT_TO_DB;
+    public String FAILED_TO_CREATE_DB;
+    public String FAILED_TO_CREATE_TABLE;
+    public String FAILED_TO_LOAD_PLAYER_DATA;
+    public String FAILED_TO_CREATE_NEW_PLAYER;
+    public String FAILED_TO_SAVE_PLAYER_DATA;
+    public String FAILED_TO_CLOSE_CONNECTION;
+    public String DB_INITIALISED_SUCCESSFULLY;
+    public String MISSING_DB_CONFIG_SECTION;
+    public String DB_STILL_CONNECTING;
+    public String FAILED_TO_LOAD_PLAYER_FILE;
     
     public void reloadMessages() {
+        config = configsManager.getConfig(Config.MESSAGES);
+
         // Startup Messages
+        STARTUP_MESSAGES = config.getStringList("startup");
         METRICS_ENABLED = getAndColourise("metrics-enabled");
         METRICS_DISABLED = getAndColourise("metrics-disabled");
         PLACEHOLDERS_ENABLED = getAndColourise("placeholders-enabled");
@@ -132,11 +155,9 @@ public class Messages {
         MODIFIERS = getAndColourise("modifiers");
 
         // Command-Related Messages
-        HELP = getAndColourise("help");
         NOT_ENOUGH_ARGS = getAndColourise("not-enough-args");
         TOO_MANY_ARGS = getAndColourise("too-many-args");
         PLAYER_NOT_JOINED = getAndColourise("player-not-joined");
-        PLAYERS_ONLY = getAndColourise("players-only");
         NO_PERMISSIONS = getAndColourise("no-permissions");
         NO_COLOR_PERMS = getAndColourise("no-color-perms");
         NO_MOD_PERMS = getAndColourise("no-mod-perms");
@@ -161,7 +182,6 @@ public class Messages {
         NO_CUSTOM_COLOR_PERMISSIONS = getAndColourise("no-custom-color-permissions");
         INVALID_CUSTOM_COLOR = getAndColourise("invalid-custom-color");
         CUSTOM_COLOR_EXISTS = getAndColourise("custom-color-exists");
-        INCORRECT_CUSTOM_COLOR = getAndColourise("incorrect-custom-color");
         CUSTOM_COLORS_LIST = getAndColourise("custom-colors-list");
         CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
         CUSTOM_COLOR_ADDED = getAndColourise("custom-color-added");
@@ -187,7 +207,6 @@ public class Messages {
         TO_CHANGE = getAndColourise("to-change");
         CHANGE_SUCCESS = getAndColourise("change-success");
         CONFIGS_RESET = getAndColourise("configs-reset");
-        INVALID_SEQUENCE = getAndColourise("invalid-sequence");
 
         // GUI-Related Messages and Strings
         INVALID_GUI = getAndColourise("invalid-gui");
@@ -219,18 +238,31 @@ public class Messages {
         STRIKETHROUGH = getAndColourise("strikethrough");
         UNDERLINED = getAndColourise("underlined");
         ITALIC = getAndColourise("italic");
+
+        FAILED_TO_INITIALISE_DB = getAndColourise("failed-to-initialise-db");
+        FAILED_TO_CONNECT_TO_DB = getAndColourise("failed-to-connect-to-db");
+        FAILED_TO_CREATE_DB = getAndColourise("failed-to-create-db");
+        FAILED_TO_CREATE_TABLE = getAndColourise("failed-to-create-table");
+        FAILED_TO_LOAD_PLAYER_DATA = getAndColourise("failed-to-load-player-data");
+        FAILED_TO_CREATE_NEW_PLAYER = getAndColourise("failed-to-create-new-player");
+        FAILED_TO_SAVE_PLAYER_DATA = getAndColourise("failed-to-save-player-data");
+        FAILED_TO_CLOSE_CONNECTION = getAndColourise("failed-to-close-connection");
+        DB_INITIALISED_SUCCESSFULLY = getAndColourise("db-initialised-successfully");
+        MISSING_DB_CONFIG_SECTION = getAndColourise("missing-db-config-section");
+        DB_STILL_CONNECTING = getAndColourise("db-still-connecting");
+        FAILED_TO_LOAD_PLAYER_FILE = getAndColourise("failed-to-load-player-file");
     }
 
     // Gets and colourises a message from config.
     // Also catches missing messages (mainly for dev purposes).
     private String getAndColourise(String key) {
-        String message = utils.getMessage(key);
+        String message = config.getString(key);
 
         if (message == null) {
             Bukkit.getConsoleSender().sendMessage(GeneralUtils.colourise("&b[ChatColor] &6Warning: Message not found: " + key));
             return null;
         }
 
-        return GeneralUtils.colourise(utils.getMessage(key));
+        return GeneralUtils.colourise(message);
     }
 }
