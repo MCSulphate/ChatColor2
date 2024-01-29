@@ -33,17 +33,30 @@ public class ChatListener implements Listener, Reloadable {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
-    public void onEvent(AsyncPlayerChatEvent e) {
-        if (e.isCancelled()) {
+    public void onEvent(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) {
             return;
         }
 
-        Player player = e.getPlayer();
-        String message = e.getMessage();
+        Player player = event.getPlayer();
+        String message = event.getMessage();
         UUID uuid = player.getUniqueId();
 
+        boolean defaultColourEnabled = mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath());
+
+        // If they chat before the data store has had a chance to load/fail their data, use the default colour, or if
+        // not enabled, do nothing at all.
+        if (dataStore.getColour(uuid) == null) {
+            if (defaultColourEnabled) {
+                String defaultColor = mainConfig.getString("default.color");
+                event.setMessage(generalUtils.colouriseMessage(defaultColor, event.getMessage(), false));
+            }
+
+            return;
+        }
+
         // Check default colour.
-        if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
+        if (defaultColourEnabled) {
             generalUtils.checkDefault(uuid);
         }
 
@@ -60,7 +73,7 @@ public class ChatListener implements Listener, Reloadable {
             }
         }
 
-        e.setMessage(generalUtils.colouriseMessage(colour, message, true));
+        event.setMessage(generalUtils.colouriseMessage(colour, message, true));
     }
 
     private String checkColourCodes(String message, Player player) {
