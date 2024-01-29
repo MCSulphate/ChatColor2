@@ -4,7 +4,7 @@
 
   <groupId>me.sulphate</groupId>
   <artifactId>ChatColor2</artifactId>
-  <version>1.13.4</version>
+  <version>1.14</version>
   <name>ChatColor2</name>
 
   <properties>
@@ -53,6 +53,13 @@
       <version>2.11.5</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- MySQL -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.3.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -69,13 +76,21 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
+
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>com.sulphate.chatcolor2</shadedPattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.org.bstats</shadedPattern>
+            </relocation>
+
+            <relocation>
+              <pattern>com.mysql</pattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.com.mysql</shadedPattern>
             </relocation>
           </relocations>
+
         </configuration>
+
         <executions>
           <execution>
             <phase>package</phase>
@@ -84,6 +99,7 @@
             </goals>
           </execution>
         </executions>
+
       </plugin>
     </plugins>
   </build>

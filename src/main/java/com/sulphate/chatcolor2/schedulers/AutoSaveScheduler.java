@@ -47,7 +47,6 @@ public class AutoSaveScheduler {
 
     // Adds a config to the HashMap to be saved.
     public void saveConfigWithDelay(String configName, YamlConfiguration config) {
-        configsToSave.remove(configName);
         configsToSave.put(configName, config);
     }
 

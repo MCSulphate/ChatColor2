@@ -1,26 +1,29 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     private final ChatColor plugin;
-    private final ConfigUtils configUtils;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, ConfigUtils configUtils, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
+    public PlaceholderAPIHook(ChatColor plugin, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
         this.plugin = plugin;
-        this.configUtils = configUtils;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.dataStore = dataStore;
         this.M = M;
     }
 
@@ -50,7 +53,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
 
         // Ignore if player is null.
         if (player == null) {
@@ -58,12 +61,13 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         }
 
         UUID uuid = player.getUniqueId();
-        String colour = configUtils.getColour(uuid);
+        String colour = dataStore.getColour(uuid);
+        boolean isCustomColour = GeneralUtils.isCustomColour(colour);
 
         switch (identifier) {
             case "full_color": {
                 // Return the player's full colour, including modifiers. Does not work for rainbow colour!
-                if (GeneralUtils.isCustomColour(colour)) {
+                if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
                 }
 
@@ -71,7 +75,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "modifiers": {
-                if (GeneralUtils.isCustomColour(colour)) {
+                if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
                 }
 
@@ -82,7 +86,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "color": {
-                if (GeneralUtils.isCustomColour(colour)) {
+                if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
                 }
 
@@ -97,29 +101,63 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "color_name": {
-                // Remove any modifiers (start index = second & symbol).
-                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+                return generalUtils.getColorName(colour, false);
+            }
 
-                if (modifiersStartIndex != -1) {
-                    colour = colour.substring(0, modifiersStartIndex + 1);
-                }
+            case "colored_color_name": {
+                return generalUtils.colouriseMessage(colour, generalUtils.getColorName(colour, false), false);
+            }
 
-                return colour.replaceAll("&", "");
+            case "full_color_name": {
+                return generalUtils.getColorName(colour, true);
+            }
+
+            case "colored_full_color_name": {
+                return generalUtils.colouriseMessage(colour, generalUtils.getColorName(colour, true), false);
             }
 
             case "modifier_names": {
-                int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
 
-                if (modifiersStartIndex == -1) {
-                    return "";
+                return generalUtils.getModifierNames(colour, false).collect(Collectors.joining());
+            }
+
+            case "modified_modifier_names": {
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
                 }
-                else {
-                    return colour.substring(modifiersStartIndex + 1).replaceAll("&", "");
+
+                // e.g., 'k' -> "&f&kk" -> renders as an obfuscated white 'k'.
+                return GeneralUtils.colourise(generalUtils.getModifierNames(colour, false).map(m -> "&f&" + m + m).collect(Collectors.joining()));
+            }
+
+            case "full_modifier_names": {
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
                 }
+
+                return generalUtils.getModifierNames(colour, true).collect(Collectors.joining(", "));
+            }
+
+            case "modified_full_modifier_names": {
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
+
+                List<String> modifierChars = generalUtils.getModifierNames(colour, false).collect(Collectors.toList());
+                List<String> modifierNames = generalUtils.getModifierNames(colour, true).collect(Collectors.toList());
+
+                for (int i = 0; i < modifierNames.size(); i++) {
+                    modifierNames.set(i, "&f&" + modifierChars.get(i) + modifierNames.get(i));
+                }
+
+                return GeneralUtils.colourise(String.join("&r&f, ", modifierNames));
             }
 
             case "group": {
-                String groupName = configUtils.getGroupColour(player, true);
+                String groupName = generalUtils.getGroupColour(player, true);
                 return groupName == null ? "None" : groupName;
             }
 

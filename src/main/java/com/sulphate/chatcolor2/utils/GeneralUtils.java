@@ -1,29 +1,82 @@
 package com.sulphate.chatcolor2.utils;
 
+import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.data.PlayerDataStore;
+import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
-public class GeneralUtils {
+public class GeneralUtils implements Reloadable {
+
+    private static final String COLOUR_PLACEHOLDER = "[color]";
 
     private enum SpecialColorType {
         RAINBOW,
         GRADIENT
     }
 
-    private final ConfigUtils configUtils;
+    private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
+    private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public GeneralUtils(ConfigUtils configUtils, CustomColoursManager customColoursManager, Messages M) {
-        this.configUtils = configUtils;
+    private final Map<String, String> colourCodeToNameMap;
+    private final Map<String, String> modifierCodeToNameMap;
+
+    private YamlConfiguration mainConfig;
+    private YamlConfiguration groupsConfig;
+
+    public GeneralUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+        this.configsManager = configsManager;
         this.customColoursManager = customColoursManager;
+        this.dataStore = dataStore;
         this.M = M;
+
+        colourCodeToNameMap = new HashMap<>();
+        modifierCodeToNameMap = new HashMap<>();
+
+        reload();
+    }
+
+    public void reload() {
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
+        groupsConfig = configsManager.getConfig(Config.GROUPS);
+
+        colourCodeToNameMap.clear();
+        modifierCodeToNameMap.clear();
+
+        colourCodeToNameMap.put("0", M.BLACK);
+        colourCodeToNameMap.put("1", M.DARK_BLUE);
+        colourCodeToNameMap.put("2", M.DARK_GREEN);
+        colourCodeToNameMap.put("3", M.DARK_AQUA);
+        colourCodeToNameMap.put("4", M.DARK_RED);
+        colourCodeToNameMap.put("5", M.DARK_PURPLE);
+        colourCodeToNameMap.put("6", M.GOLD);
+        colourCodeToNameMap.put("7", M.GRAY);
+        colourCodeToNameMap.put("8", M.DARK_GRAY);
+        colourCodeToNameMap.put("9", M.BLUE);
+        colourCodeToNameMap.put("a", M.GREEN);
+        colourCodeToNameMap.put("b", M.AQUA);
+        colourCodeToNameMap.put("c", M.RED);
+        colourCodeToNameMap.put("d", M.LIGHT_PURPLE);
+        colourCodeToNameMap.put("e", M.YELLOW);
+        colourCodeToNameMap.put("f", M.WHITE);
+
+        modifierCodeToNameMap.put("k", M.OBFUSCATED);
+        modifierCodeToNameMap.put("l", M.BOLD);
+        modifierCodeToNameMap.put("m", M.STRIKETHROUGH);
+        modifierCodeToNameMap.put("n", M.UNDERLINED);
+        modifierCodeToNameMap.put("o", M.ITALIC);
     }
 
     // Small utility method to colourise messages.
@@ -148,39 +201,6 @@ public class GeneralUtils {
 
         hexString = hexString.replace("&", "");
         return net.md_5.bungee.api.ChatColor.of(hexString).toString();
-    }
-
-    public static boolean verifyRainbowSequence(List<String> seq) {
-        List<String> cols = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
-
-        boolean verify = true;
-        // Hex flag to check for legacy availability.
-        boolean hexFlag = false;
-        for (String part : seq) {
-            // Handle hex colours in the rainbow sequence.
-            if (part.startsWith("#")) {
-                hexFlag = true;
-
-                if (part.length() != 7) {
-                    verify = false;
-                    break;
-                }
-                else if (!GeneralUtils.isValidHexColour(part)) {
-                    verify = false;
-                    break;
-                }
-            }
-            else if (!cols.contains(part)) {
-                verify = false;
-                break;
-            }
-        }
-
-        if (hexFlag && verify && CompatabilityUtils.isHexLegacy()) {
-            verify = false;
-        }
-
-        return verify;
     }
 
     private static List<String> parseSpecialColour(String toParse) {
@@ -354,7 +374,7 @@ public class GeneralUtils {
 
         // Check the override if the coloured message is different.
         if (checkOverride && isDifferentWhenColourised(message)) {
-            boolean override = ((boolean) configUtils.getSetting("color-override"));
+            boolean override = mainConfig.getBoolean(Setting.COLOR_OVERRIDE.getConfigPath());
             String colourised = colourise(message);
 
             if (override) {
@@ -401,16 +421,13 @@ public class GeneralUtils {
     // Replaces a set-colour-message including if rainbow is in the colour.
     // This is a clever (if I say so myself) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
     public String colourSetMessage(String originalMessage, String colour) {
-        String placeholder = originalMessage.contains("[color]") ? "[color]" : originalMessage.contains("[color-text]") ? "[color-text]" : null;
-
-        // If there is no placeholder present, we don't need to do anything.
-        if (placeholder == null) {
-            return originalMessage;
+        if (originalMessage.contains("[color-name]")) {
+            return originalMessage.replace("[color-name]", colouriseMessage(colour, getColorName(colour, true), false));
         }
 
-        // If the color-text placeholder is present, set colour to the text equivalent.
-        if (placeholder.equals("[color-text]")) {
-            colour = getTextEquivalent(colour);
+        // If there is no colour placeholder present, we don't need to do anything.
+        if (!originalMessage.contains(COLOUR_PLACEHOLDER)) {
+            return originalMessage;
         }
 
         // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
@@ -418,9 +435,9 @@ public class GeneralUtils {
             String finalString;
 
             // The message up to the colour placeholder.
-            String firstPart = originalMessage.substring(0, originalMessage.indexOf(placeholder));
+            String firstPart = originalMessage.substring(0, originalMessage.indexOf(COLOUR_PLACEHOLDER));
             // The message past the colour placeholder.
-            String lastPart = originalMessage.substring(originalMessage.indexOf(placeholder) + placeholder.length());
+            String lastPart = originalMessage.substring(originalMessage.indexOf(COLOUR_PLACEHOLDER) + COLOUR_PLACEHOLDER.length());
 
             // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
             if (lastPart.contains(ChatColor.COLOR_CHAR + "")) {
@@ -438,45 +455,147 @@ public class GeneralUtils {
             return finalString;
         }
         else {
-            return originalMessage.replace(placeholder, GeneralUtils.colourise(colour));
+            return originalMessage.replace(COLOUR_PLACEHOLDER, GeneralUtils.colourise(colour));
         }
     }
 
-    // Returns the text equivalent of a string of colours or modifiers.
-    // TODO: Rewrite this, it's very broken at the moment from rainbows & custom colours.
-    public String getTextEquivalent(String colour) {
-        StringBuilder builder = new StringBuilder();
-        String stripped = colour.replaceAll("&", "");
-
-        char[] chars = stripped.toCharArray();
-
-        for (int i = 0; i < chars.length; i++) {
-            List<String> specialChars = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o");
-            String[] charNames = { M.BLACK, M.DARK_BLUE, M.DARK_GREEN, M.DARK_AQUA, M.DARK_RED, M.DARK_PURPLE, M.GOLD, M.GRAY, M.DARK_GRAY, M.BLUE, M.GREEN, M.AQUA, M.RED, M.LIGHT_PURPLE, M.YELLOW, M.WHITE, M.OBFUSCATED, M.BOLD, M.STRIKETHROUGH, M.UNDERLINED, M.ITALIC };
-
-            char chr = chars[i];
-            int index = specialChars.indexOf(chr + "");
-
-            // Get the correct text equiv., and add it to the builder.
-            String text = "&" + chr + charNames[index] + "&r";
-
-            if (builder.length() > 0 || i != 0) {
-                builder.append(", ");
-            }
-
-            builder.append(text);
+    public String getColorName(String colour, boolean fullName) {
+        if (colour.startsWith("%")) {
+            return colour;
+        }
+        else if (colour.startsWith("&u")) {
+            return "rainbow";
+        }
+        else if (colour.startsWith("&g")) {
+            return "gradient";
         }
 
-        return colourise(builder.toString());
+        // Remove any modifiers (start index = second & symbol).
+        int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+        if (modifiersStartIndex != -1) {
+            colour = colour.substring(0, modifiersStartIndex + 1);
+        }
+
+        String colourChar = colour.replace("&", "");
+
+        return fullName ? colourCodeToNameMap.get(colourChar) : colourChar;
+    }
+
+    public Stream<String> getModifierNames(String colour, boolean fullNames) {
+        int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+        if (modifiersStartIndex == -1) {
+            return Stream.empty();
+        }
+        else {
+            String modifierChars = colour.substring(modifiersStartIndex + 1).replaceAll("&", "");
+            return fullNames ? Arrays.stream(modifierChars.split("")).map(modifierCodeToNameMap::get) : Stream.of(modifierChars.split(""));
+        }
+    }
+
+    // Adds a new group colour.
+    public void addGroupColour(String name, String colour) {
+        groupsConfig.set(name, colour);
+        configsManager.saveConfig(Config.GROUPS);
+    }
+
+    // Removes a group colour.
+    public void removeGroupColour(String name) {
+        groupsConfig.set(name, null);
+        configsManager.saveConfig(Config.GROUPS);
+    }
+
+    public String getGroupColour(Player player) {
+        return getGroupColour(player, false);
+    }
+
+    // Returns whether a group colour exists.
+    public boolean groupColourExists(String name) {
+        return getGroupColourNames().contains(name);
+    }
+
+    public Set<String> getGroupColourNames() {
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
+        return config.getKeys(false);
+    }
+
+    // Gets a list of group colours.
+    public HashMap<String, String> getGroupColours() {
+        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
+        HashMap<String, String> returnValue = new HashMap<>();
+
+        // Fill the HashMap with the group colours.
+        Set<String> keys = config.getKeys(false);
+        for (String key : keys) {
+            returnValue.put(key, config.getString(key));
+        }
+
+        return returnValue;
+    }
+
+    // Returns the group colour, if any, that a player has. returnName is to allow the group name placeholder to work.
+    public String getGroupColour(Player player, boolean returnName) {
+        Set<String> groupColourNames = getGroupColourNames();
+        HashMap<String, String> groupColours = getGroupColours();
+
+        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
+        // If they do, then they would have the first group colour applied to them, always.
+        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.group.*")) {
+            return null;
+        }
+
+        // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
+        for (String groupName : groupColourNames) {
+            // Not checking for OP, that would cause the first colour to always be chosen.
+            Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
+
+            if (player.hasPermission(permission)) {
+                // Allows for group name placeholder.
+                return returnName ? groupName : groupColours.get(groupName);
+            }
+        }
+
+        return null;
+    }
+
+    // Gets the default color for a player, taking into account group color (if they are online).
+    public String getDefaultColourForPlayer(UUID uuid) {
+        String colour = null;
+        Player target = Bukkit.getPlayer(uuid);
+
+        if (target != null) {
+            colour = getGroupColour(target);
+        }
+
+        if (colour == null) {
+            return mainConfig.getString("default.color");
+        }
+        else {
+            return colour;
+        }
     }
 
     public void checkDefault(UUID uuid) {
-        long currentCode = configUtils.getCurrentDefaultCode();
-        long playerCode = configUtils.getDefaultCode(uuid);
+        long currentCode = mainConfig.getLong("default.code");
+        long playerCode = dataStore.getDefaultCode(uuid);
 
         if (playerCode != currentCode) {
-            configUtils.setDefaultCode(uuid, currentCode);
-            configUtils.setColour(uuid, configUtils.getCurrentDefaultColour());
+            dataStore.setDefaultCode(uuid, currentCode);
+            dataStore.setColour(uuid, mainConfig.getString("default.color"));
+        }
+    }
+
+    // Attempts to get a player's UUID from their name, from the playerlist.
+    public UUID getUUIDFromName(String name) {
+        YamlConfiguration config = configsManager.getConfig(Config.PLAYER_LIST);
+        String uuid = config.getString(name);
+
+        if (uuid != null) {
+            return UUID.fromString(uuid);
+        }
+        else {
+            return null;
         }
     }
 

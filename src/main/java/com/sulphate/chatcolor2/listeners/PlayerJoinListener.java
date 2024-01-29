@@ -1,9 +1,14 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
-import com.sulphate.chatcolor2.utils.ConfigUtils;
+import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Reloadable;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,18 +19,30 @@ import com.sulphate.chatcolor2.utils.Messages;
 
 import java.util.UUID;
 
-public class PlayerJoinListener implements Listener {
+public class PlayerJoinListener implements Listener, Reloadable {
 
     private final Messages M;
-    private final ConfigUtils configUtils;
-    private final GeneralUtils generalUtils;
     private final ConfigsManager configsManager;
+    private final GeneralUtils generalUtils;
+    private final CustomColoursManager customColoursManager;
+    private final PlayerDataStore dataStore;
 
-    public PlayerJoinListener(Messages M, ConfigUtils configUtils, GeneralUtils generalUtils, ConfigsManager configsManager) {
+    private YamlConfiguration mainConfig;
+    private YamlConfiguration playerList;
+
+    public PlayerJoinListener(Messages M, ConfigsManager configsManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore) {
         this.M = M;
-        this.configUtils = configUtils;
-        this.generalUtils = generalUtils;
         this.configsManager = configsManager;
+        this.generalUtils = generalUtils;
+        this.customColoursManager = customColoursManager;
+        this.dataStore = dataStore;
+
+        reload();
+    }
+
+    public void reload() {
+        mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
+        playerList = configsManager.getConfig(Config.PLAYER_LIST);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -33,32 +50,66 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        // Load the player's config, if necessary.
-        if (configsManager.getPlayerConfig(uuid) == null) {
-            configsManager.loadPlayerConfig(uuid);
-        }
+        dataStore.loadPlayerData(uuid, loaded -> {
+            if (loaded) {
+                if (dataStore.getColour(uuid) == null) {
+                    setInitialColour(uuid);
+                }
 
-        // Update the player list and check their default colour.
-        configUtils.updatePlayerListEntry(player.getName(), uuid);
-        generalUtils.checkDefault(uuid);
+                checkCustomColour(uuid);
 
-        if ((boolean) configUtils.getSetting("join-message")) {
+                // Update the player list and check their default colour.
+                playerList.set(player.getName(), uuid.toString());
+                configsManager.saveConfig(Config.PLAYER_LIST);
+                generalUtils.checkDefault(uuid);
+
+                sendJoinMessage(player);
+
+                if (GeneralUtils.check(player)) {
+                    player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
+                }
+            }
+        });
+    }
+
+    private void sendJoinMessage(Player player) {
+        if (mainConfig.getBoolean(Setting.JOIN_MESSAGE.getConfigPath())) {
             // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-            String groupColour = configUtils.getGroupColour(player);
-            String colour = configUtils.getColour(uuid);
+            String groupColour = generalUtils.getGroupColour(player, false);
+            String colour = dataStore.getColour(player.getUniqueId());
 
             if (groupColour != null) {
                 // If it should be forced, set it so.
-                if ((boolean) configUtils.getSetting("force-group-colors")) {
+                if (mainConfig.getBoolean(Setting.FORCE_GROUP_COLORS.getConfigPath())) {
                     colour = groupColour;
                 }
             }
 
             player.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.CURRENT_COLOR, colour));
         }
+    }
 
-        if (GeneralUtils.check(player)) {
-            player.sendMessage(M.PREFIX + M.PLUGIN_NOTIFICATION.replace("[version]", ChatColor.getPlugin().getDescription().getVersion()));
+    private void checkCustomColour(UUID uuid) {
+        String colour = dataStore.getColour(uuid);
+
+        if (colour.startsWith("%")) {
+            if (customColoursManager.getCustomColour(colour) == null) {
+                setInitialColour(uuid);
+            }
         }
     }
+
+    private void setInitialColour(UUID uuid) {
+        String colour = dataStore.getColour(uuid);
+
+        if (colour == null) {
+            if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
+                dataStore.setColour(uuid, mainConfig.getString("default.color"));
+            }
+            else {
+                dataStore.setColour(uuid, "");
+            }
+        }
+    }
+
 }

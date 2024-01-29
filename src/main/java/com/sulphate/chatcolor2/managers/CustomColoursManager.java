@@ -1,14 +1,14 @@
 package com.sulphate.chatcolor2.managers;
 
 import com.sulphate.chatcolor2.utils.Config;
-import org.bukkit.Bukkit;
+import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CustomColoursManager {
+public class CustomColoursManager implements Reloadable {
 
     private final ConfigsManager configsManager;
 
@@ -20,6 +20,17 @@ public class CustomColoursManager {
         customColoursMap = new HashMap<>();
 
         reload();
+    }
+
+    public void reload() {
+        customColoursMap.clear();
+        config = configsManager.getConfig(Config.CUSTOM_COLOURS);
+        Set<String> keys = config.getKeys(false);
+
+        for (String key : keys) {
+            String colour = config.getString(key);
+            customColoursMap.put('%' + key, colour);
+        }
     }
 
     // Returns the actual name (inclusive of %).
@@ -66,17 +77,6 @@ public class CustomColoursManager {
 
     public Map<String, String> getCustomColours() {
         return customColoursMap;
-    }
-
-    public void reload() {
-        customColoursMap.clear();
-        config = configsManager.getConfig(Config.CUSTOM_COLOURS);
-        Set<String> keys = config.getKeys(false);
-
-        for (String key : keys) {
-            String colour = config.getString(key);
-            customColoursMap.put('%' + key, colour);
-        }
     }
 
 }

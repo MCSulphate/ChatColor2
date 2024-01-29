@@ -16,13 +16,19 @@ public enum Setting {
     RESET(SettingDataType.NONE);
 
     private final SettingDataType dataType;
+    private final String configPath;
 
     Setting(SettingDataType dataType) {
         this.dataType = dataType;
+        configPath = "settings." + getName();
     }
 
     public SettingDataType getDataType() {
         return dataType;
+    }
+
+    public String getConfigPath() {
+        return configPath;
     }
 
     public String getName() {
