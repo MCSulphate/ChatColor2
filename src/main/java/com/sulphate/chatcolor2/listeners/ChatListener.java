@@ -34,6 +34,10 @@ public class ChatListener implements Listener, Reloadable {
     }
 
     public void onEvent(AsyncPlayerChatEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+
         Player player = e.getPlayer();
         String message = e.getMessage();
         UUID uuid = player.getUniqueId();
