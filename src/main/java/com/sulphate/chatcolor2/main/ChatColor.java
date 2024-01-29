@@ -40,7 +40,7 @@ import com.sulphate.chatcolor2.commands.ConfirmHandler;
 public class ChatColor extends JavaPlugin {
 
     private static ChatColor plugin;
-    private static Set<Reloadable> reloadables;
+    private static List<Reloadable> reloadables;
 
     private HandlersManager handlersManager;
     private ConfigUtils configUtils;
@@ -62,14 +62,14 @@ public class ChatColor extends JavaPlugin {
         return plugin;
     }
 
-    public static Set<Reloadable> getReloadables() {
+    public static List<Reloadable> getReloadables() {
         return reloadables;
     }
 
     @Override
     public void onEnable() {
         plugin = this;
-        reloadables = new HashSet<>();
+        reloadables = new ArrayList<>();
         manager = Bukkit.getPluginManager();
 
         // Setup objects. commands & listeners.
@@ -180,10 +180,12 @@ public class ChatColor extends JavaPlugin {
     private void setupCommands() {
         ChatColorCommand command = new ChatColorCommand(M, generalUtils, confirmationsManager, configsManager,
                 handlersManager, guiManager, customColoursManager, playerDataStore);
-        getCommand("chatcolor").setExecutor(command);
+        ConfirmHandler confirmHandler = new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils, playerDataStore);
 
+        getCommand("chatcolor").setExecutor(command);
         reloadables.add(command);
-        handlersManager.registerHandler(ConfirmHandler.class, new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils, playerDataStore));
+        reloadables.add(confirmHandler);
+        handlersManager.registerHandler(ConfirmHandler.class, confirmHandler);
     }
 
     private void setupListeners() {

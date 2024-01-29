@@ -14,8 +14,11 @@ import org.bukkit.permissions.PermissionDefault;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class GeneralUtils implements Reloadable {
+
+    private static final String COLOUR_PLACEHOLDER = "[color]";
 
     private enum SpecialColorType {
         RAINBOW,
@@ -27,6 +30,9 @@ public class GeneralUtils implements Reloadable {
     private final PlayerDataStore dataStore;
     private final Messages M;
 
+    private final Map<String, String> colourCodeToNameMap;
+    private final Map<String, String> modifierCodeToNameMap;
+
     private YamlConfiguration mainConfig;
     private YamlConfiguration groupsConfig;
 
@@ -36,12 +42,41 @@ public class GeneralUtils implements Reloadable {
         this.dataStore = dataStore;
         this.M = M;
 
+        colourCodeToNameMap = new HashMap<>();
+        modifierCodeToNameMap = new HashMap<>();
+
         reload();
     }
 
     public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
         groupsConfig = configsManager.getConfig(Config.GROUPS);
+
+        colourCodeToNameMap.clear();
+        modifierCodeToNameMap.clear();
+
+        colourCodeToNameMap.put("0", M.BLACK);
+        colourCodeToNameMap.put("1", M.DARK_BLUE);
+        colourCodeToNameMap.put("2", M.DARK_GREEN);
+        colourCodeToNameMap.put("3", M.DARK_AQUA);
+        colourCodeToNameMap.put("4", M.DARK_RED);
+        colourCodeToNameMap.put("5", M.DARK_PURPLE);
+        colourCodeToNameMap.put("6", M.GOLD);
+        colourCodeToNameMap.put("7", M.GRAY);
+        colourCodeToNameMap.put("8", M.DARK_GRAY);
+        colourCodeToNameMap.put("9", M.BLUE);
+        colourCodeToNameMap.put("a", M.GREEN);
+        colourCodeToNameMap.put("b", M.AQUA);
+        colourCodeToNameMap.put("c", M.RED);
+        colourCodeToNameMap.put("d", M.LIGHT_PURPLE);
+        colourCodeToNameMap.put("e", M.YELLOW);
+        colourCodeToNameMap.put("f", M.WHITE);
+
+        modifierCodeToNameMap.put("k", M.OBFUSCATED);
+        modifierCodeToNameMap.put("l", M.BOLD);
+        modifierCodeToNameMap.put("m", M.STRIKETHROUGH);
+        modifierCodeToNameMap.put("n", M.UNDERLINED);
+        modifierCodeToNameMap.put("o", M.ITALIC);
     }
 
     // Small utility method to colourise messages.
@@ -386,16 +421,13 @@ public class GeneralUtils implements Reloadable {
     // Replaces a set-colour-message including if rainbow is in the colour.
     // This is a clever (if I say so myself) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
     public String colourSetMessage(String originalMessage, String colour) {
-        String placeholder = originalMessage.contains("[color]") ? "[color]" : originalMessage.contains("[color-text]") ? "[color-text]" : null;
-
-        // If there is no placeholder present, we don't need to do anything.
-        if (placeholder == null) {
-            return originalMessage;
+        if (originalMessage.contains("[color-name]")) {
+            return originalMessage.replace("[color-name]", colouriseMessage(colour, getColorName(colour, true), false));
         }
 
-        // If the color-text placeholder is present, set colour to the text equivalent.
-        if (placeholder.equals("[color-text]")) {
-            colour = getTextEquivalent(colour);
+        // If there is no colour placeholder present, we don't need to do anything.
+        if (!originalMessage.contains(COLOUR_PLACEHOLDER)) {
+            return originalMessage;
         }
 
         // Colourising with rainbow colour is a bit more complicated since I removed M.THIS.
@@ -403,9 +435,9 @@ public class GeneralUtils implements Reloadable {
             String finalString;
 
             // The message up to the colour placeholder.
-            String firstPart = originalMessage.substring(0, originalMessage.indexOf(placeholder));
+            String firstPart = originalMessage.substring(0, originalMessage.indexOf(COLOUR_PLACEHOLDER));
             // The message past the colour placeholder.
-            String lastPart = originalMessage.substring(originalMessage.indexOf(placeholder) + placeholder.length());
+            String lastPart = originalMessage.substring(originalMessage.indexOf(COLOUR_PLACEHOLDER) + COLOUR_PLACEHOLDER.length());
 
             // If there is more colouration after the placeholder, we need to make sure we don't overwrite it, or add unnecessary colours.
             if (lastPart.contains(ChatColor.COLOR_CHAR + "")) {
@@ -423,36 +455,43 @@ public class GeneralUtils implements Reloadable {
             return finalString;
         }
         else {
-            return originalMessage.replace(placeholder, GeneralUtils.colourise(colour));
+            return originalMessage.replace(COLOUR_PLACEHOLDER, GeneralUtils.colourise(colour));
         }
     }
 
-    // Returns the text equivalent of a string of colours or modifiers.
-    // TODO: Rewrite this, it's very broken at the moment from rainbows & custom colours.
-    public String getTextEquivalent(String colour) {
-        StringBuilder builder = new StringBuilder();
-        String stripped = colour.replaceAll("&", "");
-
-        char[] chars = stripped.toCharArray();
-
-        for (int i = 0; i < chars.length; i++) {
-            List<String> specialChars = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o");
-            String[] charNames = { M.BLACK, M.DARK_BLUE, M.DARK_GREEN, M.DARK_AQUA, M.DARK_RED, M.DARK_PURPLE, M.GOLD, M.GRAY, M.DARK_GRAY, M.BLUE, M.GREEN, M.AQUA, M.RED, M.LIGHT_PURPLE, M.YELLOW, M.WHITE, M.OBFUSCATED, M.BOLD, M.STRIKETHROUGH, M.UNDERLINED, M.ITALIC };
-
-            char chr = chars[i];
-            int index = specialChars.indexOf(chr + "");
-
-            // Get the correct text equiv., and add it to the builder.
-            String text = "&" + chr + charNames[index] + "&r";
-
-            if (builder.length() > 0 || i != 0) {
-                builder.append(", ");
-            }
-
-            builder.append(text);
+    public String getColorName(String colour, boolean fullName) {
+        if (colour.startsWith("%")) {
+            return colour;
+        }
+        else if (colour.startsWith("&u")) {
+            return "rainbow";
+        }
+        else if (colour.startsWith("&g")) {
+            return "gradient";
         }
 
-        return colourise(builder.toString());
+        // Remove any modifiers (start index = second & symbol).
+        int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+        if (modifiersStartIndex != -1) {
+            colour = colour.substring(0, modifiersStartIndex + 1);
+        }
+
+        String colourChar = colour.replace("&", "");
+
+        return fullName ? colourCodeToNameMap.get(colourChar) : colourChar;
+    }
+
+    public Stream<String> getModifierNames(String colour, boolean fullNames) {
+        int modifiersStartIndex = (colour.substring(1).indexOf("&"));
+
+        if (modifiersStartIndex == -1) {
+            return Stream.empty();
+        }
+        else {
+            String modifierChars = colour.substring(modifiersStartIndex + 1).replaceAll("&", "");
+            return fullNames ? Arrays.stream(modifierChars.split("")).map(modifierCodeToNameMap::get) : Stream.of(modifierChars.split(""));
+        }
     }
 
     // Adds a new group colour.
