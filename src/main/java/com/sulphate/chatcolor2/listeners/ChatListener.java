@@ -49,7 +49,7 @@ public class ChatListener implements Listener, Reloadable {
         if (dataStore.getColour(uuid) == null) {
             if (defaultColourEnabled) {
                 String defaultColor = mainConfig.getString("default.color");
-                event.setMessage(generalUtils.colouriseMessage(defaultColor, event.getMessage(), false));
+                event.setMessage(generalUtils.colouriseMessage(defaultColor, message, false));
             }
 
             return;

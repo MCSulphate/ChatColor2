@@ -89,6 +89,17 @@
             </relocation>
           </relocations>
 
+          <minimizeJar>true</minimizeJar>
+
+          <filters>
+            <filter>
+              <artifact>com.mysql:mysql-connector-j</artifact>
+              <includes>
+                <include>com/mysql/cj/**</include>
+              </includes>
+            </filter>
+          </filters>
+
         </configuration>
 
         <executions>

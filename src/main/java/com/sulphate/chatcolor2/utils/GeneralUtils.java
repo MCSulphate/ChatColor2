@@ -363,7 +363,7 @@ public class GeneralUtils implements Reloadable {
         return !toColourise.equals(colourised);
     }
 
-    // Applies a color string (like the one the MainClass.getUtils().getColor(uuid) method returns) to a message,
+    // Applies a color string (like the one the dataStore.getColor(uuid) method returns) to a message,
     // optionally taking into account the color override setting.
     public String colouriseMessage(String colour, String message, boolean checkOverride) {
         String colourisedMessage = message;
