@@ -1,11 +1,13 @@
 package com.sulphate.chatcolor2.listeners;
 
+import com.sulphate.chatcolor2.api.ChatColorEvent;
 import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Reloadable;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -49,7 +51,10 @@ public class ChatListener implements Listener, Reloadable {
         if (dataStore.getColour(uuid) == null) {
             if (defaultColourEnabled) {
                 String defaultColor = mainConfig.getString("default.color");
-                event.setMessage(generalUtils.colouriseMessage(defaultColor, message, false));
+
+                if (fireEvent(player, message, defaultColor, event)) {
+                    event.setMessage(generalUtils.colouriseMessage(defaultColor, message, false));
+                }
             }
 
             return;
@@ -73,7 +78,9 @@ public class ChatListener implements Listener, Reloadable {
             }
         }
 
-        event.setMessage(generalUtils.colouriseMessage(colour, message, true));
+        if (fireEvent(player, message, colour, event)) {
+            event.setMessage(generalUtils.colouriseMessage(colour, message, false));
+        }
     }
 
     private String checkColourCodes(String message, Player player) {
@@ -93,6 +100,13 @@ public class ChatListener implements Listener, Reloadable {
         }
 
         return message;
+    }
+
+    private boolean fireEvent(Player player, String message, String colour, AsyncPlayerChatEvent chatEvent) {
+        ChatColorEvent chatColorEvent = new ChatColorEvent(player, message, colour, chatEvent);
+//        Bukkit.getPluginManager().callEvent(chatEvent);
+
+        return !chatColorEvent.isCancelled();
     }
 
 }

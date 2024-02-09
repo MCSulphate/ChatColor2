@@ -292,7 +292,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 return true;
             }
 
-            if (argsno > 6) {
+            if (argsno > 7) {
                 sender.sendMessage(M.PREFIX + M.TOO_MANY_ARGS);
                 return true;
             }
@@ -328,39 +328,14 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             if (uuid != null) {
                 // If their config hasn't been loaded, we must load it.
                 if (configsManager.getPlayerConfig(uuid) == null) {
-                    configsManager.loadPlayerConfig(uuid);
+                    UUID finalUuid = uuid;
+                    String[] finalArgs = args;
+
+                    dataStore.loadPlayerData(uuid, success -> doConsoleSetColour(sender, finalUuid, finalArgs, notifyOthers));
                 }
-
-                // Make sure the colour / modifiers are valid.
-                for (int i = 1; i < argsno; i++) {
-                    if (i == 1) {
-                        String colour = getColour(args[i]);
-
-                        if (colour == null) {
-                            sender.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", args[i]));
-                            return true;
-                        }
-                        // Check for hex support, if necessary.
-                        else if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
-                            sender.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
-                            return false;
-                        }
-                    }
-
-                    else if (getModifier(args[i]) == null) {
-                        sender.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
-                        return true;
-                    }
+                else {
+                    doConsoleSetColour(sender, uuid, args, notifyOthers);
                 }
-
-                String colour = colourFromArgs(args, 1);
-                dataStore.setColour(uuid, colour);
-                Player target = Bukkit.getPlayer(args[0]);
-
-                if (notifyOthers && target != null) {
-                    target.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE"), colour));
-                }
-                sender.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), colour));
             }
             else {
                 sender.sendMessage(M.PREFIX + M.PLAYER_NOT_JOINED);
@@ -368,6 +343,58 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         }
 
         return true;
+    }
+
+    private void doConsoleSetColour(CommandSender sender, UUID uuid, String[] args, boolean notifyOthers) {
+        String colour = args[1];
+
+        // Allows for setting rainbows & gradients from a command.
+        if (colour.startsWith("&u") || colour.startsWith("&g")) {
+            if (!isValidColourString(colour)) {
+                sender.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", colour));
+                return;
+            }
+        }
+        else {
+            colour = getColour(colour);
+
+            if (colour == null) {
+                sender.sendMessage(M.PREFIX + M.INVALID_COLOR.replace("[color]", args[1]));
+                return;
+            }
+
+            // Check for hex support, if necessary.
+            if (GeneralUtils.isValidHexColour(colour) && CompatabilityUtils.isHexLegacy()) {
+                sender.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
+                return;
+            }
+            else if (GeneralUtils.isCustomColour(colour)) {
+                if (customColoursManager.getCustomColour(colour) == null) {
+                    sender.sendMessage(M.PREFIX + M.INVALID_CUSTOM_COLOR);
+                    return;
+                }
+                else if (args.length > 2) {
+                    sender.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
+                    return;
+                }
+            }
+
+            for (int i = 2; i < args.length; i++) {
+                if (getModifier(args[i]) == null) {
+                    sender.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
+                    return;
+                }
+            }
+        }
+
+        String result = parseAndSetColour(uuid, Arrays.copyOfRange(args, 1, args.length));
+        Player target = Bukkit.getPlayer(args[0]);
+
+        if (notifyOthers && target != null) {
+            target.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.PLAYER_SET_YOUR_COLOR.replace("[player]", "CONSOLE"), result));
+        }
+
+        sender.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OTHERS_COLOR.replace("[player]", args[0]), result));
     }
 
     private String parseAndSetColour(UUID uuid, String[] args) {

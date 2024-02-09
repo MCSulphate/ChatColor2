@@ -30,6 +30,11 @@ public class YamlStorageImpl extends PlayerDataStore {
 
     @Override
     public void loadPlayerData(UUID uuid, Callback<Boolean> callback) {
+        if (dataMap.containsKey(uuid)) {
+            callback.callback(true);
+            return;
+        }
+
         configsManager.loadPlayerConfig(uuid);
         YamlConfiguration config = configsManager.getPlayerConfig(uuid);
 
