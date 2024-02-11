@@ -9,6 +9,7 @@ public class DatabaseConnectionSettings {
 
     public static final String TABLE_NAME = "chatcolor_players";
 
+    private final String databaseType;
     private final String address;
     private final int port;
     private final String databaseName;
@@ -16,6 +17,7 @@ public class DatabaseConnectionSettings {
     private final String databasePassword;
 
     public DatabaseConnectionSettings(ConfigurationSection section) {
+        databaseType = section.getString("type");
         address = section.getString("address");
         port = section.getInt("port");
         databaseName = section.getString("name");
@@ -32,7 +34,7 @@ public class DatabaseConnectionSettings {
             String user = URLEncoder.encode(databaseUser, "UTF-8").replace("+", "%20");
             String password = URLEncoder.encode(databasePassword, "UTF-8").replace("+", "%20");
 
-            return String.format("jdbc:mysql://%s:%d?user=%s&password=%s", address, port, user, password);
+            return String.format("jdbc:%s://%s:%d?user=%s&password=%s", databaseType, address, port, user, password);
         }
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);

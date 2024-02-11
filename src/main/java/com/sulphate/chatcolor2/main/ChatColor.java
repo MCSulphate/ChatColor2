@@ -155,6 +155,11 @@ public class ChatColor extends JavaPlugin {
                 Bukkit.getPluginManager().disablePlugin(this);
                 return;
             }
+            // Since v1.14.2 - mariadb support.
+            else if (!dbSection.contains("type")) {
+                dbSection.set("type", "mysql");
+                configsManager.saveConfig(Config.MAIN_CONFIG);
+            }
 
             playerDataStore = new SqlStorageImpl(new DatabaseConnectionSettings(dbSection), M);
         }

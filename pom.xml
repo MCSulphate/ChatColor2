@@ -4,12 +4,13 @@
 
   <groupId>me.sulphate</groupId>
   <artifactId>ChatColor2</artifactId>
-  <version>1.14.1</version>
+  <version>1.14.2</version>
   <name>ChatColor2</name>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <repositories>
@@ -34,7 +35,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.20.4-R0.1-SNAPSHOT</version>
+      <version>1.20.3-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
@@ -54,11 +55,11 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- MySQL -->
+    <!-- MariaDB -->
     <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>8.3.0</version>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <version>3.3.2</version>
     </dependency>
   </dependencies>
 
@@ -84,8 +85,8 @@
             </relocation>
 
             <relocation>
-              <pattern>com.mysql</pattern>
-              <shadedPattern>com.sulphate.chatcolor2.lib.com.mysql</shadedPattern>
+              <pattern>org.mariadb</pattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.org.mariadb</shadedPattern>
             </relocation>
           </relocations>
 
@@ -93,9 +94,9 @@
 
           <filters>
             <filter>
-              <artifact>com.mysql:mysql-connector-j</artifact>
+              <artifact>org.mariadb.jdbc:mariadb-java-client</artifact>
               <includes>
-                <include>com/mysql/cj/**</include>
+                <include>org/mariadb/**</include>
               </includes>
             </filter>
           </filters>

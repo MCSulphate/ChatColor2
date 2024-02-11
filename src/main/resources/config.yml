@@ -5,6 +5,8 @@ storage:
   type: yaml
   # These settings do nothing if you're not using SQL.
   database:
+    # Valid values: mysql, mariadb
+    type: mysql
     address: localhost
     port: 3306
     name: chatcolor_db

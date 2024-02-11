@@ -54,7 +54,7 @@ public class SqlStorageImpl extends PlayerDataStore {
     }
 
     private boolean initialiseDatabase() throws ClassNotFoundException, SQLException {
-        Class.forName("com.sulphate.chatcolor2.lib.com.mysql.cj.jdbc.Driver");
+        Class.forName("com.sulphate.chatcolor2.lib.org.mariadb.jdbc.Driver");
         String databaseName = settings.getDatabaseName();
 
         try {
