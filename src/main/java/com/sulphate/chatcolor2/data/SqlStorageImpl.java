@@ -115,10 +115,10 @@ public class SqlStorageImpl extends PlayerDataStore {
 
     private boolean tableExists() throws SQLException {
         DatabaseMetaData metaData = con.getMetaData();
-        ResultSet results = metaData.getTables(settings.getDatabaseName(), null, null, new String[] { "TABLE" });
+        ResultSet results = metaData.getTables(con.getCatalog(), null, "%", new String[] { "TABLE" });
 
         while (results.next()) {
-            String name = results.getString("TABLE_NAME");
+            String name = results.getString(3);
 
             if (name.equals(TABLE_NAME)) {
                 return true;
