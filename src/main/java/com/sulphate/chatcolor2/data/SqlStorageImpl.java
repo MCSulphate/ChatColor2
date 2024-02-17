@@ -23,7 +23,6 @@ public class SqlStorageImpl extends PlayerDataStore {
         this.settings = settings;
         this.M = M;
 
-
         try {
             boolean success = initialiseDatabase();
 
@@ -172,11 +171,11 @@ public class SqlStorageImpl extends PlayerDataStore {
     }
 
     private void insertNewPlayer(UUID uuid) throws SQLException {
-            boolean success = con.prepareStatement(
+            int rows = con.prepareStatement(
             "INSERT INTO " + TABLE_NAME + " VALUES ('" + uuid + "', '', -1);"
-            ).execute();
+            ).executeUpdate();
 
-            if (!success) {
+            if (rows == 0) {
                 GeneralUtils.sendConsoleMessage(M.PREFIX + M.FAILED_TO_CREATE_NEW_PLAYER.replace("[player]", uuid.toString()));
             }
     }
