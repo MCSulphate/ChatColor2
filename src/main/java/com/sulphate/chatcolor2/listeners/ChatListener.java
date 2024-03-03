@@ -1,6 +1,6 @@
 package com.sulphate.chatcolor2.listeners;
 
-import com.sulphate.chatcolor2.api.ChatColorEvent;
+import com.sulphate.chatcolor2.event.ChatColorEvent;
 import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
@@ -51,10 +51,7 @@ public class ChatListener implements Listener, Reloadable {
         if (dataStore.getColour(uuid) == null) {
             if (defaultColourEnabled) {
                 String defaultColor = mainConfig.getString("default.color");
-
-                if (fireEvent(player, message, defaultColor, event)) {
-                    event.setMessage(generalUtils.colouriseMessage(defaultColor, message, false));
-                }
+                colourAndModify(player, message, defaultColor, event);
             }
 
             return;
@@ -78,8 +75,29 @@ public class ChatListener implements Listener, Reloadable {
             }
         }
 
-        if (fireEvent(player, message, colour, event)) {
-            event.setMessage(generalUtils.colouriseMessage(colour, message, false));
+        colourAndModify(player, message, colour, event);
+    }
+
+    private void colourAndModify(Player player, String message, String colour, AsyncPlayerChatEvent event) {
+        if (GeneralUtils.isDifferentWhenColourised(message)) {
+            boolean override = mainConfig.getBoolean(Setting.COLOR_OVERRIDE.getConfigPath());
+
+            if (override) {
+                while (GeneralUtils.isDifferentWhenColourised(message)) {
+                    // Strip the colour from the message.
+                    message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
+                }
+
+                event.setMessage(message);
+            }
+            else {
+                event.setMessage(GeneralUtils.colourise(message));
+            }
+        }
+        else {
+            if (fireEvent(player, message, colour, event)) {
+                event.setMessage(generalUtils.colouriseMessage(colour, message, false));
+            }
         }
     }
 
@@ -104,7 +122,7 @@ public class ChatListener implements Listener, Reloadable {
 
     private boolean fireEvent(Player player, String message, String colour, AsyncPlayerChatEvent chatEvent) {
         ChatColorEvent chatColorEvent = new ChatColorEvent(player, message, colour, chatEvent);
-//        Bukkit.getPluginManager().callEvent(chatEvent);
+        Bukkit.getPluginManager().callEvent(chatColorEvent);
 
         return !chatColorEvent.isCancelled();
     }

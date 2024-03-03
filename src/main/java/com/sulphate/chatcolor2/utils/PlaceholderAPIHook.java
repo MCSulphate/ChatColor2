@@ -66,7 +66,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
         switch (identifier) {
             case "full_color": {
-                // Return the player's full colour, including modifiers. Does not work for rainbow colour!
+                // Return the player's full colour, including modifiers. Does not work for rainbow/gradient colours!
                 if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
                 }

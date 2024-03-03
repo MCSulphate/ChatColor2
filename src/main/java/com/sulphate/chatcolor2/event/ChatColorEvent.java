@@ -1,4 +1,4 @@
-package com.sulphate.chatcolor2.api;
+package com.sulphate.chatcolor2.event;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -18,6 +18,8 @@ public class ChatColorEvent extends Event implements Cancellable {
     private boolean cancelled;
 
     public ChatColorEvent(Player player, String message, String colour, AsyncPlayerChatEvent chatEvent) {
+        super(true);
+
         handlerList = new HandlerList();
         cancelled = false;
 
