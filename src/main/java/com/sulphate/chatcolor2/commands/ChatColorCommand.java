@@ -1111,7 +1111,12 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             return colour;
         }
         else if (GeneralUtils.isValidHexColour(str)) {
-            return '&' + colour;
+            if (str.startsWith("&")) {
+                return str;
+            }
+            else {
+                return '&' + colour;
+            }
         }
 
         List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.gray", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
