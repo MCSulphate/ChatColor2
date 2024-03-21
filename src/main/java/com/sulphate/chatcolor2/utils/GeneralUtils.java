@@ -469,6 +469,9 @@ public class GeneralUtils implements Reloadable {
         else if (colour.startsWith("&g")) {
             return "gradient";
         }
+        else if (colour.startsWith("&#")) {
+            return colour.substring(1);
+        }
 
         // Remove any modifiers (start index = second & symbol).
         int modifiersStartIndex = (colour.substring(1).indexOf("&"));
