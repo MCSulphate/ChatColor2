@@ -13,6 +13,7 @@ public enum Setting {
     FORCE_GROUP_COLORS(SettingDataType.BOOLEAN),
     DEFAULT_COLOR_ENABLED(SettingDataType.BOOLEAN),
     COMMAND_OPENS_GUI(SettingDataType.BOOLEAN),
+    IGNORE_SYMBOL_PREFIXES(SettingDataType.BOOLEAN),
     RESET(SettingDataType.NONE);
 
     private final SettingDataType dataType;

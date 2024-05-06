@@ -25,6 +25,7 @@ settings:
   force-group-colors: true
   default-color-enabled: true
   command-opens-gui: false
+  ignore-symbol-prefixes: true
 default:
   code: 1
   color: '&f'

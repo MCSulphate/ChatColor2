@@ -14,8 +14,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class ChatListener implements Listener, Reloadable {
+
+    private static final Pattern SYMBOLS_REGEX = Pattern.compile("^[!^\"£$%&*()\\[\\]{}'#@~;:,./<>?\\\\|\\-_=+]+[a-z0-9A-Z]+");
 
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
@@ -36,13 +39,13 @@ public class ChatListener implements Listener, Reloadable {
     }
 
     public void onEvent(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Player player = event.getPlayer();
         String message = event.getMessage();
         UUID uuid = player.getUniqueId();
+
+        if (event.isCancelled() || checkHasSymbolPrefix(message)) {
+            return;
+        }
 
         boolean defaultColourEnabled = mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath());
 
@@ -76,6 +79,17 @@ public class ChatListener implements Listener, Reloadable {
         }
 
         colourAndModify(player, message, colour, event);
+    }
+
+    private boolean checkHasSymbolPrefix(String message) {
+        boolean checkSymbols = mainConfig.getBoolean(Setting.IGNORE_SYMBOL_PREFIXES.getConfigPath());
+
+        if (checkSymbols) {
+            return SYMBOLS_REGEX.matcher(message).matches();
+        }
+        else {
+            return false;
+        }
     }
 
     private void colourAndModify(Player player, String message, String colour, AsyncPlayerChatEvent event) {
