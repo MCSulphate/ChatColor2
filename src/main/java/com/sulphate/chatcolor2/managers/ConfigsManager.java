@@ -33,13 +33,7 @@ public class ConfigsManager implements Reloadable {
 
         for (Config config : Config.values()) {
             String fileName = config.getFilename();
-
-            if (fileName.equals(Config.PLAYER_LIST.getFilename())) {
-                configs.put(fileName, configUtils.getConfigOrCreateBlank(fileName));
-            }
-            else {
-                configs.put(fileName, configUtils.getConfigOrCopyDefault(fileName));
-            }
+            configs.put(fileName, configUtils.getConfigOrCopyDefault(fileName));
         }
     }
 

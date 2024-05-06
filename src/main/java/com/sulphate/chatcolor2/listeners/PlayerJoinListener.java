@@ -28,7 +28,6 @@ public class PlayerJoinListener implements Listener, Reloadable {
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
-    private YamlConfiguration playerList;
 
     public PlayerJoinListener(Messages M, ConfigsManager configsManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore) {
         this.M = M;
@@ -42,7 +41,6 @@ public class PlayerJoinListener implements Listener, Reloadable {
 
     public void reload() {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
-        playerList = configsManager.getConfig(Config.PLAYER_LIST);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -58,9 +56,7 @@ public class PlayerJoinListener implements Listener, Reloadable {
 
                 checkCustomColour(uuid);
 
-                // Update the player list and check their default colour.
-                playerList.set(player.getName(), uuid.toString());
-                configsManager.saveConfig(Config.PLAYER_LIST);
+                // Check their default colour.
                 generalUtils.checkDefault(uuid);
 
                 sendJoinMessage(player);

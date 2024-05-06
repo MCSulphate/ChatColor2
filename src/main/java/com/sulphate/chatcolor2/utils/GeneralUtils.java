@@ -591,11 +591,10 @@ public class GeneralUtils implements Reloadable {
 
     // Attempts to get a player's UUID from their name, from the playerlist.
     public UUID getUUIDFromName(String name) {
-        YamlConfiguration config = configsManager.getConfig(Config.PLAYER_LIST);
-        String uuid = config.getString(name);
+        Player player = Bukkit.getPlayer(name);
 
-        if (uuid != null) {
-            return UUID.fromString(uuid);
+        if (player != null) {
+            return player.getUniqueId();
         }
         else {
             return null;
