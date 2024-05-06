@@ -252,11 +252,6 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             // Check if they are setting another player's name.
             UUID uuid = generalUtils.getUUIDFromName(args[0]);
             if (uuid != null) {
-                // If they are offline, we must load their config first.
-                if (configsManager.getPlayerConfig(uuid) == null) {
-                    configsManager.loadPlayerConfig(uuid);
-                }
-
                 String result = parseAndSetColour(uuid, Arrays.copyOfRange(args, 1, args.length));
 
                 // Notify the player, if necessary.
@@ -326,16 +321,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             }
 
             if (uuid != null) {
-                // If their config hasn't been loaded, we must load it.
-                if (configsManager.getPlayerConfig(uuid) == null) {
-                    UUID finalUuid = uuid;
-                    String[] finalArgs = args;
-
-                    dataStore.loadPlayerData(uuid, success -> doConsoleSetColour(sender, finalUuid, finalArgs, notifyOthers));
-                }
-                else {
-                    doConsoleSetColour(sender, uuid, args, notifyOthers);
-                }
+                doConsoleSetColour(sender, uuid, args, notifyOthers);
             }
             else {
                 sender.sendMessage(M.PREFIX + M.PLAYER_NOT_JOINED);
