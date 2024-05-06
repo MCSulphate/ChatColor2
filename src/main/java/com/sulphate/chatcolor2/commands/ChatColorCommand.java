@@ -34,7 +34,8 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             "command-name",
             "force-group-colors",
             "default-color-enabled",
-            "command-opens-gui"
+            "command-opens-gui",
+            "ignore-symbol-prefixes"
     );
 
     private final Messages M;

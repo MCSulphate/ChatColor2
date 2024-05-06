@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class ChatListener implements Listener, Reloadable {
 
-    private static final Pattern SYMBOLS_REGEX = Pattern.compile("^[!^\"£$%&*()\\[\\]{}'#@~;:,./<>?\\\\|\\-_=+]+[a-z0-9A-Z]+");
+    private static final Pattern SYMBOLS_REGEX = Pattern.compile("^[!^\"£$%*()\\[\\]{}'#@~;:,./<>?\\\\|\\-_=+]+[^!^\"£$%&*()\\[\\]{}'#@~;:,./<>?\\\\|\\-_=+].+");
 
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
