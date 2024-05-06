@@ -69,6 +69,7 @@ public class Messages implements Reloadable {
     public String CUSTOM_COLOR_FORMAT;
     public String CUSTOM_COLOR_ADDED;
     public String CUSTOM_COLOR_REMOVED;
+    public String COLOR_CLEARED;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -186,6 +187,7 @@ public class Messages implements Reloadable {
         CUSTOM_COLOR_FORMAT = getAndColourise("custom-color-format");
         CUSTOM_COLOR_ADDED = getAndColourise("custom-color-added");
         CUSTOM_COLOR_REMOVED = getAndColourise("custom-color-removed");
+        COLOR_CLEARED = getAndColourise("color-cleared");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");

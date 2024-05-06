@@ -90,9 +90,15 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 args = new String[] { "gui" };
             }
 
-            List<String> cmds = Arrays.asList("confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group", "custom");
+            List<String> cmds = Arrays.asList("clear", "confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group", "custom");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
+                    case "clear": {
+                        dataStore.setColour(s.getUniqueId(), "");
+                        s.sendMessage(M.PREFIX + M.COLOR_CLEARED);
+                        return true;
+                    }
+
                     case "confirm": {
                         return handlersManager.callHandler(ConfirmHandler.class, s);
                     }
@@ -481,6 +487,16 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             }
 
             if (!player.isOp() && !player.hasPermission("chatcolor.admin") && !(args[0].equals("commandshelp") || args[0].equals("available"))) {
+                player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Check if they want to clear their colour.
+        if (args[0].equals("clear")) {
+            if (!player.hasPermission("chatcolor.clear")) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
             }

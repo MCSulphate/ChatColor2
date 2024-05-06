@@ -6,8 +6,7 @@ public enum Config {
     MESSAGES("messages.yml"),
     GUI("gui.yml"),
     GROUPS("groups.yml"),
-    CUSTOM_COLOURS("custom-colors.yml"),
-    PLAYER_LIST("player-list.yml");
+    CUSTOM_COLOURS("custom-colors.yml");
 
     private final String filename;
 
