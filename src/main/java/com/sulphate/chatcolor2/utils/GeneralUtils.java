@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -389,7 +390,71 @@ public class GeneralUtils implements Reloadable {
             }
         }
 
-        return colourise(colour + colourisedMessage);
+        return colouriseWithPlaceholders(colourisedMessage, colour, mainConfig.getStringList("placeholders"));
+    }
+
+    private String colouriseWithPlaceholders(String message, String colour, List<String> placeholders) {
+        if (containsPlaceholder(message, placeholders)) {
+            StringBuilder result = new StringBuilder();
+            Map<Integer, String> placeholdersMap = getPlaceholdersMap(message, placeholders);
+
+            int lastEndIndex = -1;
+            for (Map.Entry<Integer, String> placeholderEntry : placeholdersMap.entrySet()) {
+                int index = placeholderEntry.getKey();
+                String placeholder = placeholderEntry.getValue();
+
+                // If it would overlap with the previous placeholder, skip it.
+                if (!(index + placeholder.length() < lastEndIndex)) {
+                    int startIndex = lastEndIndex == -1 ? 0 : lastEndIndex;
+                    String part = message.substring(startIndex, index);
+                    result.append(colourise(colour + part));
+                    result.append(colourise("&f" + placeholder));
+
+                    lastEndIndex = index + placeholder.length();
+                }
+            }
+
+            if (lastEndIndex != message.length()) {
+                String tailEnd = message.substring(lastEndIndex);
+                result.append(colourise(colour + tailEnd));
+            }
+
+            return result.toString();
+        }
+        else {
+            return colourise(colour + message);
+        }
+    }
+
+    @NotNull
+    private static Map<Integer, String> getPlaceholdersMap(String message, List<String> placeholders) {
+        Map<Integer, String> placeholdersMap = new TreeMap<>();
+        String messageToCheck = message;
+
+        // Iterate over the message, removing one character at a time to build a map of all placeholders.
+        for (int i = 0; i < message.length(); i++) {
+            for (String placeholder : placeholders) {
+                int index = messageToCheck.indexOf(placeholder);
+
+                if (index != -1) {
+                    placeholdersMap.put(index + i, placeholder);
+                }
+            }
+
+            messageToCheck = messageToCheck.substring(1);
+        }
+
+        return placeholdersMap;
+    }
+
+    private boolean containsPlaceholder(String message, List<String> placeholders) {
+        for (String placeholder : placeholders) {
+            if (message.contains(placeholder)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static char[] getAvailableColours(Player player) {

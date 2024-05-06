@@ -21,13 +21,11 @@ import com.sulphate.chatcolor2.managers.HandlersManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.EventExecutor;
@@ -177,9 +175,10 @@ public class ChatColor extends JavaPlugin {
         reloadables.add(generalUtils);
         reloadables.add(guiManager);
 
-        // Scan messages and settings to make sure all are present.
+        // Scan messages, settings, and other values to make sure all are present.
         scanMessages();
         scanSettings();
+        scanOther();
     }
 
     private void setupCommands() {
@@ -366,6 +365,13 @@ public class ChatColor extends JavaPlugin {
                 config.set("settings." + key, defaultConfig.get("settings." + key));
                 configsManager.saveConfig(Config.MAIN_CONFIG);
             }
+        }
+    }
+
+    private void scanOther() {
+        if (!config.contains("placeholders")) {
+            config.set("placeholders", Collections.singletonList("[item]"));
+            configsManager.saveConfig(Config.MAIN_CONFIG);
         }
     }
 

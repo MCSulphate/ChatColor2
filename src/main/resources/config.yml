@@ -26,6 +26,8 @@ settings:
   default-color-enabled: true
   command-opens-gui: false
   ignore-symbol-prefixes: true
+placeholders:
+  - '[item]'
 default:
   code: 1
   color: '&f'
