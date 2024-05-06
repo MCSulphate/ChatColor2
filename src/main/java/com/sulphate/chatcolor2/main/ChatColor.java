@@ -86,7 +86,7 @@ public class ChatColor extends JavaPlugin {
         // Startup messages.
         for (String message : M.STARTUP_MESSAGES) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "SQL Update!");
+            message = message.replace("[version-description]", "Plugin compatability update");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
