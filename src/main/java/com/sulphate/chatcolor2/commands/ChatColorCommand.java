@@ -70,8 +70,6 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     }
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-        int argsno = args.length;
-
         // Settings values used below.
         boolean notifyOthers = mainConfig.getBoolean(Setting.NOTIFY_OTHERS.getConfigPath());
         boolean forceGroupColours = mainConfig.getBoolean(Setting.FORCE_GROUP_COLORS.getConfigPath());
@@ -288,12 +286,12 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         // Sent from console - no need for checking permissions.
         // Settings changes are not supported by the console, only from in-game.
         else {
-            if (argsno < 2) {
+            if (args.length < 2) {
                 sender.sendMessage(M.PREFIX + M.NOT_ENOUGH_ARGS);
                 return true;
             }
 
-            if (argsno > 7) {
+            if (args.length > 7) {
                 sender.sendMessage(M.PREFIX + M.TOO_MANY_ARGS);
                 return true;
             }
@@ -1172,7 +1170,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     private boolean isValidColourString(String customColourString) {
         // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
         // context as to why it's *not* a valid colour if it isn't. God I love/hate regex.
-        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9a-f]{6}|[ug]\\[(#[0-9a-f]{6}|[0-9a-f])(,(#[0-9a-f]{6}|[0-9a-f]))*])(&[k-o])*$");
+        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9A-Fa-f]{6}|[ug]\\[(#[0-9A-Fa-f]{6}|[0-9A-Fa-f])(,(#[0-9A-Fa-f]{6}|[0-9A-Fa-f]))*])(&[k-o])*$");
         Matcher matcher = pattern.matcher(customColourString);
 
         return matcher.matches();
