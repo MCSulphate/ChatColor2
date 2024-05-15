@@ -18,6 +18,7 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
+import com.sulphate.chatcolor2.newgui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -45,7 +46,7 @@ public class ChatColor extends JavaPlugin {
     private ConfigsManager configsManager;
     private CustomColoursManager customColoursManager;
     private GeneralUtils generalUtils;
-    private GUIManager guiManager;
+    private GuiManager guiManager;
     private ConfirmationsManager confirmationsManager;
     private PlayerDataStore playerDataStore;
     private Messages M;
@@ -167,7 +168,7 @@ public class ChatColor extends JavaPlugin {
         }
 
         generalUtils = new GeneralUtils(configsManager, customColoursManager, playerDataStore, M);
-        guiManager = new GUIManager(configsManager, generalUtils, playerDataStore, M);
+        guiManager = new GuiManager(configsManager, playerDataStore, generalUtils, customColoursManager);
         confirmationsManager = new ConfirmationsManager();
 
         reloadables.add(customColoursManager);

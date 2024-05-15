@@ -7,6 +7,7 @@ import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.newgui.GuiManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Reloadable;
@@ -23,13 +24,13 @@ public class ConfirmHandler extends Handler implements Reloadable {
     private final ConfirmationsManager confirmationsManager;
     private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
-    private final GUIManager guiManager;
+    private final GuiManager guiManager;
     private final GeneralUtils generalUtils;
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
 
-    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GUIManager guiManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
+    public ConfirmHandler(Messages M, ConfirmationsManager confirmationsManager, ConfigsManager configsManager, CustomColoursManager customColoursManager, GuiManager guiManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
         this.M = M;
         this.confirmationsManager = confirmationsManager;
         this.configsManager = configsManager;

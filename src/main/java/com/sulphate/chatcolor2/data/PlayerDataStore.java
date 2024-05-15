@@ -12,6 +12,10 @@ public abstract class PlayerDataStore {
         dataMap = new HashMap<>();
     }
 
+    public PlayerData getPlayerData(UUID uuid) {
+        return dataMap.get(uuid);
+    }
+
     public abstract void loadPlayerData(UUID uuid, Callback<Boolean> callback);
 
     public String getColour(UUID uuid) {

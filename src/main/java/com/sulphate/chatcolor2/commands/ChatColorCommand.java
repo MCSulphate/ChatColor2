@@ -2,12 +2,12 @@ package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
-import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
+import com.sulphate.chatcolor2.newgui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,7 +43,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     private final ConfirmationsManager confirmationsManager;
     private final ConfigsManager configsManager;
     private final HandlersManager handlersManager;
-    private final GUIManager guiManager;
+    private final GuiManager guiManager;
     private final CustomColoursManager customColoursManager;
     private final PlayerDataStore dataStore;
 
@@ -51,7 +51,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
     public ChatColorCommand(
             Messages M, GeneralUtils generalUtils, ConfirmationsManager confirmationsManager,
-            ConfigsManager configsManager, HandlersManager handlersManager, GUIManager guiManager,
+            ConfigsManager configsManager, HandlersManager handlersManager, GuiManager guiManager,
             CustomColoursManager customColoursManager, PlayerDataStore playerDataStore
     ) {
         this.M = M;
@@ -166,7 +166,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                     }
 
                     case "gui": {
-                        guiManager.openGUI(s, "main");
+                        guiManager.openMainGui(s);
                         return true;
                     }
 

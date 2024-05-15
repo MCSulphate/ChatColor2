@@ -562,6 +562,10 @@ public class GeneralUtils implements Reloadable {
         }
     }
 
+    public String getModifierName(String modifier) {
+        return modifierCodeToNameMap.get(modifier);
+    }
+
     // Adds a new group colour.
     public void addGroupColour(String name, String colour) {
         groupsConfig.set(name, colour);
