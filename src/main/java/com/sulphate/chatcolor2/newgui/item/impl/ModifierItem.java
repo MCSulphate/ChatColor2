@@ -6,13 +6,11 @@ import com.sulphate.chatcolor2.newgui.item.ItemStackTemplate;
 import com.sulphate.chatcolor2.newgui.item.ComplexGuiItem;
 import com.sulphate.chatcolor2.newgui.item.PermissibleItem;
 import com.sulphate.chatcolor2.newgui.item.SelectableItem;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ModifierItem extends ComplexGuiItem implements PermissibleItem, SelectableItem {
@@ -80,15 +78,35 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
     }
 
     @Override
-    public void select() {
+    public boolean hasPermission() {
+        return hasPermission;
+    }
+
+    @Override
+    public boolean select() {
+        if (!selected) {
+            if (!hasPermission) {
+                return false;
+            }
+
+            playerData.addModifier(data.charAt(0));
+            selected = true;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void unselect() {
         if (selected) {
             playerData.removeModifier(data.charAt(0));
             selected = false;
         }
-        else {
-            playerData.addModifier(data.charAt(0));
-            selected = true;
-        }
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
     }
 
     public static void setSelectedText(String selectedText) {

@@ -9,6 +9,7 @@ import com.sulphate.chatcolor2.newgui.item.impl.InventoryItem;
 import com.sulphate.chatcolor2.newgui.item.impl.ModifierItem;
 import com.sulphate.chatcolor2.newgui.item.impl.SimpleGuiItem;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -36,6 +37,7 @@ public class Gui {
     private final GuiManager guiManager;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final Messages M;
 
     private final Map<Integer, GuiItem> items;
     private final String name;
@@ -43,8 +45,9 @@ public class Gui {
     private final int size;
     private final boolean fillEmptySlots;
     private final Player owner;
+    private final PlayerData playerData;
 
-    public Gui(String name, ConfigurationSection section, Player owner, PlayerData playerData, GuiManager guiManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager) {
+    public Gui(String name, ConfigurationSection section, Player owner, PlayerData playerData, GuiManager guiManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
         if (section == null) {
             throw new InvalidGuiException(String.format("Invalid GUI %s.", name));
         }
@@ -58,8 +61,10 @@ public class Gui {
         this.guiManager = guiManager;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.M = M;
         this.name = name;
         this.owner = owner;
+        this.playerData = playerData;
 
         title = GeneralUtils.colourise(section.getString("title"));
         size = section.getInt("size");
@@ -207,22 +212,77 @@ public class Gui {
         owner.openInventory(inventory);
     }
 
-    public GuiItem onInteract(int slot) {
+    // Performs an interaction within the GUI, updating the passed inventory with any effects of the interaction.
+    public void onInteract(int slot, Inventory inventory) {
         // This means they clicked outside of the actual GUI.
         if (slot >= size) {
-            return null;
+            return;
         }
 
         GuiItem clicked = items.get(slot);
 
         if (clicked instanceof SelectableItem) {
-            ((SelectableItem) clicked).select();
+            SelectableItem selectable = (SelectableItem) clicked;
+            String noPermissionsMessage = M.NO_PERMISSIONS; // Shouldn't ever happen, but it fails quietly.
+            String displayName = clicked.buildItem().getItemMeta().getDisplayName();
+
+            // TODO: Refactor this code? I feel like it could be written better.
+
+            if (selectable instanceof ColourItem) {
+                checkCurrentColourSelection(slot, inventory);
+                noPermissionsMessage = M.NO_COLOR_PERMS.replace("[color]", displayName);
+            }
+            else if (selectable instanceof ModifierItem) {
+                if (!canModifyColour()) {
+                    owner.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
+                    return;
+                }
+                else {
+                    noPermissionsMessage = M.NO_MOD_PERMS.replace("[modifier]", displayName);
+                }
+
+                if (selectable.isSelected()) {
+                    selectable.unselect();
+                    return;
+                }
+            }
+
+            if (selectable.select()) {
+                owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, playerData.getColour()));
+            }
+            else {
+                owner.sendMessage(M.PREFIX + noPermissionsMessage);
+            }
         }
         else if (clicked instanceof ClickableItem) {
             ((ClickableItem) clicked).click();
         }
 
-        return clicked;
+        inventory.setItem(slot, clicked.buildItem());
+    }
+
+    private void checkCurrentColourSelection(int interactedSlot, Inventory inventory) {
+        Optional<Map.Entry<Integer, GuiItem>> selectedOptional = getSelectedColourItemEntry();
+
+        // Deselect any currently selected colour item.
+        selectedOptional.ifPresent(selectedEntry -> {
+            // Only if it's not the current selection.
+            if (selectedEntry.getKey() != interactedSlot) {
+                ((SelectableItem) selectedEntry.getValue()).unselect();
+                inventory.setItem(selectedEntry.getKey(), selectedEntry.getValue().buildItem());
+            }
+        });
+    }
+
+    private boolean canModifyColour() {
+        return !customColoursManager.hasCustomColour(playerData.getColourName());
+    }
+
+    private Optional<Map.Entry<Integer, GuiItem>> getSelectedColourItemEntry() {
+        return items.entrySet().stream()
+                .filter(i -> i.getValue() instanceof ColourItem)
+                .filter(i -> ((SelectableItem) i.getValue()).isSelected())
+                .findFirst();
     }
 
 }

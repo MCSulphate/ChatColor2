@@ -10,6 +10,7 @@ import com.sulphate.chatcolor2.newgui.item.impl.ColourItem;
 import com.sulphate.chatcolor2.newgui.item.impl.ModifierItem;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
+import com.sulphate.chatcolor2.utils.Messages;
 import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,6 +34,7 @@ public class GuiManager implements Reloadable, Listener {
     private final PlayerDataStore dataStore;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final Messages M;
 
     private final Map<String, ConfigurationSection> guiConfigs;
     private final Map<Player, Gui> openGuis;
@@ -40,11 +42,12 @@ public class GuiManager implements Reloadable, Listener {
 
     private String mainConfigName = "main";
 
-    public GuiManager(ConfigsManager configsManager, PlayerDataStore dataStore, GeneralUtils generalUtils, CustomColoursManager customColoursManager) {
+    public GuiManager(ConfigsManager configsManager, PlayerDataStore dataStore, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
         this.configsManager = configsManager;
         this.dataStore = dataStore;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.M = M;
 
         guiConfigs = new HashMap<>();
         openGuis = new HashMap<>();
@@ -138,7 +141,7 @@ public class GuiManager implements Reloadable, Listener {
 
         try {
             ConfigurationSection section = guiConfigs.get(name);
-            return new Gui(name, section, player, dataStore.getPlayerData(player.getUniqueId()), this, generalUtils, customColoursManager);
+            return new Gui(name, section, player, dataStore.getPlayerData(player.getUniqueId()), this, generalUtils, customColoursManager, M);
         }
         catch (InvalidGuiException ex) {
             // TODO: Error message
@@ -182,14 +185,8 @@ public class GuiManager implements Reloadable, Listener {
             ItemStack clicked = event.getCurrentItem();
 
             if (action.equals(InventoryAction.PICKUP_ALL) && clicked != null && !clicked.getType().equals(Material.AIR)) {
-                GuiItem interacted = openGuis.get(player).onInteract(event.getRawSlot());
-
-                // Re-build the item after interaction.
-                if (interacted != null) {
-                    inventory.setItem(event.getSlot(), interacted.buildItem());
-                }
-
-                // Persist any changes to their colour.
+                // Perform the interaction, persist any changes to their colour.
+                openGuis.get(player).onInteract(event.getRawSlot(), inventory);
                 dataStore.savePlayerData(player.getUniqueId());
             }
         }

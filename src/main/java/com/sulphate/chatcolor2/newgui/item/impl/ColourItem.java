@@ -7,11 +7,9 @@ import com.sulphate.chatcolor2.newgui.item.ComplexGuiItem;
 import com.sulphate.chatcolor2.newgui.item.PermissibleItem;
 import com.sulphate.chatcolor2.newgui.item.SelectableItem;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ColourItem extends ComplexGuiItem implements PermissibleItem, SelectableItem {
@@ -83,22 +81,40 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
     }
 
     @Override
-    public void select() {
-        // Don't need to do anything with colours if they already have it selected.
-        if (selected) {
-            return;
+    public boolean hasPermission() {
+        return hasPermission;
+    }
+
+    @Override
+    public boolean select() {
+        if (!selected) {
+            if (!hasPermission) {
+                return false;
+            }
+
+            selected = true;
+
+            // Unless it's a custom colour, just set the 'name' of the colour.
+            // e.g., a, b, c, #123456
+            if (data.startsWith("%")) {
+                playerData.setColour(data);
+            }
+            else {
+                playerData.setColourName(data);
+            }
         }
 
-        selected = true;
+        return true;
+    }
 
-        // Unless it's a custom colour, just set the 'name' of the colour.
-        // e.g., a, b, c, #123456
-        if (data.startsWith("%")) {
-            playerData.setColour(data);
-        }
-        else {
-            playerData.setColourName(data);
-        }
+    @Override
+    public void unselect() {
+        selected = false;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
     }
 
     public static void setSelectedText(String selectedText) {

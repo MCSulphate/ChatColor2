@@ -125,6 +125,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
                     case "reset": {
                         s.sendMessage("");
+                        s.sendMessage(M.PREFIX + M.RESET_WARNING);
                         s.sendMessage(M.PREFIX + M.CONFIRM_ARE_YOU_SURE);
                         s.sendMessage(M.PREFIX + M.CONFIRM_FINALISE);
 

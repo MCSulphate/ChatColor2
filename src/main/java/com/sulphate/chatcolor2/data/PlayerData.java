@@ -36,7 +36,7 @@ public class PlayerData {
         }
         else {
             return Arrays.stream(colour
-                            .substring(secondIndex)
+                            .substring(secondIndex + 1)
                             .replace("&", "")
                             .split(""))
                     .map(s -> s.charAt(0))

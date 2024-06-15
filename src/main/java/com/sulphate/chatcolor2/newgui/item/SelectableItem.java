@@ -1,9 +1,11 @@
 package com.sulphate.chatcolor2.newgui.item;
 
-import org.bukkit.entity.Player;
-
 public interface SelectableItem {
 
-    void select();
+    boolean select();
+
+    void unselect();
+
+    boolean isSelected();
 
 }

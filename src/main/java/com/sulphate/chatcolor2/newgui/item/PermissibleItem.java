@@ -6,4 +6,6 @@ public interface PermissibleItem {
 
     void checkPermission(Player player);
 
+    boolean hasPermission();
+
 }

@@ -168,7 +168,7 @@ public class ChatColor extends JavaPlugin {
         }
 
         generalUtils = new GeneralUtils(configsManager, customColoursManager, playerDataStore, M);
-        guiManager = new GuiManager(configsManager, playerDataStore, generalUtils, customColoursManager);
+        guiManager = new GuiManager(configsManager, playerDataStore, generalUtils, customColoursManager, M);
         confirmationsManager = new ConfirmationsManager();
 
         reloadables.add(customColoursManager);

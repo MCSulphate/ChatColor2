@@ -48,6 +48,7 @@ custom-color-format: ' &7- [color][color-name]'
 custom-color-added: 'Added a custom color, [color][color-name]&e.'
 custom-color-removed: 'Removed a custom color, [color][color-name]&e.'
 color-cleared: 'Your color has been cleared.'
+reset-warning: '&c&lWarning: This will reset all ChatColor configs.'
 
 # Group-Color Messages
 group-color-exists: '&cThat group color already exists!'
