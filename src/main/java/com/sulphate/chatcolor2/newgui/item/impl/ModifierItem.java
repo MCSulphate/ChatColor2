@@ -43,8 +43,8 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
         ItemStack item;
 
         if (!hasPermission) {
-            if (Gui.noPermissionItemTemplate != null) {
-                item = Gui.noPermissionItemTemplate.build(1);
+            if (Gui.getNoPermissionItemTemplate() != null) {
+                item = Gui.getNoPermissionItemTemplate().build(1);
             }
             else {
                 return null;

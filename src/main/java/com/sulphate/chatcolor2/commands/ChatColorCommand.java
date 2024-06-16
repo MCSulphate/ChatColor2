@@ -849,15 +849,17 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
-                    if (colour.startsWith("#")) {
-                        if (!checkPermission(player, "chatcolor.use-hex-codes")) {
-                            player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                    if (!GeneralUtils.isCustomColour(colour)) {
+                        if (colour.startsWith("#")) {
+                            if (!checkPermission(player, "chatcolor.use-hex-codes")) {
+                                player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                                return false;
+                            }
+                        }
+                        else if (!checkPermission(player, "chatcolor.color." + colour)) {
+                            player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
                             return false;
                         }
-                    }
-                    else if (!checkPermission(player, "chatcolor.color." + args[0])) {
-                        player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
-                        return false;
                     }
 
                     continue;

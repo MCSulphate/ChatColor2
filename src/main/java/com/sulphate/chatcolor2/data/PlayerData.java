@@ -29,6 +29,10 @@ public class PlayerData {
     }
 
     private static Set<Character> getModifiers(String colour) {
+        if (colour.isEmpty()) {
+            return new HashSet<>();
+        }
+
         int secondIndex = colour.substring(1).indexOf('&');
 
         if (secondIndex == -1) {
@@ -45,7 +49,7 @@ public class PlayerData {
     }
 
     private static String getColourName(String colour) {
-        if (colour.startsWith("%")) {
+        if (colour.startsWith("%") || colour.isEmpty()) {
             return colour;
         }
 
@@ -95,6 +99,10 @@ public class PlayerData {
     }
 
     public String getColour() {
+        if (colour.isEmpty()) {
+            return colour;
+        }
+
         String prefix = colour.startsWith("%") ? "" : "&";
         return prefix + colour + modifiers.stream().map(m -> "&" + m).collect(Collectors.joining());
     }

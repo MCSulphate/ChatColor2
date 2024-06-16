@@ -26,7 +26,7 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
         super(colour, itemTemplate);
 
         if (colour.startsWith("%")) {
-            permission = "chatcolor.custom." + colour;
+            permission = "chatcolor.custom." + colour.substring(1);
         }
         else if (colour.startsWith("#")) {
             permission = "chatcolor.use-hex-codes";
@@ -47,8 +47,8 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
         ItemStack item;
 
         if (!hasPermission) {
-            if (Gui.noPermissionItemTemplate != null) {
-                item = Gui.noPermissionItemTemplate.build(1);
+            if (Gui.getNoPermissionItemTemplate() != null) {
+                item = Gui.getNoPermissionItemTemplate().build(1);
             }
             else {
                 return null;

@@ -13,6 +13,7 @@ import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import com.sulphate.chatcolor2.utils.Reloadable;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -77,8 +78,11 @@ public class GuiManager implements Reloadable, Listener {
             }
 
             if (configSection.contains("no-permission-item")) {
-                Gui.noPermissionItemTemplate = ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item"));
+                Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item")));
             }
+
+            Gui.setSelectSound(tryGetSound(configSection, "select-sound"));
+            Gui.setErrorSound(tryGetSound(configSection, "error-sound"));
 
             if (configSection.contains("color.selected-text")) {
                 ColourItem.setSelectedText(configSection.getString("color.selected-text"));
@@ -111,8 +115,8 @@ public class GuiManager implements Reloadable, Listener {
         }
         else {
             // Warning message TODO
-            GeneralUtils.sendConsoleMessage("Warning: No GUI config section found, default values will be used!");
-            GeneralUtils.sendConsoleMessage("To regenerate the config, please delete gui.yml and reload the server.");
+            GeneralUtils.sendConsoleMessage(M.PREFIX + "Warning: No GUI config section found, default values will be used!");
+            GeneralUtils.sendConsoleMessage(M.PREFIX + "To regenerate the config, please delete gui.yml and reload the server.");
         }
 
         for (String inventoryName : keys) {
@@ -127,6 +131,21 @@ public class GuiManager implements Reloadable, Listener {
             // TODO Error message
             GeneralUtils.sendConsoleMessage(String.format("Error: No main GUI configuration found with name %s. The GUI will not open.", mainConfigName));
         }
+    }
+
+    private Sound tryGetSound(ConfigurationSection section, String key) {
+        if (section.contains(key)) {
+            String soundName = section.getString(key);
+
+            try {
+                return Sound.valueOf(soundName);
+            }
+            catch (IllegalArgumentException ex) {
+                GeneralUtils.sendConsoleMessage(M.PREFIX + String.format("Invalid sound name in GUI config: %s. Please ensure you have a valid value for your Minecraft version!", soundName));
+            }
+        }
+
+        return null;
     }
 
     public void openMainGui(Player player) {

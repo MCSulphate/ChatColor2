@@ -1,21 +1,19 @@
 # GUI Config Format Guide
 #
-# NOTE: All materials must be 1.16 materials. They will be automatically
-#       converted into other versions materials.
-#
-#       See here for 1.16:
-#       https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# See here for valid materials:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #
 # <inventory name>:
-#   title: [inventory title (colors supported) titles MUST be unique]
+#   title: [inventory title (colors supported)]
 #   size: [must be a multiple of 9]
+#   fill-empty-slots: [true/false]
 #
 #   items:
 #     <slot number>:
 #       type: [COLOUR / MODIFIER / INVENTORY / FILLER]
 #       data: [color name / modifier char / inventory name]
 #       name: [item name (colors supported)]
-#       material: [item material (MUST be 1.16 material!) ONLY FOR COLOURS / INVENTORIES]
+#       material: [item material (colors & inventories only)]
 #
 #     <slot number>: ...
 #
@@ -24,6 +22,8 @@
 
 config:
   main-inventory: main
+  select-sound: BLOCK_AMETHYST_BLOCK_STEP
+  error-sound: ENTITY_BLAZE_HURT
 
   no-permission-item:
     material: BARRIER

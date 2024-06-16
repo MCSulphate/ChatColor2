@@ -12,6 +12,7 @@ import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -32,7 +33,9 @@ public class Gui {
             "",
             null
     );
-    public static ItemStackTemplate noPermissionItemTemplate = null;
+    private static ItemStackTemplate noPermissionItemTemplate = null;
+    private static Sound selectSound = null;
+    private static Sound errorSound = null;
 
     private final GuiManager guiManager;
     private final GeneralUtils generalUtils;
@@ -223,35 +226,16 @@ public class Gui {
 
         if (clicked instanceof SelectableItem) {
             SelectableItem selectable = (SelectableItem) clicked;
-            String noPermissionsMessage = M.NO_PERMISSIONS; // Shouldn't ever happen, but it fails quietly.
-            String displayName = clicked.buildItem().getItemMeta().getDisplayName();
 
-            // TODO: Refactor this code? I feel like it could be written better.
-
-            if (selectable instanceof ColourItem) {
-                checkCurrentColourSelection(slot, inventory);
-                noPermissionsMessage = M.NO_COLOR_PERMS.replace("[color]", displayName);
-            }
-            else if (selectable instanceof ModifierItem) {
-                if (!canModifyColour()) {
-                    owner.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
-                    return;
+            if (doPreSelectChecks(selectable, slot, inventory)) {
+                if (selectable.select()) {
+                    playSound(selectSound);
+                    owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, playerData.getColour()));
                 }
                 else {
-                    noPermissionsMessage = M.NO_MOD_PERMS.replace("[modifier]", displayName);
+                    playSound(errorSound);
+                    owner.sendMessage(M.PREFIX + "An error occurred whilst selecting that color.");
                 }
-
-                if (selectable.isSelected()) {
-                    selectable.unselect();
-                    return;
-                }
-            }
-
-            if (selectable.select()) {
-                owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, playerData.getColour()));
-            }
-            else {
-                owner.sendMessage(M.PREFIX + noPermissionsMessage);
             }
         }
         else if (clicked instanceof ClickableItem) {
@@ -261,7 +245,48 @@ public class Gui {
         inventory.setItem(slot, clicked.buildItem());
     }
 
-    private void checkCurrentColourSelection(int interactedSlot, Inventory inventory) {
+    // Returns true if it should select, false if not.
+    private boolean doPreSelectChecks(SelectableItem item, int slot, Inventory inventory) {
+        String displayName = ((GuiItem) item).buildItem().getItemMeta().getDisplayName();
+
+        if (item instanceof ColourItem) {
+            if (!((PermissibleItem) item).hasPermission()) {
+                owner.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", displayName));
+                playSound(errorSound);
+                return false;
+            }
+
+            unselectCurrentColour(slot, inventory);
+        }
+        else if (item instanceof ModifierItem) {
+            if (!canModifyColour()) {
+                owner.sendMessage(M.PREFIX + M.CANNOT_MODIFY_CUSTOM_COLOR);
+                playSound(errorSound);
+                return false;
+            }
+            else if (!((PermissibleItem) item).hasPermission()) {
+                owner.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", displayName));
+                playSound(errorSound);
+                return false;
+            }
+
+            if (item.isSelected()) {
+                item.unselect();
+                playSound(selectSound);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void playSound(Sound sound) {
+        if (sound != null) {
+            owner.playSound(owner.getLocation(), sound, 0.5f, 1.0f);
+        }
+    }
+
+    private void unselectCurrentColour(int interactedSlot, Inventory inventory) {
         Optional<Map.Entry<Integer, GuiItem>> selectedOptional = getSelectedColourItemEntry();
 
         // Deselect any currently selected colour item.
@@ -283,6 +308,22 @@ public class Gui {
                 .filter(i -> i.getValue() instanceof ColourItem)
                 .filter(i -> ((SelectableItem) i.getValue()).isSelected())
                 .findFirst();
+    }
+
+    public static void setSelectSound(Sound sound) {
+        Gui.selectSound = sound;
+    }
+
+    public static void setErrorSound(Sound sound) {
+        Gui.errorSound = sound;
+    }
+
+    public static void setNoPermissionItemTemplate(ItemStackTemplate template) {
+        Gui.noPermissionItemTemplate = template;
+    }
+
+    public static ItemStackTemplate getNoPermissionItemTemplate() {
+        return Gui.noPermissionItemTemplate;
     }
 
 }
