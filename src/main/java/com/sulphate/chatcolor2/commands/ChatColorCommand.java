@@ -756,9 +756,11 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 for (int i = 1; i < args.length; i++) {
                     if (i == 1) {
                         // Check for hex colour.
-                        if (args[i].startsWith("#")) {
-                            if (!checkPermission(player, "chatcolor.use-hex-codes")) {
-                                player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                        if (args[1].startsWith("#")) {
+                            String permission = "chatcolor.color." + args[i].substring(1).toLowerCase();
+
+                            if (!checkPermission(player, permission) && !checkPermission(player, "chatcolor.use-hex-codes")) {
+                                player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[1].toUpperCase(), false)));
                                 return false;
                             }
                         }
@@ -850,9 +852,12 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
                     if (!GeneralUtils.isCustomColour(colour)) {
-                        if (colour.startsWith("#")) {
-                            if (!checkPermission(player, "chatcolor.use-hex-codes")) {
-                                player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                        // Gross, but it is what it is. I'll get around to rewriting this class at some point, just not today.
+                        if (colour.startsWith("&#")) {
+                            String permission = "chatcolor.color." + colour.substring(2).toLowerCase();
+
+                            if (!checkPermission(player, permission) && !checkPermission(player, "chatcolor.use-hex-codes")) {
+                                player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0].toUpperCase(), false)));
                                 return false;
                             }
                         }
@@ -1116,10 +1121,10 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         }
         else if (GeneralUtils.isValidHexColour(str)) {
             if (str.startsWith("&")) {
-                return str;
+                return str.toUpperCase();
             }
             else {
-                return '&' + colour;
+                return '&' + colour.toUpperCase();
             }
         }
 

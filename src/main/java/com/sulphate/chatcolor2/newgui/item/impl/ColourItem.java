@@ -29,7 +29,7 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
             permission = "chatcolor.custom." + colour.substring(1);
         }
         else if (colour.startsWith("#")) {
-            permission = "chatcolor.use-hex-codes";
+            permission = "chatcolor.color." + colour.substring(1).toLowerCase();
         }
         else if (colour.startsWith("u") || colour.startsWith("g")) {
             permission = "chatcolor.special";
@@ -77,7 +77,12 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
 
     @Override
     public void checkPermission(Player player) {
-        hasPermission = player.hasPermission(permission);
+        if (data.startsWith("#")) {
+            hasPermission = player.hasPermission(permission) || player.hasPermission("chatcolor.use-hex-codes");
+        }
+        else {
+            hasPermission = player.hasPermission(permission);
+        }
     }
 
     @Override
