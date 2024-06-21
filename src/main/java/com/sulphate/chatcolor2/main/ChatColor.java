@@ -228,8 +228,15 @@ public class ChatColor extends JavaPlugin {
             String version = config.getString("version");
             String latest = getDescription().getVersion();
 
+            if (!compareVersions(version, "1.15")) {
+                if (!backupOldConfig("gui.yml")) return false;
+                saveResource("gui.yml", true);
+
+                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: An old GUI config was found. It has been copied to &aold-gui.yml&e."));
+            }
+
             if (!compareVersions(version, "1.14")) {
-                if (!backupOldConfig()) return false;
+                if (!backupOldConfig("config.yml")) return false;
                 saveResource("config.yml", true);
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
@@ -293,9 +300,9 @@ public class ChatColor extends JavaPlugin {
     }
 
     // Backs up an old version of the config to a separate file, so it can be copied from to the new format.
-    private boolean backupOldConfig() {
-        File oldConfig = new File(getDataFolder(), "config.yml");
-        File backupFile = new File(getDataFolder(), "old-config.yml");
+    private boolean backupOldConfig(String configName) {
+        File oldConfig = new File(getDataFolder(), configName);
+        File backupFile = new File(getDataFolder(), "old-" + configName);
 
         try {
             // Create the backup file, load the old config and save it to the file.

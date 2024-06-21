@@ -172,7 +172,13 @@ public class Gui {
             }
 
             if (item instanceof PermissibleItem) {
-                ((PermissibleItem) item).checkPermission(player);
+                PermissibleItem permissible = (PermissibleItem) item;
+                permissible.checkPermission(player);
+
+                // If permissible, the no-permissions template is null, and the player has no permission, skip the item.
+                if (noPermissionItemTemplate == null && !permissible.hasPermission()) {
+                    continue;
+                }
             }
 
             items.put(slot, item);
@@ -203,8 +209,6 @@ public class Gui {
         }
     }
 
-    // Note: Creating and opening a new inventory every time is not very efficient. Should be caching an inventory and
-    // updating items where needed, ideally.
     public void open() {
         Inventory inventory = Bukkit.createInventory(owner, size, title);
 

@@ -2,6 +2,8 @@ package com.sulphate.chatcolor2.newgui;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.exception.InvalidGuiException;
+import com.sulphate.chatcolor2.exception.InvalidItemTemplateException;
+import com.sulphate.chatcolor2.exception.InvalidMaterialException;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.newgui.item.GuiItem;
@@ -78,7 +80,12 @@ public class GuiManager implements Reloadable, Listener {
             }
 
             if (configSection.contains("no-permission-item")) {
-                Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item")));
+                try {
+                    Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item")));
+                }
+                catch (InvalidItemTemplateException | InvalidMaterialException ex) {
+                    // Do nothing, a null no-permissions item is fine!
+                }
             }
 
             Gui.setSelectSound(tryGetSound(configSection, "select-sound"));
