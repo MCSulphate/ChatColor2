@@ -126,7 +126,7 @@ public class ChatListener implements Listener, Reloadable {
             }
         }
 
-        if (!player.hasPermission("chatcolor.use-hex-codes") && GeneralUtils.containsHexColour(message)) {
+        if (!player.hasPermission("chatcolor.use-hex-codes") && GeneralUtils.containsHexColour(message, true)) {
             while (GeneralUtils.isDifferentWhenColourised(message)) {
                 message = org.bukkit.ChatColor.stripColor(GeneralUtils.colourise(message));
             }

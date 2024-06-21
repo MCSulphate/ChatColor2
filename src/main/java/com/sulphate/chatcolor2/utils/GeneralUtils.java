@@ -106,11 +106,13 @@ public class GeneralUtils implements Reloadable {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static boolean containsHexColour(String message) {
-        Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
-        Matcher matcher = hexPattern.matcher(message);
-
-        return matcher.find();
+    public static boolean containsHexColour(String message, boolean strict) {
+        if (strict) {
+            return Pattern.compile("&#[a-fA-F0-9]{6}").matcher(message).find();
+        }
+        else {
+            return Pattern.compile("#[a-fA-F0-9]{6}").matcher(message).find();
+        }
     }
 
     private static String colouriseSpecial(String message, SpecialColorType type) {

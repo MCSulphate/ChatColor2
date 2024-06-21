@@ -8,6 +8,7 @@ import com.sulphate.chatcolor2.newgui.item.impl.ColourItem;
 import com.sulphate.chatcolor2.newgui.item.impl.InventoryItem;
 import com.sulphate.chatcolor2.newgui.item.impl.ModifierItem;
 import com.sulphate.chatcolor2.newgui.item.impl.SimpleGuiItem;
+import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.Bukkit;
@@ -89,6 +90,7 @@ public class Gui {
 
         Map<Integer, GuiItem> items = new HashMap<>();
         Set<String> itemKeys = section.getKeys(false);
+        boolean sendLegacyHexWarning = false;
 
         for (String itemKey : itemKeys) {
             int slot;
@@ -158,6 +160,15 @@ public class Gui {
                         throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'material' config value.", itemKey, name));
                     }
 
+                    if (CompatabilityUtils.isHexLegacy()) {
+                        String colour = GeneralUtils.isCustomColour(data) ? customColoursManager.getCustomColour(data) : data;
+
+                        if (GeneralUtils.containsHexColour(colour, false)) {
+                            sendLegacyHexWarning = true;
+                            continue;
+                        }
+                    }
+
                     ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
 
                     // Default display name is auto-generated, but allow them to override it if they want.
@@ -191,6 +202,10 @@ public class Gui {
                     items.put(i, new SimpleGuiItem(fillerItemTemplate));
                 }
             }
+        }
+
+        if (sendLegacyHexWarning) {
+            GeneralUtils.sendConsoleMessage("Warning: Hex colours found in GUI; these will only show on MC versions 1.16+!");
         }
 
         return items;

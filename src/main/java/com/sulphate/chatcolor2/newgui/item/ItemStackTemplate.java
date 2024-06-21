@@ -102,21 +102,6 @@ public class ItemStackTemplate {
         pProfile.setTextures(textures);
 
         meta.setOwnerProfile(pProfile);
-
-        /*
-         GameProfile profile = new GameProfile(UUID.randomUUID(), "");
-        profile.getProperties().put("textures", new Property("textures", headData));
-
-        try {
-            Field profileField = meta.getClass().getDeclaredField("profile");
-
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        }
-        catch (Exception ex) {
-            GeneralUtils.sendConsoleMessage("Failed to create player skull: " + ex.getMessage());
-        }*/
-
         head.setItemMeta(meta);
     }
 
