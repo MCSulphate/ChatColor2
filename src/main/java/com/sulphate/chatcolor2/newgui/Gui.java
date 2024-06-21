@@ -31,6 +31,7 @@ public class Gui {
     private static ItemStackTemplate fillerItemTemplate = new ItemStackTemplate(
             Material.GRAY_STAINED_GLASS_PANE,
             "",
+            null,
             null
     );
     private static ItemStackTemplate noPermissionItemTemplate = null;

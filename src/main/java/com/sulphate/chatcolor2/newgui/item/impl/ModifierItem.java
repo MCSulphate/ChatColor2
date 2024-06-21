@@ -29,7 +29,7 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
     public ModifierItem(String modifier, String name, PlayerData playerData) {
         // Modifiers have two underlying items - selected and unselected. This doesn't really conform to the
         // design pattern I've gone for, so I may rework this in the future. The template passed in here
-        super(modifier, new ItemStackTemplate(selectedMaterial, name, null));
+        super(modifier, new ItemStackTemplate(selectedMaterial, name, null, null));
 
         permission = "chatcolor.modifier." + modifier;
         selected = playerData.getModifiers().contains(modifier.charAt(0));
@@ -51,7 +51,7 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
             }
         }
         else {
-            ItemStackTemplate template = new ItemStackTemplate(selected ? selectedMaterial : unselectedMaterial, name, null);
+            ItemStackTemplate template = new ItemStackTemplate(selected ? selectedMaterial : unselectedMaterial, name, null, null);
             item = template.build(1);
             List<String> lore = InventoryUtils.getLore(item);
 
