@@ -137,6 +137,7 @@ public class Gui {
                 }
 
                 String data = itemSection.getString("data");
+                List<String> noPermissionLore = itemSection.getStringList("no-permission-lore");
 
                 if (type.equals(ItemType.INVENTORY)) {
                     if (!itemSection.contains("name")) {
@@ -176,10 +177,10 @@ public class Gui {
                         itemTemplate.setDisplayName(getColourName(data));
                     }
 
-                    item = new ColourItem(data, itemTemplate, playerData);
+                    item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
                 }
                 else {
-                    item = new ModifierItem(data, String.format("&%s%s", data, generalUtils.getModifierName(data)), playerData);
+                    item = new ModifierItem(data, String.format("&%s%s", data, generalUtils.getModifierName(data)), playerData, noPermissionLore);
                 }
             }
 

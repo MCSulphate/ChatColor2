@@ -23,10 +23,11 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
     private final String name;
     private final PlayerData playerData;
     private final String permission;
+    private final List<String> noPermissionLore;
     private boolean hasPermission = false;
     private boolean selected;
 
-    public ModifierItem(String modifier, String name, PlayerData playerData) {
+    public ModifierItem(String modifier, String name, PlayerData playerData, List<String> noPermissionLore) {
         // Modifiers have two underlying items - selected and unselected. This doesn't really conform to the
         // design pattern I've gone for, so I may rework this in the future. The template passed in here
         super(modifier, new ItemStackTemplate(selectedMaterial, name, null, null));
@@ -36,6 +37,7 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
 
         this.name = name;
         this.playerData = playerData;
+        this.noPermissionLore = noPermissionLore;
     }
 
     @Override
@@ -45,6 +47,10 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
         if (!hasPermission) {
             if (Gui.getNoPermissionItemTemplate() != null) {
                 item = Gui.getNoPermissionItemTemplate().build(1);
+
+                if (!noPermissionLore.isEmpty()) {
+                    InventoryUtils.setLore(item, noPermissionLore);
+                }
             }
             else {
                 return null;

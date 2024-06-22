@@ -12,7 +12,6 @@ import com.sulphate.chatcolor2.data.DatabaseConnectionSettings;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.SqlStorageImpl;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
-import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
@@ -119,6 +118,7 @@ public class ChatColor extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        guiManager.closeOpenGuis();
         playerDataStore.shutdown();
         plugin = null;
 

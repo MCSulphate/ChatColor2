@@ -19,10 +19,11 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
 
     private final PlayerData playerData;
     private final String permission;
+    private final List<String> noPermissionLore;
     private boolean hasPermission = false;
     private boolean selected;
 
-    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData) {
+    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData, List<String> noPermissionLore) {
         super(colour, itemTemplate);
 
         if (colour.startsWith("%")) {
@@ -40,6 +41,7 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
 
         selected = playerData.getColourName().equals(colour);
         this.playerData = playerData;
+        this.noPermissionLore = noPermissionLore;
     }
 
     @Override
@@ -49,6 +51,10 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
         if (!hasPermission) {
             if (Gui.getNoPermissionItemTemplate() != null) {
                 item = Gui.getNoPermissionItemTemplate().build(1);
+
+                if (!noPermissionLore.isEmpty()) {
+                    InventoryUtils.setLore(item, noPermissionLore);
+                }
             }
             else {
                 return null;

@@ -58,11 +58,15 @@ public class GuiManager implements Reloadable, Listener {
         reload();
     }
 
-    @Override
-    public void reload() {
+    public void closeOpenGuis() {
         for (Player player : openGuis.keySet()) {
             player.closeInventory();
         }
+    }
+
+    @Override
+    public void reload() {
+        closeOpenGuis();
 
         transitioningPlayers.clear();
         openGuis.clear();
