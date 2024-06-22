@@ -54,12 +54,12 @@ public class Gui {
 
     public Gui(String name, ConfigurationSection section, Player owner, PlayerData playerData, GuiManager guiManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, Messages M) {
         if (section == null) {
-            throw new InvalidGuiException(String.format("Invalid GUI %s.", name));
+            throw new InvalidGuiException(String.format(Messages.INVALID_GUI_ERROR, name));
         }
 
         for (String requiredKey : REQUIRED_GUI_KEYS) {
             if (!section.contains(requiredKey)) {
-                throw new InvalidGuiException(String.format("Missing required key %s in GUI %s.", requiredKey, name));
+                throw new InvalidGuiException(M.PREFIX + String.format(Messages.MISSING_REQUIRED_KEY, requiredKey, name));
             }
         }
 
@@ -99,21 +99,21 @@ public class Gui {
                 slot = Integer.parseInt(itemKey);
             }
             catch (NumberFormatException ex) {
-                throw new InvalidGuiException(String.format("Invalid item key %s in GUI %s, must be a number.", itemKey, name));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be a number"));
             }
 
             if (slot < 0 || slot > size - 1) {
-                throw new InvalidGuiException(String.format("Invalid item key %s in GUI %s, must be between 0 and %d.", itemKey, name, size));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be between 0 and %d" + size));
             }
 
             ConfigurationSection itemSection = section.getConfigurationSection(itemKey);
 
             if (itemSection == null) {
-                throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, should be a config section.", itemKey, name));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "should be a config section"));
             }
 
             if (!itemSection.contains("type")) {
-                throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'type' config value.", itemKey, name));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'type' config value"));
             }
 
             String typeString = itemSection.getString("type");
@@ -123,7 +123,7 @@ public class Gui {
                 type = ItemType.valueOf(typeString);
             }
             catch (IllegalArgumentException ex) {
-                throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, invalid item type %s.", itemKey, name, typeString));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "invalid item type" + typeString));
             }
 
             GuiItem item;
@@ -133,7 +133,7 @@ public class Gui {
             }
             else {
                 if (!itemSection.contains("data")) {
-                    throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'data' config value.", itemKey, name));
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'data' config value"));
                 }
 
                 String data = itemSection.getString("data");
@@ -141,24 +141,24 @@ public class Gui {
 
                 if (type.equals(ItemType.INVENTORY)) {
                     if (!itemSection.contains("name")) {
-                        throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'name' config value.", itemKey, name));
+                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'name' config value"));
                     }
 
                     if (!itemSection.contains("material")) {
-                        throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'material' config value.", itemKey, name));
+                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
                     }
 
                     ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
 
                     if (!guiManager.guiExists(data)) {
-                        throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, targeting non-existent GUI %s", itemKey, name, data));
+                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "targeting non-existent GUI " + data));
                     }
 
                     item = new InventoryItem(data, itemTemplate, owner, guiManager);
                 }
                 else if (type.equals(ItemType.COLOUR)) {
                     if (!itemSection.contains("material")) {
-                        throw new InvalidGuiException(String.format("Invalid item %s in GUI %s, missing 'material' config value.", itemKey, name));
+                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
                     }
 
                     if (CompatabilityUtils.isHexLegacy()) {
@@ -206,7 +206,7 @@ public class Gui {
         }
 
         if (sendLegacyHexWarning) {
-            GeneralUtils.sendConsoleMessage("Warning: Hex colours found in GUI; these will only show on MC versions 1.16+!");
+            GeneralUtils.sendConsoleMessage(M.PREFIX + Messages.HEX_IN_GUI_WARNING);
         }
 
         return items;
@@ -255,7 +255,7 @@ public class Gui {
                 }
                 else {
                     playSound(errorSound);
-                    owner.sendMessage(M.PREFIX + "An error occurred whilst selecting that color.");
+                    owner.sendMessage(M.PREFIX + Messages.INTERNAL_GUI_ERROR);
                 }
             }
         }
@@ -293,7 +293,9 @@ public class Gui {
 
             if (item.isSelected()) {
                 item.unselect();
+                owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, playerData.getColour()));
                 playSound(selectSound);
+
                 return false;
             }
         }

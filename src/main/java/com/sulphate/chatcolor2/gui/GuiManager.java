@@ -89,7 +89,7 @@ public class GuiManager implements Reloadable, Listener {
                     Gui.setFillerItemMaterial(Material.valueOf(materialName));
                 }
                 catch (IllegalArgumentException ex) {
-                    GeneralUtils.sendConsoleMessage(String.format("Warning: Invalid filler item material %s found, will use the default.", materialName));
+                    GeneralUtils.sendConsoleMessage(M.PREFIX + String.format(Messages.INVALID_FILLER_MATERIAL, materialName));
                 }
             }
 
@@ -131,13 +131,12 @@ public class GuiManager implements Reloadable, Listener {
                 }
             }
             catch (IllegalArgumentException ex) {
-                throw new InvalidGuiException("Invalid modifier material in GUI config, default will be used.");
+                throw new InvalidGuiException(M.PREFIX + Messages.INVALID_MODIFIER_MATERIAL);
             }
         }
         else {
-            // Warning message TODO
-            GeneralUtils.sendConsoleMessage(M.PREFIX + "Warning: No GUI config section found, default values will be used!");
-            GeneralUtils.sendConsoleMessage(M.PREFIX + "To regenerate the config, please delete gui.yml and reload the server.");
+            GeneralUtils.sendConsoleMessage(M.PREFIX + Messages.NO_GUI_CONFIG_SECTION);
+            GeneralUtils.sendConsoleMessage(M.PREFIX + Messages.REGENERATE_CONFIG_MESSAGE);
         }
 
         for (String inventoryName : keys) {
@@ -149,8 +148,7 @@ public class GuiManager implements Reloadable, Listener {
         }
 
         if (!guiConfigs.containsKey(mainConfigName)) {
-            // TODO Error message
-            GeneralUtils.sendConsoleMessage(String.format("Error: No main GUI configuration found with name %s. The GUI will not open.", mainConfigName));
+            GeneralUtils.sendConsoleMessage(M.PREFIX + String.format(Messages.MAIN_GUI_NOT_FOUND, mainConfigName));
         }
     }
 
@@ -162,7 +160,7 @@ public class GuiManager implements Reloadable, Listener {
                 return Sound.valueOf(soundName);
             }
             catch (IllegalArgumentException ex) {
-                GeneralUtils.sendConsoleMessage(M.PREFIX + String.format("Invalid sound name in GUI config: %s. Please ensure you have a valid value for your Minecraft version!", soundName));
+                GeneralUtils.sendConsoleMessage(M.PREFIX + String.format(Messages.INVALID_SOUND_NAME, soundName));
             }
         }
 
@@ -184,8 +182,7 @@ public class GuiManager implements Reloadable, Listener {
             return new Gui(name, section, player, dataStore.getPlayerData(player.getUniqueId()), this, generalUtils, customColoursManager, M);
         }
         catch (InvalidGuiException ex) {
-            // TODO: Error message
-            GeneralUtils.sendConsoleMessage("Error: " + ex.getMessage());
+            GeneralUtils.sendConsoleMessage(String.format(Messages.INVALID_GUI_ERROR_MESSAGE, ex.getMessage()));
             return null;
         }
     }
@@ -196,8 +193,7 @@ public class GuiManager implements Reloadable, Listener {
 
     public void openGui(Gui gui, Player player) {
         if (gui == null) {
-            // TODO: Error message
-            player.sendMessage("Tried to open invalid GUI.");
+            player.sendMessage(M.INVALID_GUI);
             return;
         }
 

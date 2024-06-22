@@ -137,7 +137,22 @@ public class Messages implements Reloadable {
     public String MISSING_DB_CONFIG_SECTION;
     public String DB_STILL_CONNECTING;
     public String FAILED_TO_LOAD_PLAYER_FILE;
-    
+
+    // Static plugin-side messages.
+    public static final String INVALID_GUI_ERROR = "Invalid GUI %s.";
+    public static final String MISSING_REQUIRED_KEY = "Missing required key %s in GUI %s.";
+    public static final String INVALID_ITEM_KEY = "Invalid item key %s in GUI %s: %s.";
+    public static final String INVALID_ITEM = "Invalid item %s in GUI %s, %s.";
+    public static final String HEX_IN_GUI_WARNING = "Warning: Hex colours found in GUI; these will only show on MC versions 1.16+!";
+    public static final String INTERNAL_GUI_ERROR = "A GUI error occurred when selecting that colour, please report this to an admin.";
+    public static final String INVALID_FILLER_MATERIAL = "Warning: Invalid filler item material %s found, will use the default.";
+    public static final String INVALID_MODIFIER_MATERIAL = "Invalid modifier material in GUI config, default will be used.";
+    public static final String NO_GUI_CONFIG_SECTION = "Warning: No GUI config section found, default values will be used!";
+    public static final String REGENERATE_CONFIG_MESSAGE = "To regenerate the config, please delete gui.yml and reload the server.";
+    public static final String MAIN_GUI_NOT_FOUND = "Error: No main GUI configuration found with name %s. The GUI will not open.";
+    public static final String INVALID_SOUND_NAME = "Invalid sound name in GUI config: %s. Please ensure you have a valid value for your Minecraft version!";
+    public static final String INVALID_GUI_ERROR_MESSAGE = "GUI error: %s";
+
     public void reloadMessages() {
         config = configsManager.getConfig(Config.MESSAGES);
 
