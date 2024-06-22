@@ -130,7 +130,7 @@ public class GeneralUtils implements Reloadable {
 
             if (type.equals(SpecialColorType.GRADIENT)) {
                 // Further parse the gradient colours to create the full set.
-                parsedSpecial = createGradientColour(parsedSpecial, message.length());
+                parsedSpecial = createGradientColour(parsedSpecial, message.replaceAll(" ", "").length());
             }
 
             if (message.isEmpty()) {
@@ -222,81 +222,50 @@ public class GeneralUtils implements Reloadable {
     }
 
     private static List<String> createGradientColour(List<String> colours, int gradientLength) {
-        // If the message is <= in length to the number of gradient points, just return the list.
-        if (gradientLength <= colours.size()) {
-            return colours;
+        List<String> fullList = new ArrayList<>();
+        int coloursBetween = maxRgbDistance(colours);
+        int totalColours = coloursBetween * colours.size() + (colours.size() + 2);
+
+        if (totalColours < gradientLength) {
+            // Generate twice the minimum to give a decent representation.
+            // Minimum = gradient length / number of sections between.
+            // This is likely to happen for gradients whose start and end points are close, e.g. grey -> dark grey.
+            coloursBetween = (int) Math.ceil(gradientLength / (double) (colours.size() - 1)) * 3;
         }
 
-        List<String> result = new ArrayList<>();
-
-        // Number of steps between each colour in the list.
-        int stepsBetween = Math.floorDiv(gradientLength, colours.size());
-        // The number of gradient sections.
-        int gradientSections = colours.size() - 1;
-        // The number of colours that will be created.
-        int numColsCreated = colours.size() + (stepsBetween * gradientSections);
-        // The number of colours over/under the required amount.
-        int numColsDifference = numColsCreated - gradientLength;
-
-        boolean removeMiddle = false;
-        boolean createMiddle = false;
-
-        if (numColsDifference != 0) {
-            // If there's only one lacking, add a middle colour.
-            if (numColsDifference == -1) {
-                createMiddle = true;
-            }
-            // If there's one too many, remove the middle.
-            else if (numColsDifference == 1) {
-                removeMiddle = true;
-            }
-            // If the difference is equal (positive or negative) to the gradient section count, add/remove a step.
-            else if (numColsDifference == gradientSections) { // Too many colours
-                stepsBetween -= 1;
-            }
-            else if (numColsDifference == -gradientSections) { // Too few colours
-                stepsBetween += 1;
-            }
-            // As a last-ditch effort, just increase the steps if negative or ignore if positive.
-            // This will happen for large messages, based on how many gradient sections there are.
-            else if (numColsDifference < 0) {
-                while (numColsDifference < 0) {
-                    stepsBetween += 1;
-
-                    numColsCreated = colours.size() + (stepsBetween * gradientSections);
-                    numColsDifference = numColsCreated - gradientLength;
-                }
-            }
+        for (int i = 0; i < colours.size() - 1; i++) {
+            fullList.add(colours.get(i));
+            fullList.addAll(createColoursBetween(colours.get(i), colours.get(i + 1), coloursBetween));
         }
 
-        for (int i = 1; i < colours.size(); i++) {
-            String startColour = colours.get(i - 1);
-            String endColour = colours.get(i);
+        fullList.add(colours.get(colours.size() - 1));
 
-            // Only add the start colour if it's the first time, the others get added as an end colour.
-            if (i == 1) {
-                result.add(startColour);
-            }
+        List<String> gradientColours = new ArrayList<>();
 
-            result.addAll(createColoursBetween(startColour, endColour, stepsBetween));
-            result.add(endColour);
+        gradientColours.add(colours.get(0));
+        for (int i = 1; i < gradientLength - 1; i++) {
+            double relativePosition = i / (double) (gradientLength - 1);
+            int index = (int) Math.floor(relativePosition * fullList.size());
+
+            gradientColours.add(fullList.get(index));
+        }
+        gradientColours.add(colours.get(colours.size() - 1));
+
+        return gradientColours;
+    }
+
+    private static int maxRgbDistance(List<String> colours) {
+        int max = -1;
+
+        for (int i = 0; i < colours.size() - 1; i++) {
+            max = Math.max(max, rgbDistance(new HexColour(colours.get(i)), new HexColour(colours.get(i + 1))));
         }
 
-        // Remove the middle colour.
-        if (removeMiddle) {
-            result.remove((int) Math.ceil((float) result.size() / 2));
-        }
+        return max;
+    }
 
-        // Create a new colour using the two colours in the middle, and add it.
-        if (createMiddle) {
-            String middleLeft = result.get(result.size() / 2 - 1);
-            String middleRight = result.get(result.size() / 2);
-            String middleColour = createColoursBetween(middleLeft, middleRight, 1).get(0);
-
-            result.add(result.size() / 2, middleColour);
-        }
-
-        return result;
+    private static int rgbDistance(HexColour a, HexColour b) {
+        return Math.max(b.r - a.r, Math.max(b.g - a.g, b.b - a.b));
     }
 
     private static class HexColour {
@@ -348,12 +317,17 @@ public class GeneralUtils implements Reloadable {
         HexColour end = new HexColour(endColour);
 
         // Add a step, as otherwise the last step will be equal to the end colour.
-        int rStepAmount = (end.r - start.r) / (steps + 1);
-        int gStepAmount = (end.g - start.g) / (steps + 1);
-        int bStepAmount = (end.b - start.b) / (steps + 1);
+        double rStepAmount = (end.r - start.r) / (double) (steps + 1);
+        double gStepAmount = (end.g - start.g) / (double) (steps + 1);
+        double bStepAmount = (end.b - start.b) / (double) (steps + 1);
 
         for (int i = 0; i < steps; i++) {
-            HexColour nextColour = new HexColour(start.r + rStepAmount * (i + 1), start.g + gStepAmount * (i + 1), start.b + bStepAmount * (i + 1));
+            HexColour nextColour = new HexColour(
+                    (int) Math.round((start.r + rStepAmount * (i + 1))),
+                    (int) Math.round((start.g + gStepAmount * (i + 1))),
+                    (int) Math.round((start.b + bStepAmount * (i + 1)))
+            );
+
             result.add(nextColour.toTextFormat());
         }
 
