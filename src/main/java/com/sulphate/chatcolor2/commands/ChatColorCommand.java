@@ -7,7 +7,7 @@ import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.ConfirmationsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.managers.HandlersManager;
-import com.sulphate.chatcolor2.newgui.GuiManager;
+import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

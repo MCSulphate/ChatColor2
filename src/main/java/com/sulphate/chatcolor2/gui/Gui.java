@@ -1,13 +1,13 @@
-package com.sulphate.chatcolor2.newgui;
+package com.sulphate.chatcolor2.gui;
 
 import com.sulphate.chatcolor2.data.PlayerData;
 import com.sulphate.chatcolor2.exception.InvalidGuiException;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.newgui.item.*;
-import com.sulphate.chatcolor2.newgui.item.impl.ColourItem;
-import com.sulphate.chatcolor2.newgui.item.impl.InventoryItem;
-import com.sulphate.chatcolor2.newgui.item.impl.ModifierItem;
-import com.sulphate.chatcolor2.newgui.item.impl.SimpleGuiItem;
+import com.sulphate.chatcolor2.gui.item.*;
+import com.sulphate.chatcolor2.gui.item.impl.ColourItem;
+import com.sulphate.chatcolor2.gui.item.impl.InventoryItem;
+import com.sulphate.chatcolor2.gui.item.impl.ModifierItem;
+import com.sulphate.chatcolor2.gui.item.impl.SimpleGuiItem;
 import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;

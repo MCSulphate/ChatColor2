@@ -1,7 +1,7 @@
-package com.sulphate.chatcolor2.gui;
+package com.sulphate.chatcolor2.gui.item;
 
 public enum ItemType {
-    COLOR,
+    COLOUR,
     MODIFIER,
     INVENTORY,
     FILLER

@@ -1,10 +1,10 @@
-package com.sulphate.chatcolor2.newgui.item.impl;
+package com.sulphate.chatcolor2.gui.item.impl;
 
-import com.sulphate.chatcolor2.newgui.Gui;
-import com.sulphate.chatcolor2.newgui.GuiManager;
-import com.sulphate.chatcolor2.newgui.item.ItemStackTemplate;
-import com.sulphate.chatcolor2.newgui.item.ClickableItem;
-import com.sulphate.chatcolor2.newgui.item.ComplexGuiItem;
+import com.sulphate.chatcolor2.gui.Gui;
+import com.sulphate.chatcolor2.gui.GuiManager;
+import com.sulphate.chatcolor2.gui.item.ItemStackTemplate;
+import com.sulphate.chatcolor2.gui.item.ClickableItem;
+import com.sulphate.chatcolor2.gui.item.ComplexGuiItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

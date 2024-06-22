@@ -1,10 +1,7 @@
-package com.sulphate.chatcolor2.newgui.item;
+package com.sulphate.chatcolor2.gui.item;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import com.sulphate.chatcolor2.exception.InvalidItemTemplateException;
 import com.sulphate.chatcolor2.exception.InvalidMaterialException;
-import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,7 +11,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;

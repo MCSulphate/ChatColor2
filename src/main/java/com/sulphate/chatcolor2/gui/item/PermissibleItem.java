@@ -1,4 +1,4 @@
-package com.sulphate.chatcolor2.newgui.item;
+package com.sulphate.chatcolor2.gui.item;
 
 import org.bukkit.entity.Player;
 
