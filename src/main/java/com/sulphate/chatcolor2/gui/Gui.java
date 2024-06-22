@@ -31,7 +31,7 @@ public class Gui {
 
     private static ItemStackTemplate fillerItemTemplate = new ItemStackTemplate(
             Material.GRAY_STAINED_GLASS_PANE,
-            "",
+            "&r",
             null,
             null
     );
@@ -71,16 +71,16 @@ public class Gui {
         this.owner = owner;
         this.playerData = playerData;
 
-        title = GeneralUtils.colourise(section.getString("title"));
-        size = section.getInt("size");
-        items = parseItems(section.getConfigurationSection("items"), owner, playerData);
-
         if (section.contains("fill-empty-slots")) {
             fillEmptySlots = section.getBoolean("fill-empty-slots");
         }
         else {
             fillEmptySlots = false;
         }
+
+        title = GeneralUtils.colourise(section.getString("title"));
+        size = section.getInt("size");
+        items = parseItems(section.getConfigurationSection("items"), owner, playerData);
     }
 
     private Map<Integer, GuiItem> parseItems(ConfigurationSection section, Player player, PlayerData playerData) {
@@ -329,6 +329,15 @@ public class Gui {
                 .filter(i -> i.getValue() instanceof ColourItem)
                 .filter(i -> ((SelectableItem) i.getValue()).isSelected())
                 .findFirst();
+    }
+
+    public static void setFillerItemMaterial(Material material) {
+        fillerItemTemplate = new ItemStackTemplate(
+                material,
+                "&r",
+                null,
+                null
+        );
     }
 
     public static void setSelectSound(Sound sound) {

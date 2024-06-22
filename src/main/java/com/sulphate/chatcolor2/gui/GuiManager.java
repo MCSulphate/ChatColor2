@@ -82,6 +82,17 @@ public class GuiManager implements Reloadable, Listener {
                 mainConfigName = configSection.getString("main-inventory");
             }
 
+            if (configSection.contains("filler-item-material")) {
+                String materialName = configSection.getString("filler-item-material");
+
+                try {
+                    Gui.setFillerItemMaterial(Material.valueOf(materialName));
+                }
+                catch (IllegalArgumentException ex) {
+                    GeneralUtils.sendConsoleMessage(String.format("Warning: Invalid filler item material %s found, will use the default.", materialName));
+                }
+            }
+
             if (configSection.contains("no-permission-item")) {
                 try {
                     Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item")));

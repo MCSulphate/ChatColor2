@@ -25,6 +25,8 @@ config:
   select-sound: BLOCK_AMETHYST_BLOCK_STEP
   error-sound: ENTITY_BLAZE_HURT
 
+  filler-item-material: GRAY_STAINED_GLASS_PANE
+
   no-permission-item:
     material: BARRIER
     lore:
