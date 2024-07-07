@@ -3,10 +3,14 @@
 # See here for valid materials:
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #
+# STATIC inventories have all items in a fixed position.
+# DYNAMIC inventories will group visible items together and no-permission items will not be shown.
+#
 # <inventory name>:
 #   title: [inventory title (colors supported)]
 #   size: [must be a multiple of 9]
 #   fill-empty-slots: [true/false]
+#   inventory-type: [STATIC/DYNAMIC]
 #
 #   items:
 #     <slot number>:
@@ -14,6 +18,8 @@
 #       data: [color name / modifier char / inventory name]
 #       name: [item name (colors supported)]
 #       material: [item material (colors & inventories only)]
+#       lore: [lore to display on the item, always]
+#       no-permission-lore: [lore to display when the player doesn't have permission]
 #
 #     <slot number>: ...
 #
@@ -25,7 +31,7 @@ config:
   select-sound: BLOCK_AMETHYST_BLOCK_STEP
   error-sound: ENTITY_BLAZE_HURT
 
-  filler-item-material: GRAY_STAINED_GLASS_PANE
+  filler-item-material: LIGHT_BLUE_STAINED_GLASS_PANE
 
   no-permission-item:
     material: BARRIER
@@ -45,95 +51,97 @@ config:
 
 main:
   title: '&9Color Picker GUI'
-  size: 36
+  size: 45
   fill-empty-slots: true
+  inventory-type: STATIC
 
   items:
-    0:
+    9:
       type: COLOUR
       data: 0
-      material: BLACK_STAINED_GLASS_PANE
-
-    1:
-      type: COLOUR
-      data: 1
-      material: BLUE_STAINED_GLASS_PANE
-
-    2:
-      type: COLOUR
-      data: 2
-      material: GREEN_STAINED_GLASS_PANE
-
-    3:
-      type: COLOUR
-      data: 3
-      material: CYAN_STAINED_GLASS_PANE
-
-    4:
-      type: COLOUR
-      data: 4
-      material: RED_STAINED_GLASS_PANE
-
-    5:
-      type: COLOUR
-      data: 5
-      material: PURPLE_STAINED_GLASS_PANE
-
-    6:
-      type: COLOUR
-      data: 6
-      material: ORANGE_STAINED_GLASS_PANE
-
-    7:
-      type: COLOUR
-      data: 7
-      material: LIGHT_GRAY_STAINED_GLASS_PANE
-
-    8:
-      type: COLOUR
-      data: 8
-      material: GRAY_STAINED_GLASS_PANE
+      material: BLACK_CONCRETE
 
     10:
       type: COLOUR
-      data: 9
-      material: BLUE_STAINED_GLASS_PANE
+      data: 1
+      material: BLUE_CONCRETE
 
     11:
       type: COLOUR
-      data: a
-      material: LIME_STAINED_GLASS_PANE
+      data: 2
+      material: GREEN_CONCRETE
 
     12:
       type: COLOUR
-      data: b
-      material: LIGHT_BLUE_STAINED_GLASS_PANE
+      data: 3
+      material: CYAN_CONCRETE
 
     13:
       type: COLOUR
-      data: c
-      material: PINK_STAINED_GLASS_PANE
+      data: 4
+      material: RED_CONCRETE
 
     14:
       type: COLOUR
-      data: d
-      material: MAGENTA_STAINED_GLASS_PANE
+      data: 5
+      material: PURPLE_CONCRETE
 
     15:
       type: COLOUR
-      data: e
-      material: YELLOW_STAINED_GLASS_PANE
+      data: 6
+      material: ORANGE_CONCRETE
 
     16:
       type: COLOUR
-      data: f
-      material: WHITE_STAINED_GLASS_PANE
+      data: 7
+      material: LIGHT_GRAY_CONCRETE
 
-    27:
+    17:
+      type: COLOUR
+      data: 8
+      material: GRAY_CONCRETE
+
+    19:
+      type: COLOUR
+      data: 9
+      material: BLUE_CONCRETE
+
+    20:
+      type: COLOUR
+      data: a
+      material: LIME_CONCRETE
+
+    21:
+      type: COLOUR
+      data: b
+      material: LIGHT_BLUE_CONCRETE
+
+    22:
+      type: COLOUR
+      data: c
+      material: PINK_CONCRETE
+
+    23:
+      type: COLOUR
+      data: d
+      material: MAGENTA_CONCRETE
+
+    24:
+      type: COLOUR
+      data: e
+      material: YELLOW_CONCRETE
+
+    25:
+      type: COLOUR
+      data: f
+      material: WHITE_CONCRETE
+
+    36:
       type: INVENTORY
       data: custom
       name: '&6View Custom Colors'
-      material: GOLD_BLOCK
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0='
 
     29:
       type: MODIFIER
@@ -155,90 +163,239 @@ main:
       type: MODIFIER
       data: o
 
-    35:
+    44:
       type: INVENTORY
       data: hex
       name: "&bView Hex Colors"
-      material: DIAMOND_BLOCK
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMzYWU4ZGU3ZWQwNzllMzhkMmM4MmRkNDJiNzRjZmNiZDk0YjM0ODAzNDhkYmI1ZWNkOTNkYThiODEwMTVlMyJ9fX0='
 
 hex:
   title: '&9Hex Colors'
   size: 36
+  fill-empty-slots: true
+  inventory-type: STATIC
 
   items:
     10:
       type: COLOUR
-      data: '#FFFFFF'
-      material: WHITE_STAINED_GLASS_PANE
+      name: '&#FF0000Bright Red'
+      data: '#FF0000'
+      material: RED_CONCRETE
 
     11:
       type: COLOUR
-      data: '#F2F2F2'
-      material: LIGHT_GRAY_STAINED_GLASS_PANE
+      name: '&#FFA500Orange'
+      data: '#FFA500'
+      material: ORANGE_CONCRETE
 
     12:
       type: COLOUR
-      data: '#E6E6E6'
-      material: LIGHT_GRAY_STAINED_GLASS_PANE
+      name: '&#FFFF00Yellow'
+      data: '#FFFF00'
+      material: YELLOW_CONCRETE
 
     13:
       type: COLOUR
-      data: '#D9D9D9'
-      material: LIGHT_GRAY_STAINED_GLASS_PANE
+      name: '&#008000Green'
+      data: '#008000'
+      material: LIME_CONCRETE
 
     14:
       type: COLOUR
-      data: '#BFBFBF'
-      material: GRAY_STAINED_GLASS_PANE
+      name: '&#0000FFBlue'
+      data: '#0000FF'
+      material: BLUE_CONCRETE
 
     15:
       type: COLOUR
-      data: '#A6A6A6'
-      material: GRAY_STAINED_GLASS_PANE
+      name: '&#4B0082Purple'
+      data: '#4B0082'
+      material: PURPLE_CONCRETE
 
     16:
       type: COLOUR
-      data: '#8C8C8C'
-      material: GRAY_STAINED_GLASS_PANE
+      name: '&#EE82EEViolet'
+      data: '#EE82EE'
+      material: PINK_CONCRETE
+
+    19:
+      type: COLOUR
+      name: '&#FFADADPastel Red'
+      data: '#FFADAD'
+      material: RED_CONCRETE_POWDER
+
+    20:
+      type: COLOUR
+      name: '&#FFD6A5Pastel Orange'
+      data: '#FFD6A5'
+      material: ORANGE_CONCRETE_POWDER
 
     21:
       type: COLOUR
-      data: '#666666'
-      material: BLACK_STAINED_GLASS_PANE
+      name: '&#FDFFB6Pastel Yellow'
+      data: '#FDFFB6'
+      material: YELLOW_CONCRETE_POWDER
 
     22:
       type: COLOUR
-      data: '#4D4D4D'
-      material: BLACK_STAINED_GLASS_PANE
+      name: '&#CAFFBFPastel Green'
+      data: '#CAFFBF'
+      material: LIME_CONCRETE_POWDER
 
     23:
       type: COLOUR
-      data: '#333333'
-      material: BLACK_STAINED_GLASS_PANE
+      name: '&#9BD6FFPastel Blue'
+      data: '#9BD6FF'
+      material: LIGHT_BLUE_CONCRETE_POWDER
 
-    35:
+    24:
+      type: COLOUR
+      name: '&#BDB2FFPastel Purple'
+      data: '#BDB2FF'
+      material: PURPLE_CONCRETE_POWDER
+
+    25:
+      type: COLOUR
+      name: '&#FFC6FFPastel Violet'
+      data: '#FFC6FF'
+      material: PINK_CONCRETE_POWDER
+
+    27:
       type: INVENTORY
       data: main
       name: "&bView Normal Colors"
-      material: GOLD_BLOCK
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0='
 
 custom:
   title: '&9Custom Colors'
   size: 36
+  fill-empty-slots: false
+  inventory-type: DYNAMIC
 
   items:
+    0:
+      type: FILLER
+
+    1:
+      type: FILLER
+
+    2:
+      type: FILLER
+
+    3:
+      type: FILLER
+
+    4:
+      type: FILLER
+
+    5:
+      type: FILLER
+
+    6:
+      type: FILLER
+
+    7:
+      type: FILLER
+
+    8:
+      type: FILLER
+
+    9:
+      type: FILLER
+
     12:
       type: COLOUR
       data: '%bright-rainbow'
-      material: GLASS
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg3ZmQyM2E3ODM2OWJkMzg3NWRhODg5NmYxNTBjNGFmOWYyMzM3NGUwNDhlMzA5MTM5MDBlM2ZkZDc3ODU5YSJ9fX0='
+
+    13:
+      type: COLOUR
+      data: '%pastel-rainbow'
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM1NzdkYWM0M2Y0YmQ4YmY0MGJlODczNDJlMmYxNTc2YmViYmRiZjg2ZDdjYmYzYzZiZTY1ZDQ5MjcwOTVjNSJ9fX0='
 
     14:
       type: COLOUR
       data: '%blue-rainbow'
-      material: BLUE_STAINED_GLASS
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2EzNzRlODg1MjA4MmI3MTRlOTQ4OTdhZDY2YzY2ZjAzMGU3Mjg5NDdjMDA3OWJjMTg5YjM4ZWM1ZTVjOWIwMSJ9fX0='
+
+    15:
+      type: COLOUR
+      data: '%sunset'
+      material: ORANGE_GLAZED_TERRACOTTA
+
+    16:
+      type: COLOUR
+      data: '%cherry-blossom'
+      material: CHERRY_LEAVES
+
+    17:
+      type: FILLER
+
+    18:
+      type: FILLER
+
+    19:
+      type: COLOUR
+      data: '%ice'
+      material: ICE
+
+    20:
+      type: COLOUR
+      data: '%hot'
+      material: MAGMA_BLOCK
+
+    21:
+      type: COLOUR
+      data: '%rose'
+      material: ROSE_BUSH
+
+    22:
+      type: COLOUR
+      data: '%vibrant-rainbow-gradient'
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFmZTI3YTEzYzVmYzE3NTE1Y2FlNjk1ODUyNzE2MzI2YjJiNWRmNDdkOGQ2Yjk1YTc4OWFlMzhjYWM3YjEifX19'
+
+    23:
+      type: COLOUR
+      data: '%pastel-rainbow-gradient'
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM1NzdkYWM0M2Y0YmQ4YmY0MGJlODczNDJlMmYxNTc2YmViYmRiZjg2ZDdjYmYzYzZiZTY1ZDQ5MjcwOTVjNSJ9fX0='
+
+    26:
+      type: FILLER
+
+    27:
+      type: FILLER
+
+    28:
+      type: FILLER
+
+    29:
+      type: FILLER
+
+    30:
+      type: FILLER
+
+    31:
+      type: FILLER
+
+    32:
+      type: FILLER
+
+    33:
+      type: FILLER
+
+    34:
+      type: FILLER
 
     35:
       type: INVENTORY
       data: main
       name: '&bView Normal Colors'
-      material: DIAMOND_BLOCK
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMzYWU4ZGU3ZWQwNzllMzhkMmM4MmRkNDJiNzRjZmNiZDk0YjM0ODAzNDhkYmI1ZWNkOTNkYThiODEwMTVlMyJ9fX0='

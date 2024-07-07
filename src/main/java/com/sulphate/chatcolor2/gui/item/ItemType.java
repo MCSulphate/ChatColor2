@@ -4,5 +4,13 @@ public enum ItemType {
     COLOUR,
     MODIFIER,
     INVENTORY,
-    FILLER
+    FILLER;
+
+    public static ItemType getTypeFromName(String name) {
+        if (name.equals("COLOR")) {
+            name = "COLOUR";
+        }
+
+        return valueOf(name);
+    }
 }

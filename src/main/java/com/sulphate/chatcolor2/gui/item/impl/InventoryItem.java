@@ -30,7 +30,10 @@ public class InventoryItem extends ComplexGuiItem implements ClickableItem {
         // It is necessary to create the GUI here as otherwise it will result in a stack overflow if two inventories
         // refer to each other (as opposed to when the item is created).
         Gui targetGui = guiManager.createGui(data, player);
-        guiManager.openGui(targetGui, player);
+
+        if (targetGui != null) {
+            guiManager.openGui(targetGui, player);
+        }
     }
 
 }

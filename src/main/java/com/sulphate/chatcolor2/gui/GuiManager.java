@@ -174,6 +174,7 @@ public class GuiManager implements Reloadable, Listener {
 
     public Gui createGui(String name, Player player) {
         if (!guiConfigs.containsKey(name)) {
+            player.sendMessage(M.PREFIX + M.INVALID_GUI.replace("[name]", name));
             return null;
         }
 
@@ -182,6 +183,7 @@ public class GuiManager implements Reloadable, Listener {
             return new Gui(name, section, player, dataStore.getPlayerData(player.getUniqueId()), this, generalUtils, customColoursManager, M);
         }
         catch (InvalidGuiException ex) {
+            player.sendMessage(M.PREFIX + M.GUI_ERROR.replace("[name]", name));
             GeneralUtils.sendConsoleMessage(String.format(Messages.INVALID_GUI_ERROR_MESSAGE, ex.getMessage()));
             return null;
         }
@@ -193,7 +195,6 @@ public class GuiManager implements Reloadable, Listener {
 
     public void openGui(Gui gui, Player player) {
         if (gui == null) {
-            player.sendMessage(M.INVALID_GUI);
             return;
         }
 

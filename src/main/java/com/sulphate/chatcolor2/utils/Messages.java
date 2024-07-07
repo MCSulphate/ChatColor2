@@ -95,6 +95,7 @@ public class Messages implements Reloadable {
 
     // GUI-Related Messages and Strings
     public String INVALID_GUI;
+    public String GUI_ERROR;
     public String GUI_COLOR_ALREADY_SET;
     public String GUI_UNAVAILABLE;
     public String GUI_AVAILABLE;
@@ -152,6 +153,7 @@ public class Messages implements Reloadable {
     public static final String MAIN_GUI_NOT_FOUND = "Error: No main GUI configuration found with name %s. The GUI will not open.";
     public static final String INVALID_SOUND_NAME = "Invalid sound name in GUI config: %s. Please ensure you have a valid value for your Minecraft version!";
     public static final String INVALID_GUI_ERROR_MESSAGE = "GUI error: %s";
+    public static final String DYNAMIC_INVENTORY_OVERFLOW = "Dynamic GUI %s has overflowed, skipping %d items.";
 
     public void reloadMessages() {
         config = configsManager.getConfig(Config.MESSAGES);
@@ -229,6 +231,7 @@ public class Messages implements Reloadable {
 
         // GUI-Related Messages and Strings
         INVALID_GUI = getAndColourise("invalid-gui");
+        GUI_ERROR = getAndColourise("gui-error");
         GUI_COLOR_ALREADY_SET = getAndColourise("gui-color-already-set");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");
         GUI_AVAILABLE = getAndColourise("gui-available");

@@ -49,6 +49,7 @@ public class Gui {
     private final String title;
     private final int size;
     private final boolean fillEmptySlots;
+    private final InventoryType inventoryType;
     private final Player owner;
     private final PlayerData playerData;
 
@@ -78,6 +79,17 @@ public class Gui {
             fillEmptySlots = false;
         }
 
+        InventoryType inventoryType = InventoryType.STATIC;
+
+        if (section.contains("inventory-type")) {
+            try {
+                inventoryType = InventoryType.valueOf(section.getString("inventory-type"));
+            }
+            catch (IllegalArgumentException ignored) {}
+        }
+
+        this.inventoryType = inventoryType;
+
         title = GeneralUtils.colourise(section.getString("title"));
         size = section.getInt("size");
         items = parseItems(section.getConfigurationSection("items"), owner, playerData);
@@ -90,6 +102,7 @@ public class Gui {
 
         Map<Integer, GuiItem> items = new HashMap<>();
         Set<String> itemKeys = section.getKeys(false);
+        List<GuiItem> dynamicItems = new ArrayList<>();
         boolean sendLegacyHexWarning = false;
 
         for (String itemKey : itemKeys) {
@@ -120,10 +133,10 @@ public class Gui {
             ItemType type;
 
             try {
-                type = ItemType.valueOf(typeString);
+                type = ItemType.getTypeFromName(typeString);
             }
             catch (IllegalArgumentException ex) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "invalid item type" + typeString));
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "invalid item type " + typeString));
             }
 
             GuiItem item;
@@ -189,12 +202,32 @@ public class Gui {
                 permissible.checkPermission(player);
 
                 // If permissible, the no-permissions template is null, and the player has no permission, skip the item.
-                if (noPermissionItemTemplate == null && !permissible.hasPermission()) {
+                // Or, if it's a dynamic inventory and no permission, skip it as well.
+                if ((noPermissionItemTemplate == null || inventoryType.equals(InventoryType.DYNAMIC))  && !permissible.hasPermission()) {
                     continue;
                 }
             }
 
-            items.put(slot, item);
+            if (inventoryType.equals(InventoryType.DYNAMIC) && !(item instanceof InventoryItem || item instanceof SimpleGuiItem)) {
+                dynamicItems.add(item);
+            }
+            else {
+                items.put(slot, item);
+            }
+        }
+
+        if (inventoryType.equals(InventoryType.DYNAMIC)) {
+            int itemsAdded = 0;
+
+            for (int i = 0; i < size && itemsAdded < dynamicItems.size(); i++) {
+                if (!items.containsKey(i)) {
+                    items.put(i, dynamicItems.get(itemsAdded++));
+                }
+            }
+
+            if (itemsAdded < dynamicItems.size()) {
+                GeneralUtils.sendConsoleMessage(String.format(M.PREFIX + String.format(Messages.DYNAMIC_INVENTORY_OVERFLOW, name, (dynamicItems.size() - itemsAdded))));
+            }
         }
 
         if (fillEmptySlots) {
