@@ -67,6 +67,7 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
             lore.add("");
 
             if (selected) {
+                InventoryUtils.addFakeEnchantment(item);
                 lore.add(selectedText);
             }
             else {

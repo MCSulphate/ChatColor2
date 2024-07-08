@@ -179,7 +179,7 @@ hex:
   items:
     10:
       type: COLOUR
-      name: '&#FF0000Bright Red'
+      name: '&#FF0000Red'
       data: '#FF0000'
       material: RED_CONCRETE
 
