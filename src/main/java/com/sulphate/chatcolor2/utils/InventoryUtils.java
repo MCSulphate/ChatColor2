@@ -69,7 +69,7 @@ public class InventoryUtils {
     }
 
     public static void addFakeEnchantment(ItemStack item) {
-        setEnchantments(item, Collections.singletonMap(Enchantment.DURABILITY, 1));
+        setEnchantments(item, Collections.singletonMap(Enchantment.FIRE_ASPECT, 1));
 
         ItemMeta meta = item.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

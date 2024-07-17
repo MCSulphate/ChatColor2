@@ -90,7 +90,7 @@ public class Gui {
 
         this.inventoryType = inventoryType;
 
-        title = GeneralUtils.colourise(section.getString("title"));
+        title = GeneralUtils.colourise(parsePrefixedColouredString(section.getString("title")));
         size = section.getInt("size");
         items = parseItems(section.getConfigurationSection("items"), owner, playerData);
     }
@@ -189,6 +189,9 @@ public class Gui {
                     if (itemTemplate.getDisplayName() == null) {
                         itemTemplate.setDisplayName(getColourName(data));
                     }
+                    else {
+                        itemTemplate.setDisplayName(parsePrefixedColouredString(itemTemplate.getDisplayName()));
+                    }
 
                     item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
                 }
@@ -243,6 +246,26 @@ public class Gui {
         }
 
         return items;
+    }
+
+    // This checks for custom colours at the start of a string
+    private String parsePrefixedColouredString(String prefixedString) {
+        if (!prefixedString.startsWith("%")) {
+            return prefixedString;
+        }
+
+        StringBuilder customColour = new StringBuilder("%");
+
+        for (int i = 1; i < prefixedString.length(); i++) {
+            customColour.append(prefixedString.charAt(i));
+            String value = customColour.toString();
+
+            if (customColoursManager.hasCustomColour(value)) {
+                return customColoursManager.getCustomColour(value) + prefixedString.substring(value.length());
+            }
+        }
+
+        return prefixedString;
     }
 
     private String getColourName(String colour) {

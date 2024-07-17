@@ -50,7 +50,7 @@ config:
     unselected-material: GRAY_DYE
 
 main:
-  title: '&9Color Picker GUI'
+  title: '%iceColor Picker GUI'
   size: 45
   fill-empty-slots: true
   inventory-type: STATIC
@@ -171,7 +171,7 @@ main:
       head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMzYWU4ZGU3ZWQwNzllMzhkMmM4MmRkNDJiNzRjZmNiZDk0YjM0ODAzNDhkYmI1ZWNkOTNkYThiODEwMTVlMyJ9fX0='
 
 hex:
-  title: '&9Hex Colors'
+  title: '%hotHex Colors'
   size: 36
   fill-empty-slots: true
   inventory-type: STATIC
@@ -269,7 +269,7 @@ hex:
       head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0='
 
 custom:
-  title: '&9Custom Colors'
+  title: '%vibrant-rainbow-gradientCustom Colors'
   size: 36
   fill-empty-slots: false
   inventory-type: DYNAMIC
@@ -365,6 +365,16 @@ custom:
       data: '%pastel-rainbow-gradient'
       material: PLAYER_HEAD
       head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM1NzdkYWM0M2Y0YmQ4YmY0MGJlODczNDJlMmYxNTc2YmViYmRiZjg2ZDdjYmYzYzZiZTY1ZDQ5MjcwOTVjNSJ9fX0='
+
+    24:
+      type: COLOUR
+      data: '%earth'
+      material: 'GRASS_BLOCK'
+
+    25:
+      type: COLOUR
+      data: '%magic'
+      material: 'NETHER_STAR'
 
     26:
       type: FILLER
