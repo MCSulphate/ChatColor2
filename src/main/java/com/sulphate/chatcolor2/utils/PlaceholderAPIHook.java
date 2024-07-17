@@ -124,6 +124,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return generalUtils.getModifierNames(colour, false).collect(Collectors.joining());
             }
 
+            case "modifiers_spaced": {
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
+
+                return generalUtils.getModifierNames(colour, false).collect(Collectors.joining(" "));
+            }
+
             case "modified_modifier_names": {
                 if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
