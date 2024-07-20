@@ -861,7 +861,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                                 return false;
                             }
                         }
-                        else if (!checkPermission(player, "chatcolor.color." + colour)) {
+                        else if (!checkPermission(player, "chatcolor.color." + colour.substring(1))) {
                             player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
                             return false;
                         }
