@@ -20,9 +20,6 @@ public class ConfigsManager implements Reloadable {
         this.configUtils = configUtils;
         configs = new HashMap<>();
 
-        File playersFolder = new File(ChatColor.getPlugin().getDataFolder(), "players");
-        playersFolder.mkdir();
-
         reload();
     }
 

@@ -1,7 +1,10 @@
 package com.sulphate.chatcolor2.data;
 
+import com.sulphate.chatcolor2.commands.Setting;
+import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.schedulers.AutoSaveScheduler;
+import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,6 +25,12 @@ public class YamlStorageImpl extends PlayerDataStore {
         this.configsManager = configsManager;
         this.M = M;
         saveScheduler = new AutoSaveScheduler(saveInterval);
+
+        File playersFolder = new File(ChatColor.getPlugin().getDataFolder(), "players");
+
+        if (playersFolder.mkdirs()) {
+            GeneralUtils.sendConsoleMessage(M.PREFIX + "Created player data folder.");
+        }
     }
 
     public void updateSaveInterval(int saveInterval) {
@@ -44,6 +53,11 @@ public class YamlStorageImpl extends PlayerDataStore {
             dataMap.put(uuid, PlayerData.createTemporaryData(uuid));
             callback.callback(true);
             return;
+        }
+        // New player joined! Values will be updated on chat, if applicable.
+        else if (!config.contains("color")) {
+            config.set("color", "");
+            config.set("default-code", -1);
         }
 
         dataMap.put(uuid, new PlayerData(

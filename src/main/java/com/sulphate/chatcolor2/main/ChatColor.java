@@ -12,12 +12,9 @@ import com.sulphate.chatcolor2.data.DatabaseConnectionSettings;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.SqlStorageImpl;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
-import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.listeners.*;
-import com.sulphate.chatcolor2.managers.ConfigsManager;
-import com.sulphate.chatcolor2.managers.ConfirmationsManager;
-import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.managers.HandlersManager;
+import com.sulphate.chatcolor2.managers.*;
+import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -44,8 +41,9 @@ public class ChatColor extends JavaPlugin {
     private ConfigUtils configUtils;
     private ConfigsManager configsManager;
     private CustomColoursManager customColoursManager;
+    private GroupColoursManager groupColoursManager;
     private GeneralUtils generalUtils;
-    private GUIManager guiManager;
+    private GuiManager guiManager;
     private ConfirmationsManager confirmationsManager;
     private PlayerDataStore playerDataStore;
     private Messages M;
@@ -84,7 +82,7 @@ public class ChatColor extends JavaPlugin {
         // Startup messages.
         for (String message : M.STARTUP_MESSAGES) {
             message = message.replace("[version]", getDescription().getVersion());
-            message = message.replace("[version-description]", "Increased plugin compatibility");
+            message = message.replace("[version-description]", "GUI rework & additional features!");
             console.sendMessage(M.PREFIX + GeneralUtils.colourise(message));
         }
 
@@ -95,7 +93,10 @@ public class ChatColor extends JavaPlugin {
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.
         if (manager.getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderAPIHook(this, generalUtils, customColoursManager, playerDataStore, M).register();
+            new PlaceholderAPIHook(
+                    this, generalUtils, customColoursManager, groupColoursManager, playerDataStore, M
+            ).register();
+
             console.sendMessage(M.PREFIX + M.PLACEHOLDERS_ENABLED);
         }
         else {
@@ -118,6 +119,7 @@ public class ChatColor extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        guiManager.closeOpenGuis();
         playerDataStore.shutdown();
         plugin = null;
 
@@ -140,6 +142,7 @@ public class ChatColor extends JavaPlugin {
 
         handlersManager = new HandlersManager();
         customColoursManager = new CustomColoursManager(configsManager);
+        groupColoursManager = new GroupColoursManager(configsManager);
         M = new Messages(configsManager);
 
         // Initialise player data store.
@@ -166,11 +169,12 @@ public class ChatColor extends JavaPlugin {
             playerDataStore = new YamlStorageImpl(configsManager, saveInterval, M);
         }
 
-        generalUtils = new GeneralUtils(configsManager, customColoursManager, playerDataStore, M);
-        guiManager = new GUIManager(configsManager, generalUtils, playerDataStore, M);
+        generalUtils = new GeneralUtils(configsManager, customColoursManager, playerDataStore, groupColoursManager, M);
+        guiManager = new GuiManager(configsManager, playerDataStore, generalUtils, customColoursManager, M);
         confirmationsManager = new ConfirmationsManager();
 
         reloadables.add(customColoursManager);
+        reloadables.add(groupColoursManager);
         reloadables.add(M);
         reloadables.add(generalUtils);
         reloadables.add(guiManager);
@@ -182,9 +186,14 @@ public class ChatColor extends JavaPlugin {
     }
 
     private void setupCommands() {
-        ChatColorCommand command = new ChatColorCommand(M, generalUtils, confirmationsManager, configsManager,
-                handlersManager, guiManager, customColoursManager, playerDataStore);
-        ConfirmHandler confirmHandler = new ConfirmHandler(M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils, playerDataStore);
+        ChatColorCommand command = new ChatColorCommand(
+                M, generalUtils, confirmationsManager, configsManager, handlersManager, guiManager,
+                customColoursManager, groupColoursManager, playerDataStore
+        );
+        ConfirmHandler confirmHandler = new ConfirmHandler(
+                M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils,
+                playerDataStore
+        );
 
         getCommand("chatcolor").setExecutor(command);
         reloadables.add(command);
@@ -194,7 +203,7 @@ public class ChatColor extends JavaPlugin {
 
     private void setupListeners() {
         EventPriority chatPriority = EventPriority.valueOf(config.getString("settings.event-priority"));
-        ChatListener chatListener = new ChatListener(configsManager, generalUtils, playerDataStore);
+        ChatListener chatListener = new ChatListener(configsManager, generalUtils, groupColoursManager, playerDataStore);
         EventExecutor executor = (listener, event) -> {
             if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
                 ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
@@ -204,7 +213,9 @@ public class ChatColor extends JavaPlugin {
         // Attempt to register
         manager.registerEvent(AsyncPlayerChatEvent.class, chatListener, chatPriority, executor, this);
 
-        joinListener = new PlayerJoinListener(M, configsManager, generalUtils, customColoursManager, playerDataStore);
+        joinListener = new PlayerJoinListener(
+                M, configsManager, generalUtils, customColoursManager, groupColoursManager, playerDataStore
+        );
         CustomCommandListener commandListener = new CustomCommandListener(configsManager);
 
         manager.registerEvents(joinListener, this);
@@ -227,8 +238,15 @@ public class ChatColor extends JavaPlugin {
             String version = config.getString("version");
             String latest = getDescription().getVersion();
 
+            if (!compareVersions(version, "1.15")) {
+                if (!backupOldConfig("gui.yml")) return false;
+                saveResource("gui.yml", true);
+
+                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: An old GUI config was found. It has been copied to &aold-gui.yml&e."));
+            }
+
             if (!compareVersions(version, "1.14")) {
-                if (!backupOldConfig()) return false;
+                if (!backupOldConfig("config.yml")) return false;
                 saveResource("config.yml", true);
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
@@ -292,9 +310,9 @@ public class ChatColor extends JavaPlugin {
     }
 
     // Backs up an old version of the config to a separate file, so it can be copied from to the new format.
-    private boolean backupOldConfig() {
-        File oldConfig = new File(getDataFolder(), "config.yml");
-        File backupFile = new File(getDataFolder(), "old-config.yml");
+    private boolean backupOldConfig(String configName) {
+        File oldConfig = new File(getDataFolder(), configName);
+        File backupFile = new File(getDataFolder(), "old-" + configName);
 
         try {
             // Create the backup file, load the old config and save it to the file.

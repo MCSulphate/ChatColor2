@@ -75,6 +75,10 @@ public class CustomColoursManager implements Reloadable {
         return customColoursMap.get(name);
     }
 
+    public boolean hasCustomColour(String name) {
+        return getCustomColour(name) != null;
+    }
+
     public Map<String, String> getCustomColours() {
         return customColoursMap;
     }

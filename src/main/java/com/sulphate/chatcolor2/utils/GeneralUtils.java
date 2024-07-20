@@ -4,6 +4,7 @@ import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.managers.GroupColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,6 +29,7 @@ public class GeneralUtils implements Reloadable {
 
     private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
     private final Messages M;
 
@@ -37,9 +39,13 @@ public class GeneralUtils implements Reloadable {
     private YamlConfiguration mainConfig;
     private YamlConfiguration groupsConfig;
 
-    public GeneralUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+    public GeneralUtils(
+            ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore,
+            GroupColoursManager groupColoursManager, Messages M
+    ) {
         this.configsManager = configsManager;
         this.customColoursManager = customColoursManager;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
         this.M = M;
 
@@ -106,11 +112,13 @@ public class GeneralUtils implements Reloadable {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    public static boolean containsHexColour(String message) {
-        Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
-        Matcher matcher = hexPattern.matcher(message);
-
-        return matcher.find();
+    public static boolean containsHexColour(String message, boolean strict) {
+        if (strict) {
+            return Pattern.compile("&#[a-fA-F0-9]{6}").matcher(message).find();
+        }
+        else {
+            return Pattern.compile("#[a-fA-F0-9]{6}").matcher(message).find();
+        }
     }
 
     private static String colouriseSpecial(String message, SpecialColorType type) {
@@ -128,7 +136,7 @@ public class GeneralUtils implements Reloadable {
 
             if (type.equals(SpecialColorType.GRADIENT)) {
                 // Further parse the gradient colours to create the full set.
-                parsedSpecial = createGradientColour(parsedSpecial, message.length());
+                parsedSpecial = createGradientColour(parsedSpecial, message.replaceAll(" ", "").length());
             }
 
             if (message.isEmpty()) {
@@ -220,81 +228,50 @@ public class GeneralUtils implements Reloadable {
     }
 
     private static List<String> createGradientColour(List<String> colours, int gradientLength) {
-        // If the message is <= in length to the number of gradient points, just return the list.
-        if (gradientLength <= colours.size()) {
-            return colours;
+        List<String> fullList = new ArrayList<>();
+        int coloursBetween = maxRgbDistance(colours);
+        int totalColours = coloursBetween * colours.size() + (colours.size() + 2);
+
+        if (totalColours < gradientLength) {
+            // Generate twice the minimum to give a decent representation.
+            // Minimum = gradient length / number of sections between.
+            // This is likely to happen for gradients whose start and end points are close, e.g. grey -> dark grey.
+            coloursBetween = (int) Math.ceil(gradientLength / (double) (colours.size() - 1)) * 3;
         }
 
-        List<String> result = new ArrayList<>();
-
-        // Number of steps between each colour in the list.
-        int stepsBetween = Math.floorDiv(gradientLength, colours.size());
-        // The number of gradient sections.
-        int gradientSections = colours.size() - 1;
-        // The number of colours that will be created.
-        int numColsCreated = colours.size() + (stepsBetween * gradientSections);
-        // The number of colours over/under the required amount.
-        int numColsDifference = numColsCreated - gradientLength;
-
-        boolean removeMiddle = false;
-        boolean createMiddle = false;
-
-        if (numColsDifference != 0) {
-            // If there's only one lacking, add a middle colour.
-            if (numColsDifference == -1) {
-                createMiddle = true;
-            }
-            // If there's one too many, remove the middle.
-            else if (numColsDifference == 1) {
-                removeMiddle = true;
-            }
-            // If the difference is equal (positive or negative) to the gradient section count, add/remove a step.
-            else if (numColsDifference == gradientSections) { // Too many colours
-                stepsBetween -= 1;
-            }
-            else if (numColsDifference == -gradientSections) { // Too few colours
-                stepsBetween += 1;
-            }
-            // As a last-ditch effort, just increase the steps if negative or ignore if positive.
-            // This will happen for large messages, based on how many gradient sections there are.
-            else if (numColsDifference < 0) {
-                while (numColsDifference < 0) {
-                    stepsBetween += 1;
-
-                    numColsCreated = colours.size() + (stepsBetween * gradientSections);
-                    numColsDifference = numColsCreated - gradientLength;
-                }
-            }
+        for (int i = 0; i < colours.size() - 1; i++) {
+            fullList.add(colours.get(i));
+            fullList.addAll(createColoursBetween(colours.get(i), colours.get(i + 1), coloursBetween));
         }
 
-        for (int i = 1; i < colours.size(); i++) {
-            String startColour = colours.get(i - 1);
-            String endColour = colours.get(i);
+        fullList.add(colours.get(colours.size() - 1));
 
-            // Only add the start colour if it's the first time, the others get added as an end colour.
-            if (i == 1) {
-                result.add(startColour);
-            }
+        List<String> gradientColours = new ArrayList<>();
 
-            result.addAll(createColoursBetween(startColour, endColour, stepsBetween));
-            result.add(endColour);
+        gradientColours.add(colours.get(0));
+        for (int i = 1; i < gradientLength - 1; i++) {
+            double relativePosition = i / (double) (gradientLength - 1);
+            int index = (int) Math.floor(relativePosition * fullList.size());
+
+            gradientColours.add(fullList.get(index));
+        }
+        gradientColours.add(colours.get(colours.size() - 1));
+
+        return gradientColours;
+    }
+
+    private static int maxRgbDistance(List<String> colours) {
+        int max = -1;
+
+        for (int i = 0; i < colours.size() - 1; i++) {
+            max = Math.max(max, rgbDistance(new HexColour(colours.get(i)), new HexColour(colours.get(i + 1))));
         }
 
-        // Remove the middle colour.
-        if (removeMiddle) {
-            result.remove((int) Math.ceil((float) result.size() / 2));
-        }
+        return max;
+    }
 
-        // Create a new colour using the two colours in the middle, and add it.
-        if (createMiddle) {
-            String middleLeft = result.get(result.size() / 2 - 1);
-            String middleRight = result.get(result.size() / 2);
-            String middleColour = createColoursBetween(middleLeft, middleRight, 1).get(0);
-
-            result.add(result.size() / 2, middleColour);
-        }
-
-        return result;
+    private static int rgbDistance(HexColour a, HexColour b) {
+        return Math.max(b.r - a.r, Math.max(b.g - a.g, b.b - a.b));
     }
 
     private static class HexColour {
@@ -346,12 +323,17 @@ public class GeneralUtils implements Reloadable {
         HexColour end = new HexColour(endColour);
 
         // Add a step, as otherwise the last step will be equal to the end colour.
-        int rStepAmount = (end.r - start.r) / (steps + 1);
-        int gStepAmount = (end.g - start.g) / (steps + 1);
-        int bStepAmount = (end.b - start.b) / (steps + 1);
+        double rStepAmount = (end.r - start.r) / (double) (steps + 1);
+        double gStepAmount = (end.g - start.g) / (double) (steps + 1);
+        double bStepAmount = (end.b - start.b) / (double) (steps + 1);
 
         for (int i = 0; i < steps; i++) {
-            HexColour nextColour = new HexColour(start.r + rStepAmount * (i + 1), start.g + gStepAmount * (i + 1), start.b + bStepAmount * (i + 1));
+            HexColour nextColour = new HexColour(
+                    (int) Math.round((start.r + rStepAmount * (i + 1))),
+                    (int) Math.round((start.g + gStepAmount * (i + 1))),
+                    (int) Math.round((start.b + bStepAmount * (i + 1)))
+            );
+
             result.add(nextColour.toTextFormat());
         }
 
@@ -562,86 +544,26 @@ public class GeneralUtils implements Reloadable {
         }
     }
 
-    // Adds a new group colour.
-    public void addGroupColour(String name, String colour) {
-        groupsConfig.set(name, colour);
-        configsManager.saveConfig(Config.GROUPS);
-    }
-
-    // Removes a group colour.
-    public void removeGroupColour(String name) {
-        groupsConfig.set(name, null);
-        configsManager.saveConfig(Config.GROUPS);
-    }
-
-    public String getGroupColour(Player player) {
-        return getGroupColour(player, false);
-    }
-
-    // Returns whether a group colour exists.
-    public boolean groupColourExists(String name) {
-        return getGroupColourNames().contains(name);
-    }
-
-    public Set<String> getGroupColourNames() {
-        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
-        return config.getKeys(false);
-    }
-
-    // Gets a list of group colours.
-    public HashMap<String, String> getGroupColours() {
-        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
-        HashMap<String, String> returnValue = new HashMap<>();
-
-        // Fill the HashMap with the group colours.
-        Set<String> keys = config.getKeys(false);
-        for (String key : keys) {
-            returnValue.put(key, config.getString(key));
-        }
-
-        return returnValue;
-    }
-
-    // Returns the group colour, if any, that a player has. returnName is to allow the group name placeholder to work.
-    public String getGroupColour(Player player, boolean returnName) {
-        Set<String> groupColourNames = getGroupColourNames();
-        HashMap<String, String> groupColours = getGroupColours();
-
-        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
-        // If they do, then they would have the first group colour applied to them, always.
-        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.group.*")) {
-            return null;
-        }
-
-        // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
-        for (String groupName : groupColourNames) {
-            // Not checking for OP, that would cause the first colour to always be chosen.
-            Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
-
-            if (player.hasPermission(permission)) {
-                // Allows for group name placeholder.
-                return returnName ? groupName : groupColours.get(groupName);
-            }
-        }
-
-        return null;
+    public String getModifierName(String modifier) {
+        return modifierCodeToNameMap.get(modifier);
     }
 
     // Gets the default color for a player, taking into account group color (if they are online).
     public String getDefaultColourForPlayer(UUID uuid) {
-        String colour = null;
         Player target = Bukkit.getPlayer(uuid);
 
         if (target != null) {
-            colour = getGroupColour(target);
+            String colour = groupColoursManager.getGroupColourForPlayer(target);
+
+            if (colour != null) {
+                return colour;
+            }
+            else if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
+                return mainConfig.getString("default.color");
+            }
         }
 
-        if (colour == null) {
-            return mainConfig.getString("default.color");
-        }
-        else {
-            return colour;
-        }
+        return null;
     }
 
     public void checkDefault(UUID uuid) {
@@ -668,10 +590,6 @@ public class GeneralUtils implements Reloadable {
 
     public static boolean check(Player player) {
         return player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"));
-    }
-
-    public static boolean checkPermission(Player player, String permission) {
-        return (player.isOp() || player.hasPermission(permission));
     }
 
 }

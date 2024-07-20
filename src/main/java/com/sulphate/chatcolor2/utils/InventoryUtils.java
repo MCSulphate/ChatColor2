@@ -5,15 +5,13 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InventoryUtils {
@@ -66,6 +64,15 @@ public class InventoryUtils {
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
             meta.addEnchant(entry.getKey(), entry.getValue(), true);
         }
+
+        item.setItemMeta(meta);
+    }
+
+    public static void addFakeEnchantment(ItemStack item) {
+        setEnchantments(item, Collections.singletonMap(Enchantment.FIRE_ASPECT, 1));
+
+        ItemMeta meta = item.getItemMeta();
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         item.setItemMeta(meta);
     }

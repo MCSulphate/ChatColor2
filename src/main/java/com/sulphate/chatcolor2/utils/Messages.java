@@ -70,6 +70,7 @@ public class Messages implements Reloadable {
     public String CUSTOM_COLOR_ADDED;
     public String CUSTOM_COLOR_REMOVED;
     public String COLOR_CLEARED;
+    public String RESET_WARNING;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -94,7 +95,7 @@ public class Messages implements Reloadable {
 
     // GUI-Related Messages and Strings
     public String INVALID_GUI;
-    public String GUI_COLOR_ALREADY_SET;
+    public String GUI_ERROR;
     public String GUI_UNAVAILABLE;
     public String GUI_AVAILABLE;
 
@@ -136,7 +137,23 @@ public class Messages implements Reloadable {
     public String MISSING_DB_CONFIG_SECTION;
     public String DB_STILL_CONNECTING;
     public String FAILED_TO_LOAD_PLAYER_FILE;
-    
+
+    // Static plugin-side messages.
+    public static final String INVALID_GUI_ERROR = "Invalid GUI %s.";
+    public static final String MISSING_REQUIRED_KEY = "Missing required key %s in GUI %s.";
+    public static final String INVALID_ITEM_KEY = "Invalid item key %s in GUI %s: %s.";
+    public static final String INVALID_ITEM = "Invalid item %s in GUI %s, %s.";
+    public static final String HEX_IN_GUI_WARNING = "Warning: Hex colours found in GUI; these will only show on MC versions 1.16+!";
+    public static final String INTERNAL_GUI_ERROR = "A GUI error occurred when selecting that colour, please report this to an admin.";
+    public static final String INVALID_FILLER_MATERIAL = "Warning: Invalid filler item material %s found, will use the default.";
+    public static final String INVALID_MODIFIER_MATERIAL = "Invalid modifier material in GUI config, default will be used.";
+    public static final String NO_GUI_CONFIG_SECTION = "Warning: No GUI config section found, default values will be used!";
+    public static final String REGENERATE_CONFIG_MESSAGE = "To regenerate the config, please delete gui.yml and reload the server.";
+    public static final String MAIN_GUI_NOT_FOUND = "Error: No main GUI configuration found with name %s. The GUI will not open.";
+    public static final String INVALID_SOUND_NAME = "Invalid sound name in GUI config: %s. Please ensure you have a valid value for your Minecraft version!";
+    public static final String INVALID_GUI_ERROR_MESSAGE = "GUI error: %s";
+    public static final String DYNAMIC_INVENTORY_OVERFLOW = "Dynamic GUI %s has overflowed, skipping %d items.";
+
     public void reloadMessages() {
         config = configsManager.getConfig(Config.MESSAGES);
 
@@ -188,6 +205,7 @@ public class Messages implements Reloadable {
         CUSTOM_COLOR_ADDED = getAndColourise("custom-color-added");
         CUSTOM_COLOR_REMOVED = getAndColourise("custom-color-removed");
         COLOR_CLEARED = getAndColourise("color-cleared");
+        RESET_WARNING = getAndColourise("reset-warning");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");
@@ -212,7 +230,7 @@ public class Messages implements Reloadable {
 
         // GUI-Related Messages and Strings
         INVALID_GUI = getAndColourise("invalid-gui");
-        GUI_COLOR_ALREADY_SET = getAndColourise("gui-color-already-set");
+        GUI_ERROR = getAndColourise("gui-error");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");
         GUI_AVAILABLE = getAndColourise("gui-available");
 

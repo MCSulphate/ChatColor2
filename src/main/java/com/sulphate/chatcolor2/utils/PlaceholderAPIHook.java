@@ -3,6 +3,7 @@ package com.sulphate.chatcolor2.utils;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.managers.GroupColoursManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -16,13 +17,18 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     private final ChatColor plugin;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
     private final Messages M;
 
-    public PlaceholderAPIHook(ChatColor plugin, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+    public PlaceholderAPIHook(
+            ChatColor plugin, GeneralUtils generalUtils, CustomColoursManager customColoursManager,
+            GroupColoursManager groupColoursManager, PlayerDataStore dataStore, Messages M
+    ) {
         this.plugin = plugin;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
         this.M = M;
     }
@@ -124,6 +130,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return generalUtils.getModifierNames(colour, false).collect(Collectors.joining());
             }
 
+            case "modifiers_spaced": {
+                if (isCustomColour) {
+                    colour = customColoursManager.getCustomColour(colour);
+                }
+
+                return generalUtils.getModifierNames(colour, false).collect(Collectors.joining(" "));
+            }
+
             case "modified_modifier_names": {
                 if (isCustomColour) {
                     colour = customColoursManager.getCustomColour(colour);
@@ -157,7 +171,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
 
             case "group": {
-                String groupName = generalUtils.getGroupColour(player, true);
+                String groupName = groupColoursManager.getGroupColourForPlayer(player, true);
                 return groupName == null ? "None" : groupName;
             }
 

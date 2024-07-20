@@ -14,6 +14,7 @@ public enum Setting {
     DEFAULT_COLOR_ENABLED(SettingDataType.BOOLEAN),
     COMMAND_OPENS_GUI(SettingDataType.BOOLEAN),
     IGNORE_SYMBOL_PREFIXES(SettingDataType.BOOLEAN),
+    REMOVE_INACCESSIBLE_COLORS(SettingDataType.BOOLEAN),
     RESET(SettingDataType.NONE);
 
     private final SettingDataType dataType;

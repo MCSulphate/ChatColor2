@@ -2,12 +2,9 @@ package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
-import com.sulphate.chatcolor2.gui.GUIManager;
 import com.sulphate.chatcolor2.main.ChatColor;
-import com.sulphate.chatcolor2.managers.ConfigsManager;
-import com.sulphate.chatcolor2.managers.ConfirmationsManager;
-import com.sulphate.chatcolor2.managers.CustomColoursManager;
-import com.sulphate.chatcolor2.managers.HandlersManager;
+import com.sulphate.chatcolor2.managers.*;
+import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,16 +40,18 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     private final ConfirmationsManager confirmationsManager;
     private final ConfigsManager configsManager;
     private final HandlersManager handlersManager;
-    private final GUIManager guiManager;
+    private final GuiManager guiManager;
     private final CustomColoursManager customColoursManager;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
 
     public ChatColorCommand(
             Messages M, GeneralUtils generalUtils, ConfirmationsManager confirmationsManager,
-            ConfigsManager configsManager, HandlersManager handlersManager, GUIManager guiManager,
-            CustomColoursManager customColoursManager, PlayerDataStore playerDataStore
+            ConfigsManager configsManager, HandlersManager handlersManager, GuiManager guiManager,
+            CustomColoursManager customColoursManager, GroupColoursManager groupColoursManager,
+            PlayerDataStore playerDataStore
     ) {
         this.M = M;
         this.generalUtils = generalUtils;
@@ -61,6 +60,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         this.handlersManager = handlersManager;
         this.guiManager = guiManager;
         this.customColoursManager = customColoursManager;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = playerDataStore;
 
         reload();
@@ -125,6 +125,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
                     case "reset": {
                         s.sendMessage("");
+                        s.sendMessage(M.PREFIX + M.RESET_WARNING);
                         s.sendMessage(M.PREFIX + M.CONFIRM_ARE_YOU_SURE);
                         s.sendMessage(M.PREFIX + M.CONFIRM_FINALISE);
 
@@ -166,7 +167,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                     }
 
                     case "gui": {
-                        guiManager.openGUI(s, "main");
+                        guiManager.openMainGui(s);
                         return true;
                     }
 
@@ -196,8 +197,8 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                         if (args[1].equals("list")) {
                             s.sendMessage(M.PREFIX + M.GROUP_COLOR_LIST);
 
-                            Set<String> groupColourNames = generalUtils.getGroupColourNames();
-                            Map<String, String> groupColours = generalUtils.getGroupColours();
+                            Set<String> groupColourNames = groupColoursManager.getOrderedGroupNames();
+                            Map<String, String> groupColours = groupColoursManager.getGroupColours();
 
                             for (String colourName : groupColourNames) {
                                 s.sendMessage(generalUtils.colourSetMessage(M.GROUP_COLOR_FORMAT.replace("[color-name]", colourName), groupColours.get(colourName)));
@@ -212,11 +213,11 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
                         if (action.equals("add")) {
                             String colour = args[3];
-                            generalUtils.addGroupColour(name, colour);
+                            groupColoursManager.addGroupColour(name, colour);
                             s.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.ADDED_GROUP_COLOR.replace("[color-name]", name), colour));
                         }
                         else if (action.equals("remove")) {
-                            generalUtils.removeGroupColour(name);
+                            groupColoursManager.removeGroupColour(name);
                             s.sendMessage(M.PREFIX + M.REMOVED_GROUP_COLOR.replace("[color-name]", name));
                         }
 
@@ -271,7 +272,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             else {
                 // Check if they have been set to a group colour, and if it's forced.
                 // Admins no longer bypass this check as it's no longer possible to wildcard group colour permissions.
-                if (generalUtils.getGroupColour(s) != null) {
+                if (groupColoursManager.getGroupColourForPlayer(s) != null) {
                     if (forceGroupColours) {
                         s.sendMessage(M.PREFIX + M.USING_GROUP_COLOR);
                         return true;
@@ -457,7 +458,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             }
             else {
                 // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-                String groupColour = generalUtils.getGroupColour(player);
+                String groupColour = groupColoursManager.getGroupColourForPlayer(player);
                 String colour = dataStore.getColour(uuid);
 
                 if (groupColour != null) {
@@ -606,7 +607,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 }
 
                 // Make sure it doesn't already exist.
-                if (generalUtils.groupColourExists(name)) {
+                if (groupColoursManager.groupColourExists(name)) {
                     player.sendMessage(M.PREFIX + M.GROUP_COLOR_EXISTS);
                     return false;
                 }
@@ -633,7 +634,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             else if (action.equals("remove")) {
 
                 // Make sure it exists.
-                if (!generalUtils.groupColourExists(name)) {
+                if (!groupColoursManager.groupColourExists(name)) {
                     player.sendMessage(M.PREFIX + M.GROUP_COLOR_NOT_EXISTS);
                     return false;
                 }
@@ -755,9 +756,11 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 for (int i = 1; i < args.length; i++) {
                     if (i == 1) {
                         // Check for hex colour.
-                        if (args[i].startsWith("#")) {
-                            if (!checkPermission(player, "chatcolor.use-hex-codes")) {
-                                player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                        if (args[1].startsWith("#")) {
+                            String permission = "chatcolor.color." + args[i].substring(1).toLowerCase();
+
+                            if (!checkPermission(player, permission) && !checkPermission(player, "chatcolor.use-hex-codes")) {
+                                player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[1].toUpperCase(), false)));
                                 return false;
                             }
                         }
@@ -848,15 +851,20 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
             for (int i = 0; i < args.length; i++) {
                 if (i == 0) {
-                    if (colour.startsWith("#")) {
-                        if (!checkPermission(player, "chatcolor.use-hex-codes")) {
-                            player.sendMessage(M.PREFIX + M.NO_HEX_PERMISSIONS);
+                    if (!GeneralUtils.isCustomColour(colour)) {
+                        // Gross, but it is what it is. I'll get around to rewriting this class at some point, just not today.
+                        if (colour.startsWith("&#")) {
+                            String permission = "chatcolor.color." + colour.substring(2).toLowerCase();
+
+                            if (!checkPermission(player, permission) && !checkPermission(player, "chatcolor.use-hex-codes")) {
+                                player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0].toUpperCase(), false)));
+                                return false;
+                            }
+                        }
+                        else if (!checkPermission(player, "chatcolor.color." + colour.substring(1))) {
+                            player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
                             return false;
                         }
-                    }
-                    else if (!checkPermission(player, "chatcolor.color." + args[0])) {
-                        player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
-                        return false;
                     }
 
                     continue;
@@ -1113,10 +1121,10 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         }
         else if (GeneralUtils.isValidHexColour(str)) {
             if (str.startsWith("&")) {
-                return str;
+                return str.toUpperCase();
             }
             else {
-                return '&' + colour;
+                return '&' + colour.toUpperCase();
             }
         }
 

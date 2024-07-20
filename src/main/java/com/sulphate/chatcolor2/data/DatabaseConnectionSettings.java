@@ -34,7 +34,7 @@ public class DatabaseConnectionSettings {
             String user = URLEncoder.encode(databaseUser, "UTF-8").replace("+", "%20");
             String password = URLEncoder.encode(databasePassword, "UTF-8").replace("+", "%20");
 
-            return String.format("jdbc:%s://%s:%d?user=%s&password=%s", databaseType, address, port, user, password);
+            return String.format("jdbc:%s://%s:%d?user=%s&password=%s&autoReconnect=true", databaseType, address, port, user, password);
         }
         catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
