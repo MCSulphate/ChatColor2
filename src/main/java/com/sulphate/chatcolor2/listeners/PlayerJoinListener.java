@@ -5,6 +5,7 @@ import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.managers.GroupColoursManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Reloadable;
@@ -25,15 +26,21 @@ public class PlayerJoinListener implements Listener, Reloadable {
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
     private final CustomColoursManager customColoursManager;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
 
-    public PlayerJoinListener(Messages M, ConfigsManager configsManager, GeneralUtils generalUtils, CustomColoursManager customColoursManager, PlayerDataStore dataStore) {
+    public PlayerJoinListener(
+            Messages M, ConfigsManager configsManager, GeneralUtils generalUtils,
+            CustomColoursManager customColoursManager, GroupColoursManager groupColoursManager,
+            PlayerDataStore dataStore
+    ) {
         this.M = M;
         this.configsManager = configsManager;
         this.generalUtils = generalUtils;
         this.customColoursManager = customColoursManager;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
 
         reload();
@@ -71,7 +78,7 @@ public class PlayerJoinListener implements Listener, Reloadable {
     private void sendJoinMessage(Player player) {
         if (mainConfig.getBoolean(Setting.JOIN_MESSAGE.getConfigPath())) {
             // Check if they have a group colour, and if it should be enforced (copied code from chat listener, may abstract it at some point).
-            String groupColour = generalUtils.getGroupColour(player, false);
+            String groupColour = groupColoursManager.getGroupColourForPlayer(player);
             String colour = dataStore.getColour(player.getUniqueId());
 
             if (groupColour != null) {

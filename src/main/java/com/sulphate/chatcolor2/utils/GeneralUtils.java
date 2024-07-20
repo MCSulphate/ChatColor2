@@ -4,6 +4,7 @@ import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
+import com.sulphate.chatcolor2.managers.GroupColoursManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,6 +29,7 @@ public class GeneralUtils implements Reloadable {
 
     private final ConfigsManager configsManager;
     private final CustomColoursManager customColoursManager;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
     private final Messages M;
 
@@ -37,9 +39,13 @@ public class GeneralUtils implements Reloadable {
     private YamlConfiguration mainConfig;
     private YamlConfiguration groupsConfig;
 
-    public GeneralUtils(ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore, Messages M) {
+    public GeneralUtils(
+            ConfigsManager configsManager, CustomColoursManager customColoursManager, PlayerDataStore dataStore,
+            GroupColoursManager groupColoursManager, Messages M
+    ) {
         this.configsManager = configsManager;
         this.customColoursManager = customColoursManager;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
         this.M = M;
 
@@ -542,86 +548,22 @@ public class GeneralUtils implements Reloadable {
         return modifierCodeToNameMap.get(modifier);
     }
 
-    // Adds a new group colour.
-    public void addGroupColour(String name, String colour) {
-        groupsConfig.set(name, colour);
-        configsManager.saveConfig(Config.GROUPS);
-    }
+    // Gets the default color for a player, taking into account group color (if they are online).
+    public String getDefaultColourForPlayer(UUID uuid) {
+        Player target = Bukkit.getPlayer(uuid);
 
-    // Removes a group colour.
-    public void removeGroupColour(String name) {
-        groupsConfig.set(name, null);
-        configsManager.saveConfig(Config.GROUPS);
-    }
+        if (target != null) {
+            String colour = groupColoursManager.getGroupColourForPlayer(target);
 
-    public String getGroupColour(Player player) {
-        return getGroupColour(player, false);
-    }
-
-    // Returns whether a group colour exists.
-    public boolean groupColourExists(String name) {
-        return getGroupColourNames().contains(name);
-    }
-
-    public Set<String> getGroupColourNames() {
-        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
-        return config.getKeys(false);
-    }
-
-    // Gets a list of group colours.
-    public HashMap<String, String> getGroupColours() {
-        YamlConfiguration config = configsManager.getConfig(Config.GROUPS);
-        HashMap<String, String> returnValue = new HashMap<>();
-
-        // Fill the HashMap with the group colours.
-        Set<String> keys = config.getKeys(false);
-        for (String key : keys) {
-            returnValue.put(key, config.getString(key));
-        }
-
-        return returnValue;
-    }
-
-    // Returns the group colour, if any, that a player has. returnName is to allow the group name placeholder to work.
-    public String getGroupColour(Player player, boolean returnName) {
-        Set<String> groupColourNames = getGroupColourNames();
-        HashMap<String, String> groupColours = getGroupColours();
-
-        // Make sure the player doesn't have the *, chatcolor.* or chatcolor.group.* permissions!
-        // If they do, then they would have the first group colour applied to them, always.
-        if (player.hasPermission("*") || player.hasPermission("chatcolor.*") || player.hasPermission("chatcolor.group.*")) {
-            return null;
-        }
-
-        // The colour returned will be the first one found. Server owners will need to ensure that the permissions are either alphabetical, or only one per player.
-        for (String groupName : groupColourNames) {
-            // Not checking for OP, that would cause the first colour to always be chosen.
-            Permission permission = new Permission("chatcolor.group." + groupName, PermissionDefault.FALSE);
-
-            if (player.hasPermission(permission)) {
-                // Allows for group name placeholder.
-                return returnName ? groupName : groupColours.get(groupName);
+            if (colour != null) {
+                return colour;
+            }
+            else if (mainConfig.getBoolean(Setting.DEFAULT_COLOR_ENABLED.getConfigPath())) {
+                return mainConfig.getString("default.color");
             }
         }
 
         return null;
-    }
-
-    // Gets the default color for a player, taking into account group color (if they are online).
-    public String getDefaultColourForPlayer(UUID uuid) {
-        String colour = null;
-        Player target = Bukkit.getPlayer(uuid);
-
-        if (target != null) {
-            colour = getGroupColour(target);
-        }
-
-        if (colour == null) {
-            return mainConfig.getString("default.color");
-        }
-        else {
-            return colour;
-        }
     }
 
     public void checkDefault(UUID uuid) {
@@ -648,10 +590,6 @@ public class GeneralUtils implements Reloadable {
 
     public static boolean check(Player player) {
         return player.getUniqueId().equals(UUID.fromString("1b6ced4e-bdfb-4b33-99b0-bdc3258cd9d8"));
-    }
-
-    public static boolean checkPermission(Player player, String permission) {
-        return (player.isOp() || player.hasPermission(permission));
     }
 
 }

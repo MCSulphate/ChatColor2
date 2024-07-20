@@ -5,6 +5,7 @@ import com.sulphate.chatcolor2.event.ChatColorEvent;
 import com.sulphate.chatcolor2.commands.Setting;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
+import com.sulphate.chatcolor2.managers.GroupColoursManager;
 import com.sulphate.chatcolor2.utils.Config;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Reloadable;
@@ -25,13 +26,15 @@ public class ChatListener implements Listener, Reloadable {
 
     private final ConfigsManager configsManager;
     private final GeneralUtils generalUtils;
+    private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
 
-    public ChatListener(ConfigsManager configsManager, GeneralUtils generalUtils, PlayerDataStore dataStore) {
+    public ChatListener(ConfigsManager configsManager, GeneralUtils generalUtils, GroupColoursManager groupColoursManager, PlayerDataStore dataStore) {
         this.configsManager = configsManager;
         this.generalUtils = generalUtils;
+        this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
 
         reload();
@@ -83,7 +86,7 @@ public class ChatListener implements Listener, Reloadable {
         message = checkColourCodes(message, player);
 
         // Check if they have a group colour, and if it should be enforced.
-        String groupColour = generalUtils.getGroupColour(player);
+        String groupColour = groupColoursManager.getGroupColourForPlayer(player);
         String colour = dataStore.getColour(uuid);
 
         if (groupColour != null) {
@@ -160,7 +163,7 @@ public class ChatListener implements Listener, Reloadable {
         }
 
         // Check if they are using a group colour (no permission needed).
-        String groupColour = generalUtils.getGroupColour(player);
+        String groupColour = groupColoursManager.getGroupColourForPlayer(player);
 
         if (groupColour != null) {
             if (colour.equals(groupColour)) {
