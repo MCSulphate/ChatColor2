@@ -4,7 +4,7 @@
 
   <groupId>me.sulphate</groupId>
   <artifactId>ChatColor2</artifactId>
-  <version>1.15</version>
+  <version>1.15.1</version>
   <name>ChatColor2</name>
 
   <properties>
