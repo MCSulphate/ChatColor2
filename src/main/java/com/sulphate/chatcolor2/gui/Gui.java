@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.gui;
 
 import com.sulphate.chatcolor2.data.PlayerData;
 import com.sulphate.chatcolor2.exception.InvalidGuiException;
+import com.sulphate.chatcolor2.exception.InvalidMaterialException;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.gui.item.*;
 import com.sulphate.chatcolor2.gui.item.impl.ColourItem;
@@ -95,6 +96,20 @@ public class Gui {
         items = parseItems(section.getConfigurationSection("items"), owner, playerData);
     }
 
+    private static class ParseResult {
+
+        final GuiItem item;
+        final int slot;
+        final boolean shouldPrintHexWarning;
+
+        ParseResult(GuiItem item, int slot, boolean shouldPrintHexWarning) {
+            this.item = item;
+            this.slot = slot;
+            this.shouldPrintHexWarning = shouldPrintHexWarning;
+        }
+
+    }
+
     private Map<Integer, GuiItem> parseItems(ConfigurationSection section, Player player, PlayerData playerData) {
         if (section == null) {
             return new HashMap<>();
@@ -106,98 +121,21 @@ public class Gui {
         boolean sendLegacyHexWarning = false;
 
         for (String itemKey : itemKeys) {
-            int slot;
+            ParseResult result;
 
             try {
-                slot = Integer.parseInt(itemKey);
+                result = parseSingleItem(itemKey, section);
             }
-            catch (NumberFormatException ex) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be a number"));
-            }
-
-            if (slot < 0 || slot > size - 1) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be between 0 and %d" + size));
+            catch (InvalidMaterialException | InvalidGuiException ex) {
+                GeneralUtils.sendConsoleMessage(M.PREFIX + String.format(Messages.INVALID_GUI_ITEM, ex.getMessage()));
+                continue;
             }
 
-            ConfigurationSection itemSection = section.getConfigurationSection(itemKey);
+            sendLegacyHexWarning = result.shouldPrintHexWarning;
+            GuiItem item = result.item;
 
-            if (itemSection == null) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "should be a config section"));
-            }
-
-            if (!itemSection.contains("type")) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'type' config value"));
-            }
-
-            String typeString = itemSection.getString("type");
-            ItemType type;
-
-            try {
-                type = ItemType.getTypeFromName(typeString);
-            }
-            catch (IllegalArgumentException ex) {
-                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "invalid item type " + typeString));
-            }
-
-            GuiItem item;
-
-            if (type.equals(ItemType.FILLER)) {
-                item = new SimpleGuiItem(fillerItemTemplate);
-            }
-            else {
-                if (!itemSection.contains("data")) {
-                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'data' config value"));
-                }
-
-                String data = itemSection.getString("data");
-                List<String> noPermissionLore = itemSection.getStringList("no-permission-lore");
-
-                if (type.equals(ItemType.INVENTORY)) {
-                    if (!itemSection.contains("name")) {
-                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'name' config value"));
-                    }
-
-                    if (!itemSection.contains("material")) {
-                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
-                    }
-
-                    ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
-
-                    if (!guiManager.guiExists(data)) {
-                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "targeting non-existent GUI " + data));
-                    }
-
-                    item = new InventoryItem(data, itemTemplate, owner, guiManager);
-                }
-                else if (type.equals(ItemType.COLOUR)) {
-                    if (!itemSection.contains("material")) {
-                        throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
-                    }
-
-                    if (CompatabilityUtils.isHexLegacy()) {
-                        String colour = GeneralUtils.isCustomColour(data) ? customColoursManager.getCustomColour(data) : data;
-
-                        if (GeneralUtils.containsHexColour(colour, false)) {
-                            sendLegacyHexWarning = true;
-                            continue;
-                        }
-                    }
-
-                    ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
-
-                    // Default display name is auto-generated, but allow them to override it if they want.
-                    if (itemTemplate.getDisplayName() == null) {
-                        itemTemplate.setDisplayName(getColourName(data));
-                    }
-                    else {
-                        itemTemplate.setDisplayName(parsePrefixedColouredString(itemTemplate.getDisplayName()));
-                    }
-
-                    item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
-                }
-                else {
-                    item = new ModifierItem(data, String.format("&%s%s", data, generalUtils.getModifierName(data)), playerData, noPermissionLore);
-                }
+            if (item == null) {
+                continue;
             }
 
             if (item instanceof PermissibleItem) {
@@ -215,7 +153,7 @@ public class Gui {
                 dynamicItems.add(item);
             }
             else {
-                items.put(slot, item);
+                items.put(result.slot, item);
             }
         }
 
@@ -246,6 +184,112 @@ public class Gui {
         }
 
         return items;
+    }
+
+    private ParseResult parseSingleItem(String itemKey, ConfigurationSection section) {
+        int slot;
+
+        try {
+            slot = Integer.parseInt(itemKey);
+        }
+        catch (NumberFormatException ex) {
+            throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be a number"));
+        }
+
+        if (slot < 0 || slot > size - 1) {
+            throw new InvalidGuiException(String.format(Messages.INVALID_ITEM_KEY, itemKey, name, "must be between 0 and %d" + size));
+        }
+
+        ConfigurationSection itemSection = section.getConfigurationSection(itemKey);
+
+        if (itemSection == null) {
+            throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "should be a config section"));
+        }
+
+        if (!itemSection.contains("type")) {
+            throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'type' config value"));
+        }
+
+        String typeString = itemSection.getString("type");
+        ItemType type;
+
+        try {
+            type = ItemType.getTypeFromName(typeString);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "invalid item type " + typeString));
+        }
+
+        GuiItem item;
+
+        if (type.equals(ItemType.FILLER)) {
+            item = new SimpleGuiItem(fillerItemTemplate);
+        }
+        else {
+            if (!itemSection.contains("data")) {
+                throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'data' config value"));
+            }
+
+            String data = itemSection.getString("data");
+            List<String> noPermissionLore = itemSection.getStringList("no-permission-lore");
+
+            if (type.equals(ItemType.INVENTORY)) {
+                if (!itemSection.contains("name")) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'name' config value"));
+                }
+
+                if (!itemSection.contains("material")) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
+                }
+
+                ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
+
+                if (!guiManager.guiExists(data)) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "targeting non-existent GUI " + data));
+                }
+
+                item = new InventoryItem(data, itemTemplate, owner, guiManager);
+            }
+            else if (type.equals(ItemType.COLOUR)) {
+                if (!itemSection.contains("material")) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
+                }
+
+                if (GeneralUtils.isCustomColour(data)) {
+                    String colour = customColoursManager.getCustomColour(data);
+
+                    if (colour == null) {
+                        GeneralUtils.sendConsoleMessage(M.PREFIX + String.format(Messages.INVALID_CUSTOM_COLOUR, name, data));
+                        return new ParseResult(null, -1, false);
+                    }
+                }
+
+                if (CompatabilityUtils.isHexLegacy()) {
+                    String colour = GeneralUtils.isCustomColour(data) ? customColoursManager.getCustomColour(data) : data;
+
+                    if (GeneralUtils.containsHexColour(colour, false)) {
+                        return new ParseResult(null, -1, true);
+                    }
+                }
+
+                ItemStackTemplate itemTemplate = ItemStackTemplate.fromConfigSection(itemSection);
+
+                // Default display name is auto-generated, but allow them to override it if they want.
+                if (itemTemplate.getDisplayName() == null) {
+                    itemTemplate.setDisplayName(getColourName(data));
+                }
+                else {
+                    itemTemplate.setDisplayName(parsePrefixedColouredString(itemTemplate.getDisplayName()));
+                }
+
+                item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
+            }
+            else {
+                item = new ModifierItem(data, String.format("&f&%s%s", data, generalUtils.getModifierName(data)), playerData, noPermissionLore);
+            }
+        }
+
+        return new ParseResult(item, slot, false);
     }
 
     // This checks for custom colours at the start of a string
@@ -306,8 +350,14 @@ public class Gui {
 
             if (doPreSelectChecks(selectable, slot, inventory)) {
                 if (selectable.select()) {
+                    String colour = playerData.getColour();
+
+                    if (selectable instanceof ColourItem) {
+                        colour = ((ColourItem) selectable).buildItem().getItemMeta().getDisplayName();
+                    }
+
                     playSound(selectSound);
-                    owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, playerData.getColour()));
+                    owner.sendMessage(M.PREFIX + generalUtils.colourSetMessage(M.SET_OWN_COLOR, colour, true));
                 }
                 else {
                     playSound(errorSound);

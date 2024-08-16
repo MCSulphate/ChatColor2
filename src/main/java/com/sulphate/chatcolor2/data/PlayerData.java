@@ -16,7 +16,7 @@ public class PlayerData {
         this.uuid = uuid;
         this.defaultCode = defaultCode;
 
-        this.colour = colour == null ? null : getColourName(colour);
+        this.colour = colour == null ? "" : getColourName(colour);
         modifiers = colour == null ? new HashSet<>() : getModifiers(colour);
     }
 
@@ -29,7 +29,7 @@ public class PlayerData {
     }
 
     private static Set<Character> getModifiers(String colour) {
-        if (colour.isEmpty()) {
+        if (colour == null || colour.isEmpty()) {
             return new HashSet<>();
         }
 
@@ -49,6 +49,10 @@ public class PlayerData {
     }
 
     private static String getColourName(String colour) {
+        if (colour == null) {
+            return "";
+        }
+
         if (colour.startsWith("%") || colour.isEmpty()) {
             return colour;
         }

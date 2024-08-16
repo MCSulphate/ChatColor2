@@ -76,11 +76,9 @@ public class ChatListener implements Listener, Reloadable {
             String colour = dataStore.getColour(uuid);
             String colourName = dataStore.getPlayerData(uuid).getColourName();
 
-            if (hasDefaultOrGroupColour(player, colour)) {
-                return;
+            if (!hasDefaultOrGroupColour(player, colour)) {
+                removeInaccessibleColour(player, colourName);
             }
-
-            removeInaccessibleColour(player, colourName);
         }
 
         message = checkColourCodes(message, player);

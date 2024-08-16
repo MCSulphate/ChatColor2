@@ -465,11 +465,20 @@ public class GeneralUtils implements Reloadable {
         return builder.toString().toCharArray();
     }
 
+    public String colourSetMessage(String originalMessage, String colour) {
+        return colourSetMessage(originalMessage, colour, false);
+    }
+
     // Replaces a set-colour-message including if rainbow is in the colour.
     // This is a clever (if I say so myself) workaround for removing M.THIS, to keep the intended behaviour (using substrings).
-    public String colourSetMessage(String originalMessage, String colour) {
+    public String colourSetMessage(String originalMessage, String colour, boolean isColourName) {
         if (originalMessage.contains("[color-name]")) {
-            return originalMessage.replace("[color-name]", colouriseMessage(colour, getColorName(colour, true), false));
+            if (isColourName) {
+                return originalMessage.replace("[color-name]", colour);
+            }
+            else {
+                return originalMessage.replace("[color-name]", colouriseMessage(colour, getColorName(colour, true), false));
+            }
         }
 
         // If there is no colour placeholder present, we don't need to do anything.
@@ -507,6 +516,10 @@ public class GeneralUtils implements Reloadable {
     }
 
     public String getColorName(String colour, boolean fullName) {
+        if (colour == null || colour.isEmpty()) {
+            return "";
+        }
+
         if (colour.startsWith("%")) {
             return colour;
         }
@@ -563,7 +576,7 @@ public class GeneralUtils implements Reloadable {
             }
         }
 
-        return null;
+        return "";
     }
 
     public void checkDefault(UUID uuid) {
