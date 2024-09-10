@@ -32,6 +32,8 @@ public class GuiManager implements Reloadable, Listener {
 
     private static final String GUI_CONFIG_KEY = "config";
 
+    private static boolean shouldCopyNoPermissionItemMaterial;
+
     private final ConfigsManager configsManager;
     private final PlayerDataStore dataStore;
     private final GeneralUtils generalUtils;
@@ -54,8 +56,13 @@ public class GuiManager implements Reloadable, Listener {
         guiConfigs = new HashMap<>();
         openGuis = new HashMap<>();
         transitioningPlayers = new ArrayList<>();
+        shouldCopyNoPermissionItemMaterial = false;
 
         reload();
+    }
+
+    public static boolean shouldCopyNoPermissionItemMaterial() {
+        return shouldCopyNoPermissionItemMaterial;
     }
 
     public void closeOpenGuis() {
@@ -94,8 +101,22 @@ public class GuiManager implements Reloadable, Listener {
             }
 
             if (configSection.contains("no-permission-item")) {
+                ConfigurationSection noPermissionSection = configSection.getConfigurationSection("no-permission-item");
+
+                if (noPermissionSection == null) {
+                    throw new InvalidGuiException("no-permission-item section is missing from the config.");
+                }
+
+                String material = noPermissionSection.getString("material");
+
+                if (material != null && material.equals("COPY")) {
+                    shouldCopyNoPermissionItemMaterial = true;
+                    // Setting the default material so that it has something to work with.
+                    noPermissionSection.set("material", Material.BARRIER);
+                }
+
                 try {
-                    Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(configSection.getConfigurationSection("no-permission-item")));
+                    Gui.setNoPermissionItemTemplate(ItemStackTemplate.fromConfigSection(noPermissionSection));
                 }
                 catch (InvalidItemTemplateException | InvalidMaterialException ex) {
                     // Do nothing, a null no-permissions item is fine!

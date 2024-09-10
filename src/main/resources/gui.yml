@@ -34,6 +34,7 @@ config:
   filler-item-material: LIGHT_BLUE_STAINED_GLASS_PANE
 
   no-permission-item:
+    # Set to COPY to keep the original item
     material: BARRIER
     lore:
       - ''

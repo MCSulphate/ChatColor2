@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.gui.item.impl;
 
 import com.sulphate.chatcolor2.data.PlayerData;
 import com.sulphate.chatcolor2.gui.Gui;
+import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.gui.item.ItemStackTemplate;
 import com.sulphate.chatcolor2.gui.item.ComplexGuiItem;
 import com.sulphate.chatcolor2.gui.item.PermissibleItem;
@@ -47,6 +48,13 @@ public class ModifierItem extends ComplexGuiItem implements PermissibleItem, Sel
         if (!hasPermission) {
             if (Gui.getNoPermissionItemTemplate() != null) {
                 item = Gui.getNoPermissionItemTemplate().build(1);
+
+                if (GuiManager.shouldCopyNoPermissionItemMaterial()) {
+                    List<String> lore = InventoryUtils.getLore(item);
+
+                    item = itemTemplate.build(1);
+                    InventoryUtils.setLore(item, lore);
+                }
 
                 if (!noPermissionLore.isEmpty()) {
                     InventoryUtils.setLore(item, noPermissionLore);
