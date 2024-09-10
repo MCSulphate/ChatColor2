@@ -342,6 +342,10 @@ public class GeneralUtils implements Reloadable {
 
     // Returns whether a String is different when colourised.
     public static boolean isDifferentWhenColourised(String toColourise) {
+        if (toColourise.contains("§")) {
+            return true;
+        }
+
         String colourised = colourise(toColourise);
         return !toColourise.equals(colourised);
     }

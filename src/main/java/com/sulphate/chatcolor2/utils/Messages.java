@@ -155,6 +155,7 @@ public class Messages implements Reloadable {
     public static final String DYNAMIC_INVENTORY_OVERFLOW = "Dynamic GUI %s has overflowed, skipping %d items.";
     public static final String INVALID_CUSTOM_COLOUR = "Invalid custom colour item in GUI %s: %s, skipping.";
     public static final String INVALID_GUI_ITEM = "Invalid GUI item: %s";
+    public static final String PLAYER_HEADS_NOT_SUPPORTED = "Player heads are not available on this version of Minecraft. Please remove all player heads from the GUI.";
 
     public void reloadMessages() {
         config = configsManager.getConfig(Config.MESSAGES);

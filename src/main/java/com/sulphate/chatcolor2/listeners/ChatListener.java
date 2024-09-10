@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -125,7 +124,16 @@ public class ChatListener implements Listener, Reloadable {
             }
         }
         else {
-            if (fireEvent(player, message, colour, event)) {
+            boolean eventSucceeded;
+
+            try {
+                eventSucceeded = fireEvent(player, message, colour, event);
+            }
+            catch (Exception ex) {
+                eventSucceeded = false;
+            }
+
+            if (eventSucceeded) {
                 event.setMessage(generalUtils.colouriseMessage(colour, message, false));
             }
         }

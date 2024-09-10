@@ -12,12 +12,14 @@ import com.sulphate.chatcolor2.data.DatabaseConnectionSettings;
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.SqlStorageImpl;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
+import com.sulphate.chatcolor2.gui.item.ItemStackTemplate;
 import com.sulphate.chatcolor2.listeners.*;
 import com.sulphate.chatcolor2.managers.*;
 import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,6 +35,8 @@ import com.sulphate.chatcolor2.schedulers.ConfirmScheduler;
 import com.sulphate.chatcolor2.commands.ConfirmHandler;
 
 public class ChatColor extends JavaPlugin {
+
+    private static final String EXAMPLE_HEAD_DATA = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMzYWU4ZGU3ZWQwNzllMzhkMmM4MmRkNDJiNzRjZmNiZDk0YjM0ODAzNDhkYmI1ZWNkOTNkYThiODEwMTVlMyJ9fX0=";
 
     private static ChatColor plugin;
     private static List<Reloadable> reloadables;
@@ -89,6 +93,14 @@ public class ChatColor extends JavaPlugin {
         // Show legacy notice if necessary.
         if (CompatabilityUtils.isHexLegacy()) {
             console.sendMessage(M.PREFIX + M.LEGACY_DETECTED);
+        }
+
+        // Check for player head compatibility
+        ItemStackTemplate head = new ItemStackTemplate(Material.PLAYER_HEAD, null, null, EXAMPLE_HEAD_DATA);
+        head.build(1);
+
+        if (head.failedToApplyHeadData()) {
+            console.sendMessage(M.PREFIX + Messages.PLAYER_HEADS_NOT_SUPPORTED);
         }
 
         // Check whether PlaceholderAPI is installed, if it is load the expansion.

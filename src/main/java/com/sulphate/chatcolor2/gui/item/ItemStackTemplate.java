@@ -24,12 +24,15 @@ public class ItemStackTemplate {
     private String displayName;
     private final List<String> lore;
     private final String headData;
+    private boolean failedToApplyHeadData;
 
     public ItemStackTemplate(Material material, String displayName, List<String> lore, String headData) {
         this.material = material;
         this.displayName = displayName;
         this.lore = lore;
         this.headData = headData;
+
+        failedToApplyHeadData = false;
     }
 
     public static ItemStackTemplate fromConfigSection(ConfigurationSection section) {
@@ -88,17 +91,26 @@ public class ItemStackTemplate {
     }
 
     private void applyHeadData(ItemStack head) {
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        try {
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
 
-        PlayerProfile pProfile = Bukkit.createPlayerProfile(UUID.randomUUID());
-        URL textureUrl = getUrlFromHeadData();
-        PlayerTextures textures = pProfile.getTextures();
+            PlayerProfile pProfile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            URL textureUrl = getUrlFromHeadData();
+            PlayerTextures textures = pProfile.getTextures();
 
-        textures.setSkin(textureUrl);
-        pProfile.setTextures(textures);
+            textures.setSkin(textureUrl);
+            pProfile.setTextures(textures);
 
-        meta.setOwnerProfile(pProfile);
-        head.setItemMeta(meta);
+            meta.setOwnerProfile(pProfile);
+            head.setItemMeta(meta);
+        }
+        catch (Exception ex) {
+            failedToApplyHeadData = true;
+        }
+    }
+
+    public boolean failedToApplyHeadData() {
+        return failedToApplyHeadData;
     }
 
     private URL getUrlFromHeadData() {
