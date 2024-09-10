@@ -446,6 +446,14 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         return (player.isOp() || player.hasPermission(permission));
     }
 
+    private boolean checkColourPermission(Player player, char colour) {
+        return player.hasPermission("chatcolor.color." + colour) || player.hasPermission("chatcolor.color." + StaticMaps.getColourName("" + colour));
+    }
+
+    private boolean checkModifierPermission(Player player, char modifier) {
+        return player.hasPermission("chatcolor.modifier." + modifier) || player.hasPermission("chatcolor.modifier." + StaticMaps.getModifierName("" + modifier));
+    }
+
     // Checks the command given, including any permissions / invalid commands.
     private boolean checkCommand(String[] args, Player player) {
         UUID uuid = player.getUniqueId();
@@ -559,6 +567,9 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             if (modifier == null) {
                 player.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", modifierToCheck));
                 return false;
+            }
+            else if (!checkModifierPermission(player, modifier.charAt(1))) {
+                player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", generalUtils.getModifierName(modifier)));
             }
 
             // Check if it's in their colour or not.
@@ -764,7 +775,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                                 return false;
                             }
                         }
-                        else if (!checkPermission(player, "chatcolor.color." + args[i])) {
+                        else if (!checkColourPermission(player, colour.charAt(1))) {
                             player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[1], false)));
                             return false;
                         }
@@ -772,13 +783,15 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                         continue;
                     }
 
-                    if (getModifier(args[i]) == null) {
+                    String modifier = getModifier(args[i]);
+
+                    if (modifier == null) {
                         player.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
                         return false;
                     }
 
-                    if (!player.isOp() && !player.hasPermission("chatcolor.modifier." + args[i])) {
-                        player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", args[i]));
+                    if (!player.isOp() && !checkModifierPermission(player, modifier.charAt(1))) {
+                        player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", generalUtils.getModifierName(args[i])));
                         return false;
                     }
                 }
@@ -861,7 +874,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                                 return false;
                             }
                         }
-                        else if (!checkPermission(player, "chatcolor.color." + colour.substring(1))) {
+                        else if (!checkColourPermission(player, colour.charAt(1))) {
                             player.sendMessage(M.PREFIX + M.NO_COLOR_PERMS.replace("[color]", generalUtils.colouriseMessage(colour, args[0], false)));
                             return false;
                         }
@@ -870,14 +883,15 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                     continue;
                 }
 
-                String mod = getModifier(args[i]);
-                if (mod == null) {
+                String modifier = getModifier(args[i]);
+
+                if (modifier == null) {
                     player.sendMessage(M.PREFIX + M.INVALID_MODIFIER.replace("[modifier]", args[i]));
                     return false;
                 }
 
-                if (!checkPermission(player, "chatcolor.modifier." + args[i])) {
-                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", GeneralUtils.colourise(mod + args[i])));
+                if (!checkModifierPermission(player, modifier.charAt(1))) {
+                    player.sendMessage(M.PREFIX + M.NO_MOD_PERMS.replace("[modifier]", generalUtils.getModifierName(args[i])));
                     return false;
                 }
             }
