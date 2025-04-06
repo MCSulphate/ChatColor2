@@ -12,21 +12,21 @@ public class StaticMaps {
         STATIC_COLOUR_NAMES_MAP = new HashMap<>();
 
         STATIC_COLOUR_NAMES_MAP.put("0", "black");
-        STATIC_COLOUR_NAMES_MAP.put("1", "");
-        STATIC_COLOUR_NAMES_MAP.put("2", "");
-        STATIC_COLOUR_NAMES_MAP.put("3", "");
-        STATIC_COLOUR_NAMES_MAP.put("4", "");
-        STATIC_COLOUR_NAMES_MAP.put("5", "");
-        STATIC_COLOUR_NAMES_MAP.put("6", "");
-        STATIC_COLOUR_NAMES_MAP.put("7", "");
-        STATIC_COLOUR_NAMES_MAP.put("8", "");
-        STATIC_COLOUR_NAMES_MAP.put("9", "");
-        STATIC_COLOUR_NAMES_MAP.put("a", "");
-        STATIC_COLOUR_NAMES_MAP.put("b", "");
-        STATIC_COLOUR_NAMES_MAP.put("c", "");
-        STATIC_COLOUR_NAMES_MAP.put("d", "");
-        STATIC_COLOUR_NAMES_MAP.put("e", "");
-        STATIC_COLOUR_NAMES_MAP.put("f", "");
+        STATIC_COLOUR_NAMES_MAP.put("1", "dark.blue");
+        STATIC_COLOUR_NAMES_MAP.put("2", "dark.green");
+        STATIC_COLOUR_NAMES_MAP.put("3", "dark.aqua");
+        STATIC_COLOUR_NAMES_MAP.put("4", "dark.red");
+        STATIC_COLOUR_NAMES_MAP.put("5", "dark.purple");
+        STATIC_COLOUR_NAMES_MAP.put("6", "gold");
+        STATIC_COLOUR_NAMES_MAP.put("7", "gray");
+        STATIC_COLOUR_NAMES_MAP.put("8", "dark.gray");
+        STATIC_COLOUR_NAMES_MAP.put("9", "blue");
+        STATIC_COLOUR_NAMES_MAP.put("a", "green");
+        STATIC_COLOUR_NAMES_MAP.put("b", "aqua");
+        STATIC_COLOUR_NAMES_MAP.put("c", "red");
+        STATIC_COLOUR_NAMES_MAP.put("d", "light.purple");
+        STATIC_COLOUR_NAMES_MAP.put("e", "yellow");
+        STATIC_COLOUR_NAMES_MAP.put("f", "white");
 
         STATIC_MODIFIER_NAMES_MAP = new HashMap<>();
 

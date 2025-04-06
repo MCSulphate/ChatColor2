@@ -935,9 +935,9 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
         player.sendMessage("");
         player.sendMessage(GeneralUtils.colourise("&eAlternatively:"));
-        player.sendMessage(GeneralUtils.colourise("&0black, &1dark.blue, &2green, &3dark.aqua,"));
-        player.sendMessage(GeneralUtils.colourise("&4red, &5purple, &6gold, &7grey, &8dark.grey, &9blue"));
-        player.sendMessage(GeneralUtils.colourise("&alight.green, &baqua, &clight.red, &dmagenta, &eyellow, &fwhite"));
+        player.sendMessage(GeneralUtils.colourise("&0black, &1dark.blue, &2dark.green, &3dark.aqua,"));
+        player.sendMessage(GeneralUtils.colourise("&4dark.red, &5dark.purple, &6gold, &7grey, &8dark.grey, &9blue"));
+        player.sendMessage(GeneralUtils.colourise("&agreen, &baqua, &cred, &dlight.purple, &eyellow, &fwhite"));
 
         player.sendMessage("");
         player.sendMessage(GeneralUtils.colourise("&eValid modifiers:"));
@@ -1142,7 +1142,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             }
         }
 
-        List<String> words = Arrays.asList("black", "dark.blue", "green", "dark.aqua", "red", "purple", "gold", "gray", "dark.gray", "blue", "light.green", "aqua", "light.red", "magenta", "yellow", "white");
+        List<String> words = Arrays.asList("black", "dark.blue", "dark.green", "dark.aqua", "dark.red", "dark.purple", "gold", "gray", "dark.gray", "blue", "green", "aqua", "red", "light.purple", "yellow", "white");
 
         if (words.contains(colour)) {
             int wordIndex = words.indexOf(colour);

@@ -285,7 +285,11 @@ public class Gui {
                 item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
             }
             else {
-                item = new ModifierItem(data, String.format("&f&%s%s", data, generalUtils.getModifierName(data)), playerData, noPermissionLore);
+                String name = itemSection.contains("name") ?
+                        itemSection.getString("name") :
+                        String.format("&f&%s%s", data, generalUtils.getModifierName(data));
+
+                item = new ModifierItem(data, name, playerData, noPermissionLore);
             }
         }
 

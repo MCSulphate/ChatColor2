@@ -104,7 +104,7 @@ public class ItemStackTemplate {
             meta.setOwnerProfile(pProfile);
             head.setItemMeta(meta);
         }
-        catch (Exception ex) {
+        catch (NoSuchMethodError ex) {
             failedToApplyHeadData = true;
         }
     }
