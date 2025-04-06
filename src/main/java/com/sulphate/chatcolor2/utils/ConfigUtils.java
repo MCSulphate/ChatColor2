@@ -92,6 +92,11 @@ public class ConfigUtils {
         return plugin.getDataFolder();
     }
 
+    public boolean configExists(String configName) {
+        File file = new File(getDataFolder(), configName);
+        return file.exists();
+    }
+
     /**
      * Gets or creates a blank YAML configuration file inside the plugin's data folder.
      *
@@ -139,10 +144,11 @@ public class ConfigUtils {
      * resource if it does not exist.
      *
      * @param configName The name of the config to get or create.
+     * @param fileName   The name of the file to write to.
      * @return           The fetched or created config file.
      */
-    public YamlConfiguration getConfigOrCopyDefault(String configName) {
-        File file = getFileOrCopyResource(configName);
+    public YamlConfiguration getConfigOrCopyDefault(String configName, String fileName) {
+        File file = getFileOrCopyResource(fileName, configName);
 
         if (file == null) {
             return null;
@@ -155,6 +161,10 @@ public class ConfigUtils {
         }
     }
 
+    public YamlConfiguration getConfigOrCopyDefault(String configName) {
+        return getConfigOrCopyDefault(configName, configName);
+    }
+
     public InputStream getRawResourceStream(String configName) {
         return plugin.getResource(configName);
     }
@@ -163,23 +173,24 @@ public class ConfigUtils {
      * Gets or creates a file inside the plugin's data folder, copying content from an existing default resource if it
      * does not exist.
      *
-     * @param fileName The name of the file to get or create.
-     * @return         The fetched or created file.
+     * @param resourceFileName    The name of the resource file to get or create.
+     * @param destinationFileName The name of the file to write to.
+     * @return                    The fetched or created file.
      */
-    private File getFileOrCopyResource(String fileName) {
-        File target = new File(getDataFolder(), fileName);
+    private File getFileOrCopyResource(String resourceFileName, String destinationFileName) {
+        File target = new File(getDataFolder(), destinationFileName);
 
         if (!target.exists()) {
             // Create a new blank file.
-            target = getFileOrCreateBlank(fileName);
+            target = getFileOrCreateBlank(destinationFileName);
 
             if (target == null) {
                 return null;
             }
 
-            try (InputStream in = plugin.getResource(fileName); OutputStream out = Files.newOutputStream(target.toPath())) {
+            try (InputStream in = plugin.getResource(resourceFileName); OutputStream out = Files.newOutputStream(target.toPath())) {
                 if (in == null) {
-                    printError(String.format("Failed to find resource %s", fileName));
+                    printError(String.format("Failed to find resource %s", resourceFileName));
                     return null;
                 }
 
@@ -188,12 +199,16 @@ public class ConfigUtils {
                     out.write(nextByte);
                 }
             } catch (IOException ex) {
-                printError(String.format("Failed to write resource %s: %s", fileName, ex.getMessage()));
+                printError(String.format("Failed to write resource %s: %s", destinationFileName, ex.getMessage()));
                 return null;
             }
         }
 
         return target;
+    }
+
+    private File getFileOrCopyResource(String resourceName) {
+        return getFileOrCopyResource(resourceName, resourceName);
     }
 
     /**

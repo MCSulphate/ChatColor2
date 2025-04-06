@@ -8,6 +8,7 @@ import com.sulphate.chatcolor2.gui.GuiManager;
 import com.sulphate.chatcolor2.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -727,7 +728,11 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
             // Allows for setting rainbows & gradients from a command.
             if (colour.startsWith("&u") || colour.startsWith("&g")) {
-                if (!player.hasPermission("chatcolor.special")) {
+                if (colour.startsWith("&g") && CompatabilityUtils.isHexLegacy()) {
+                    player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
+                    return false;
+                }
+                else if (!player.hasPermission("chatcolor.special")) {
                     player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                     return false;
                 }
@@ -811,7 +816,11 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
         // Allows for setting rainbows & gradients from a command.
         if (colour.startsWith("&u") || colour.startsWith("&g")) {
-            if (!player.hasPermission("chatcolor.special")) {
+            if (colour.startsWith("&g") && CompatabilityUtils.isHexLegacy()) {
+                player.sendMessage(M.PREFIX + M.NO_HEX_SUPPORT);
+                return false;
+            }
+            else if (!player.hasPermission("chatcolor.special")) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
             }

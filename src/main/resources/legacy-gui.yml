@@ -1,0 +1,359 @@
+# GUI Config Format Guide
+#
+# See here for valid materials:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#
+# STATIC inventories have all items in a fixed position.
+# DYNAMIC inventories will group visible items together and no-permission items will not be shown.
+#
+# <inventory name>:
+#   title: [inventory title (colors supported)]
+#   size: [must be a multiple of 9]
+#   fill-empty-slots: [true/false]
+#   inventory-type: [STATIC/DYNAMIC]
+#
+#   items:
+#     <slot number>:
+#       type: [COLOUR / MODIFIER / INVENTORY / FILLER]
+#       data: [color name / modifier char / inventory name]
+#       name: [item name (colors supported)]
+#       material: [item material (colors & inventories only)]
+#       lore: [lore to display on the item, always]
+#       no-permission-lore: [lore to display when the player doesn't have permission]
+#
+#     <slot number>: ...
+#
+# <inventory name>: ...
+#
+
+config:
+  main-inventory: main
+  select-sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  error-sound: ENTITY_BLAZE_HURT
+
+  filler-item-material: LIGHT_BLUE_STAINED_GLASS_PANE
+
+  no-permission-item:
+    # Set to COPY to keep the original item
+    material: BARRIER
+    lore:
+      - ''
+      - '&cNo permission'
+
+  color:
+    selected-text: '&aSelected'
+    unselected-text: '&eClick to Select'
+
+  modifier:
+    selected-text: '&aActive'
+    unselected-text: '&cInactive'
+    selected-material: LIME_DYE
+    unselected-material: GRAY_DYE
+
+main:
+  title: '&9Color Picker GUI'
+  size: 45
+  fill-empty-slots: true
+  inventory-type: STATIC
+
+  items:
+    9:
+      type: COLOUR
+      data: 0
+      material: BLACK_CONCRETE
+
+    10:
+      type: COLOUR
+      data: 1
+      material: BLUE_CONCRETE
+
+    11:
+      type: COLOUR
+      data: 2
+      material: GREEN_CONCRETE
+
+    12:
+      type: COLOUR
+      data: 3
+      material: CYAN_CONCRETE
+
+    13:
+      type: COLOUR
+      data: 4
+      material: RED_CONCRETE
+
+    14:
+      type: COLOUR
+      data: 5
+      material: PURPLE_CONCRETE
+
+    15:
+      type: COLOUR
+      data: 6
+      material: ORANGE_CONCRETE
+
+    16:
+      type: COLOUR
+      data: 7
+      material: LIGHT_GRAY_CONCRETE
+
+    17:
+      type: COLOUR
+      data: 8
+      material: GRAY_CONCRETE
+
+    19:
+      type: COLOUR
+      data: 9
+      material: BLUE_CONCRETE
+
+    20:
+      type: COLOUR
+      data: a
+      material: LIME_CONCRETE
+
+    21:
+      type: COLOUR
+      data: b
+      material: LIGHT_BLUE_CONCRETE
+
+    22:
+      type: COLOUR
+      data: c
+      material: PINK_CONCRETE
+
+    23:
+      type: COLOUR
+      data: d
+      material: MAGENTA_CONCRETE
+
+    24:
+      type: COLOUR
+      data: e
+      material: YELLOW_CONCRETE
+
+    25:
+      type: COLOUR
+      data: f
+      material: WHITE_CONCRETE
+
+    36:
+      type: INVENTORY
+      data: custom
+      name: '&6View Custom Colors'
+      material: GLASS
+
+    29:
+      type: MODIFIER
+      data: k
+      name: '&f&kO&rObfuscated&f&kO'
+
+    30:
+      type: MODIFIER
+      data: l
+
+    31:
+      type: MODIFIER
+      data: m
+
+    32:
+      type: MODIFIER
+      data: n
+
+    33:
+      type: MODIFIER
+      data: o
+
+    44:
+      type: INVENTORY
+      data: hex
+      name: "&bView Hex Colors"
+      material: GRAY_WOOL
+
+hex:
+  title: '&9Hex Colors'
+  size: 36
+  fill-empty-slots: true
+  inventory-type: STATIC
+
+  items:
+    10:
+      type: COLOUR
+      name: '&#FF0000Red'
+      data: '#FF0000'
+      material: RED_CONCRETE
+
+    11:
+      type: COLOUR
+      name: '&#FFA500Orange'
+      data: '#FFA500'
+      material: ORANGE_CONCRETE
+
+    12:
+      type: COLOUR
+      name: '&#FFFF00Yellow'
+      data: '#FFFF00'
+      material: YELLOW_CONCRETE
+
+    13:
+      type: COLOUR
+      name: '&#008000Green'
+      data: '#008000'
+      material: LIME_CONCRETE
+
+    14:
+      type: COLOUR
+      name: '&#0000FFBlue'
+      data: '#0000FF'
+      material: BLUE_CONCRETE
+
+    15:
+      type: COLOUR
+      name: '&#4B0082Purple'
+      data: '#4B0082'
+      material: PURPLE_CONCRETE
+
+    16:
+      type: COLOUR
+      name: '&#EE82EEViolet'
+      data: '#EE82EE'
+      material: PINK_CONCRETE
+
+    19:
+      type: COLOUR
+      name: '&#FFADADPastel Red'
+      data: '#FFADAD'
+      material: RED_CONCRETE_POWDER
+
+    20:
+      type: COLOUR
+      name: '&#FFD6A5Pastel Orange'
+      data: '#FFD6A5'
+      material: ORANGE_CONCRETE_POWDER
+
+    21:
+      type: COLOUR
+      name: '&#FDFFB6Pastel Yellow'
+      data: '#FDFFB6'
+      material: YELLOW_CONCRETE_POWDER
+
+    22:
+      type: COLOUR
+      name: '&#CAFFBFPastel Green'
+      data: '#CAFFBF'
+      material: LIME_CONCRETE_POWDER
+
+    23:
+      type: COLOUR
+      name: '&#9BD6FFPastel Blue'
+      data: '#9BD6FF'
+      material: LIGHT_BLUE_CONCRETE_POWDER
+
+    24:
+      type: COLOUR
+      name: '&#BDB2FFPastel Purple'
+      data: '#BDB2FF'
+      material: PURPLE_CONCRETE_POWDER
+
+    25:
+      type: COLOUR
+      name: '&#FFC6FFPastel Violet'
+      data: '#FFC6FF'
+      material: PINK_CONCRETE_POWDER
+
+    27:
+      type: INVENTORY
+      data: main
+      name: "&bView Normal Colors"
+      material: WHITE_WOOL
+
+custom:
+  title: '&9Custom Colors'
+  size: 36
+  fill-empty-slots: false
+  inventory-type: DYNAMIC
+
+  items:
+    0:
+      type: FILLER
+
+    1:
+      type: FILLER
+
+    2:
+      type: FILLER
+
+    3:
+      type: FILLER
+
+    4:
+      type: FILLER
+
+    5:
+      type: FILLER
+
+    6:
+      type: FILLER
+
+    7:
+      type: FILLER
+
+    8:
+      type: FILLER
+
+    9:
+      type: FILLER
+
+    12:
+      type: COLOUR
+      data: '%bright-rainbow'
+      material: PINK_STAINED_GLASS
+
+    13:
+      type: COLOUR
+      data: '%pastel-rainbow'
+      material: GLASS
+
+    14:
+      type: COLOUR
+      data: '%blue-rainbow'
+      material: BLUE_STAINED_GLASS
+
+    17:
+      type: FILLER
+
+    18:
+      type: FILLER
+
+    26:
+      type: FILLER
+
+    27:
+      type: FILLER
+
+    28:
+      type: FILLER
+
+    29:
+      type: FILLER
+
+    30:
+      type: FILLER
+
+    31:
+      type: FILLER
+
+    32:
+      type: FILLER
+
+    33:
+      type: FILLER
+
+    34:
+      type: FILLER
+
+    35:
+      type: INVENTORY
+      data: main
+      name: '&bView Normal Colors'
+      material: WHITE_WOOL
