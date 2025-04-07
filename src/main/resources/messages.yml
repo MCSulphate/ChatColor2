@@ -94,6 +94,7 @@ red: 'Red'
 light-purple: 'Light Purple'
 yellow: 'Yellow'
 white: 'White'
+default: 'Default'
 
 # Modifier Strings
 obfuscated: 'Obfuscated'

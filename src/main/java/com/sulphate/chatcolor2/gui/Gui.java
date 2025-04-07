@@ -282,7 +282,13 @@ public class Gui {
                     itemTemplate.setDisplayName(parsePrefixedColouredString(itemTemplate.getDisplayName()));
                 }
 
-                item = new ColourItem(data, itemTemplate, playerData, noPermissionLore);
+                boolean isDefault = data.equalsIgnoreCase("default");
+
+                if (isDefault) {
+                    data = generalUtils.getDefaultColourForPlayer(owner.getUniqueId());
+                }
+
+                item = new ColourItem(data, itemTemplate, playerData, noPermissionLore, isDefault);
             }
             else {
                 String name = itemSection.contains("name") ?
@@ -317,17 +323,30 @@ public class Gui {
     }
 
     private String getColourName(String colour) {
-        if (colour.startsWith("%")) {
+        String colourName;
+
+        if (colour.equalsIgnoreCase("default")) {
+            colourName = generalUtils.getDefaultColourForPlayer(owner.getUniqueId()) + M.DEFAULT;
+        }
+        else if (colour.startsWith("%")) {
             String customColourName = Arrays.stream(colour.substring(1).split("[^0-9a-zA-Z]"))
                     .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase())
                     .collect(Collectors.joining(" "));
 
-            return customColoursManager.getCustomColour(colour) + customColourName;
+            colourName = customColoursManager.getCustomColour(colour) + customColourName;
         }
         else {
             colour = '&' + colour;
-            return String.format("%s%s", colour, generalUtils.getColorName(colour, true));
+            colourName = String.format("%s%s", colour, generalUtils.getColorName(colour, true));
         }
+
+        // White colours get replaced by nothing by Minecraft in item names (default colour)!
+        // Prefacing it with another colour fixes this problem.
+        if (colourName.startsWith("&f")) {
+            colourName = "&a" + colourName;
+        }
+
+        return colourName;
     }
 
     public void open() {

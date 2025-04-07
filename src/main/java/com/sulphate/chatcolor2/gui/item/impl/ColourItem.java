@@ -8,6 +8,7 @@ import com.sulphate.chatcolor2.gui.item.ComplexGuiItem;
 import com.sulphate.chatcolor2.gui.item.PermissibleItem;
 import com.sulphate.chatcolor2.gui.item.SelectableItem;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
+import com.sulphate.chatcolor2.utils.StaticMaps;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,10 +25,13 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
     private boolean hasPermission = false;
     private boolean selected;
 
-    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData, List<String> noPermissionLore) {
+    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData, List<String> noPermissionLore, boolean isDefault) {
         super(colour, itemTemplate);
 
-        if (colour.startsWith("%")) {
+        if (isDefault) {
+            permission = "chatcolor.use";
+        }
+        else if (colour.startsWith("%")) {
             permission = "chatcolor.custom." + colour.substring(1);
         }
         else if (colour.startsWith("#")) {
@@ -96,7 +100,7 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
             hasPermission = player.hasPermission(permission) || player.hasPermission("chatcolor.use-hex-codes");
         }
         else {
-            hasPermission = player.hasPermission(permission);
+            hasPermission = player.hasPermission(permission) || player.hasPermission(StaticMaps.getVerbosePermission(permission));
         }
     }
 

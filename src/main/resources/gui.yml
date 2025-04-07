@@ -137,13 +137,6 @@ main:
       data: f
       material: WHITE_CONCRETE
 
-    36:
-      type: INVENTORY
-      data: custom
-      name: '&6View Custom Colors'
-      material: PLAYER_HEAD
-      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0='
-
     29:
       type: MODIFIER
       data: k
@@ -164,6 +157,18 @@ main:
     33:
       type: MODIFIER
       data: o
+
+    36:
+      type: INVENTORY
+      data: custom
+      name: '&6View Custom Colors'
+      material: PLAYER_HEAD
+      head-data: 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFjOTZhNWMzZDEzYzMxOTkxODNlMWJjN2YwODZmNTRjYTJhNjUyNzEyNjMwM2FjOGUyNWQ2M2UxNmI2NGNjZiJ9fX0='
+
+    40:
+      type: COLOUR
+      data: default
+      material: WHITE_DYE
 
     44:
       type: INVENTORY

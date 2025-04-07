@@ -116,6 +116,7 @@ public class Messages implements Reloadable {
     public String LIGHT_PURPLE;
     public String YELLOW;
     public String WHITE;
+    public String DEFAULT;
 
     // Modifier Strings
     public String OBFUSCATED;
@@ -254,6 +255,7 @@ public class Messages implements Reloadable {
         LIGHT_PURPLE = getAndColourise("light-purple");
         YELLOW = getAndColourise("yellow");
         WHITE = getAndColourise("white");
+        DEFAULT = getAndColourise("default");
 
         // Modifier Strings
         OBFUSCATED = getAndColourise("obfuscated");

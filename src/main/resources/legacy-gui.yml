@@ -137,12 +137,6 @@ main:
       data: f
       material: WHITE_CONCRETE
 
-    36:
-      type: INVENTORY
-      data: custom
-      name: '&6View Custom Colors'
-      material: GLASS
-
     29:
       type: MODIFIER
       data: k
@@ -164,108 +158,16 @@ main:
       type: MODIFIER
       data: o
 
-    44:
+    36:
       type: INVENTORY
-      data: hex
-      name: "&bView Hex Colors"
-      material: GRAY_WOOL
+      data: custom
+      name: '&6View Custom Colors'
+      material: GLASS
 
-hex:
-  title: '&9Hex Colors'
-  size: 36
-  fill-empty-slots: true
-  inventory-type: STATIC
-
-  items:
-    10:
+    40:
       type: COLOUR
-      name: '&#FF0000Red'
-      data: '#FF0000'
-      material: RED_CONCRETE
-
-    11:
-      type: COLOUR
-      name: '&#FFA500Orange'
-      data: '#FFA500'
-      material: ORANGE_CONCRETE
-
-    12:
-      type: COLOUR
-      name: '&#FFFF00Yellow'
-      data: '#FFFF00'
-      material: YELLOW_CONCRETE
-
-    13:
-      type: COLOUR
-      name: '&#008000Green'
-      data: '#008000'
-      material: LIME_CONCRETE
-
-    14:
-      type: COLOUR
-      name: '&#0000FFBlue'
-      data: '#0000FF'
-      material: BLUE_CONCRETE
-
-    15:
-      type: COLOUR
-      name: '&#4B0082Purple'
-      data: '#4B0082'
-      material: PURPLE_CONCRETE
-
-    16:
-      type: COLOUR
-      name: '&#EE82EEViolet'
-      data: '#EE82EE'
-      material: PINK_CONCRETE
-
-    19:
-      type: COLOUR
-      name: '&#FFADADPastel Red'
-      data: '#FFADAD'
-      material: RED_CONCRETE_POWDER
-
-    20:
-      type: COLOUR
-      name: '&#FFD6A5Pastel Orange'
-      data: '#FFD6A5'
-      material: ORANGE_CONCRETE_POWDER
-
-    21:
-      type: COLOUR
-      name: '&#FDFFB6Pastel Yellow'
-      data: '#FDFFB6'
-      material: YELLOW_CONCRETE_POWDER
-
-    22:
-      type: COLOUR
-      name: '&#CAFFBFPastel Green'
-      data: '#CAFFBF'
-      material: LIME_CONCRETE_POWDER
-
-    23:
-      type: COLOUR
-      name: '&#9BD6FFPastel Blue'
-      data: '#9BD6FF'
-      material: LIGHT_BLUE_CONCRETE_POWDER
-
-    24:
-      type: COLOUR
-      name: '&#BDB2FFPastel Purple'
-      data: '#BDB2FF'
-      material: PURPLE_CONCRETE_POWDER
-
-    25:
-      type: COLOUR
-      name: '&#FFC6FFPastel Violet'
-      data: '#FFC6FF'
-      material: PINK_CONCRETE_POWDER
-
-    27:
-      type: INVENTORY
-      data: main
-      name: "&bView Normal Colors"
-      material: WHITE_WOOL
+      data: default
+      material: WHITE_DYE
 
 custom:
   title: '&9Custom Colors'
@@ -308,16 +210,6 @@ custom:
       type: COLOUR
       data: '%bright-rainbow'
       material: PINK_STAINED_GLASS
-
-    13:
-      type: COLOUR
-      data: '%pastel-rainbow'
-      material: GLASS
-
-    14:
-      type: COLOUR
-      data: '%blue-rainbow'
-      material: BLUE_STAINED_GLASS
 
     17:
       type: FILLER

@@ -45,4 +45,18 @@ public class StaticMaps {
         return STATIC_MODIFIER_NAMES_MAP.getOrDefault(modifier, "invalid-modifier");
     }
 
+    public static String getVerbosePermission(String shortPermission) {
+        String lastPart = shortPermission.substring(shortPermission.lastIndexOf(".") + 1);
+
+        if (STATIC_COLOUR_NAMES_MAP.containsKey(lastPart)) {
+            return "chatcolor.color." + STATIC_COLOUR_NAMES_MAP.get(lastPart);
+        }
+        else if (STATIC_MODIFIER_NAMES_MAP.containsKey(lastPart)) {
+            return "chatcolor.modifier." + STATIC_MODIFIER_NAMES_MAP.get(lastPart);
+        }
+        else {
+            return shortPermission;
+        }
+    }
+
 }
