@@ -157,6 +157,9 @@ public class ChatColor extends JavaPlugin {
         groupColoursManager = new GroupColoursManager(configsManager);
         M = new Messages(configsManager);
 
+        // Scan messages here to avoid any null messages when upgrading versions.
+        scanMessages();
+
         // Initialise player data store.
         String pdcType = config.getString("storage.type");
 
@@ -191,8 +194,7 @@ public class ChatColor extends JavaPlugin {
         reloadables.add(generalUtils);
         reloadables.add(guiManager);
 
-        // Scan messages, settings, and other values to make sure all are present.
-        scanMessages();
+        // Scan settings and other values to make sure all are present.
         scanSettings();
         scanOther();
     }

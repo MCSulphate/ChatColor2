@@ -3,12 +3,9 @@ package com.sulphate.chatcolor2.gui;
 import com.sulphate.chatcolor2.data.PlayerData;
 import com.sulphate.chatcolor2.exception.InvalidGuiException;
 import com.sulphate.chatcolor2.exception.InvalidMaterialException;
+import com.sulphate.chatcolor2.gui.item.impl.*;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.gui.item.*;
-import com.sulphate.chatcolor2.gui.item.impl.ColourItem;
-import com.sulphate.chatcolor2.gui.item.impl.InventoryItem;
-import com.sulphate.chatcolor2.gui.item.impl.ModifierItem;
-import com.sulphate.chatcolor2.gui.item.impl.SimpleGuiItem;
 import com.sulphate.chatcolor2.utils.CompatabilityUtils;
 import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.Messages;
@@ -289,6 +286,19 @@ public class Gui {
                 }
 
                 item = new ColourItem(data, itemTemplate, playerData, noPermissionLore, isDefault);
+            }
+            else if (type.equals(ItemType.COMMAND)) {
+                if (!itemSection.contains("material")) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'material' config value"));
+                }
+                else if (!itemSection.contains("name")) {
+                    throw new InvalidGuiException(String.format(Messages.INVALID_ITEM, itemKey, name, "missing 'name' config value"));
+                }
+
+                ItemStackTemplate template = ItemStackTemplate.fromConfigSection(itemSection);
+
+                data = data.replace("%player%", owner.getDisplayName());
+                item = new CommandItem(data, template);
             }
             else {
                 String name = itemSection.contains("name") ?

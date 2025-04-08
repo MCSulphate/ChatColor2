@@ -98,6 +98,7 @@ public class Messages implements Reloadable {
     public String GUI_ERROR;
     public String GUI_UNAVAILABLE;
     public String GUI_AVAILABLE;
+    public String CLICK_TO_RUN;
 
     // Colour Strings
     public String BLACK;
@@ -237,6 +238,7 @@ public class Messages implements Reloadable {
         GUI_ERROR = getAndColourise("gui-error");
         GUI_UNAVAILABLE = getAndColourise("gui-unavailable");
         GUI_AVAILABLE = getAndColourise("gui-available");
+        CLICK_TO_RUN = getAndColourise("click-to-run");
 
         // Colour Strings
         BLACK = getAndColourise("black");

@@ -4,6 +4,7 @@ import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.exception.InvalidGuiException;
 import com.sulphate.chatcolor2.exception.InvalidItemTemplateException;
 import com.sulphate.chatcolor2.exception.InvalidMaterialException;
+import com.sulphate.chatcolor2.gui.item.impl.CommandItem;
 import com.sulphate.chatcolor2.managers.ConfigsManager;
 import com.sulphate.chatcolor2.managers.CustomColoursManager;
 import com.sulphate.chatcolor2.gui.item.ItemStackTemplate;
@@ -84,6 +85,8 @@ public class GuiManager implements Reloadable, Listener {
 
         if (keys.contains(GUI_CONFIG_KEY)) {
             ConfigurationSection configSection = config.getConfigurationSection(GUI_CONFIG_KEY);
+
+            CommandItem.clickToRunMessage = M.CLICK_TO_RUN;
 
             if (configSection.contains("main-inventory")) {
                 mainConfigName = configSection.getString("main-inventory");

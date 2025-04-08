@@ -76,6 +76,7 @@ invalid-gui: '&cTried to open a non-existent GUI ([name]), please report this to
 gui-error: '&cAn error occurred trying to open GUI [name], please report this to an admin.'
 gui-unavailable: '&cUnavailable'
 gui-available: '&aAvailable'
+click-to-run: '&eClick to run command'
 
 # Color Strings
 black: 'Black'
