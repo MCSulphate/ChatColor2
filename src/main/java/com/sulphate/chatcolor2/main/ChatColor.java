@@ -255,13 +255,15 @@ public class ChatColor extends JavaPlugin {
             if (!compareVersions(version, "1.15")) {
                 if (!backupOldConfig("gui.yml")) return false;
                 saveResource("gui.yml", true);
+                configsManager.reloadSingle(Config.GUI);
 
-                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: An old GUI config was found. It has been copied to &aold-gui.yml&e."));
+                console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old GUI config was found. It has been copied to &aold-gui.yml&e."));
             }
 
             if (!compareVersions(version, "1.14")) {
                 if (!backupOldConfig("config.yml")) return false;
                 saveResource("config.yml", true);
+                configsManager.reloadSingle(Config.MAIN_CONFIG);
 
                 console.sendMessage(GeneralUtils.colourise("&b[ChatColor] &cWarning: &eAn old version of the config was found. It has been copied to &aold-config.yml&e."));
             }

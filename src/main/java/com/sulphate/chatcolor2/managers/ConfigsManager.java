@@ -43,6 +43,12 @@ public class ConfigsManager implements Reloadable {
         }
     }
 
+    // (re)loads a specific config.
+    public void reloadSingle(Config config) {
+        String fileName = config.getFilename();
+        configs.put(fileName, configUtils.getConfigOrCopyDefault(fileName));
+    }
+
     // Returns a given config.
     public YamlConfiguration getConfig(Config config) {
         return configs.get(config.getFilename());

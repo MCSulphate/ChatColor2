@@ -21,12 +21,17 @@ public class CommandItem extends ComplexGuiItem implements ClickableItem {
     @Override
     public ItemStack buildItem() {
         ItemStack item = itemTemplate.build(1);
-        List<String> lore = InventoryUtils.getLore(item);
 
-        lore.add("");
-        lore.add(clickToRunMessage);
+        // Allow people to remove it if they want to - this is a simple way to do so.
+        if (!clickToRunMessage.isEmpty()) {
+            List<String> lore = InventoryUtils.getLore(item);
 
-        InventoryUtils.setLore(item, lore);
+            lore.add("");
+            lore.add(clickToRunMessage);
+
+            InventoryUtils.setLore(item, lore);
+        }
+
         return item;
     }
 
