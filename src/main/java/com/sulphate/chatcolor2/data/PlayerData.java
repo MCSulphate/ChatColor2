@@ -131,7 +131,7 @@ public class PlayerData {
         return dirty;
     }
 
-    public void markClean() {
+    public synchronized void markClean() {
         dirty = false;
     }
 

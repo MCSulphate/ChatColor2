@@ -4,7 +4,7 @@
 
   <groupId>me.sulphate</groupId>
   <artifactId>ChatColor2</artifactId>
-  <version>1.16</version>
+  <version>1.16.1</version>
   <name>ChatColor2</name>
 
   <properties>
@@ -65,6 +65,15 @@
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
       <version>3.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- HikariDB (JDBC Connection Pool Manager) -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>4.0.3</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Mojang Authlib (required for skulls) -->
@@ -72,6 +81,7 @@
       <groupId>com.mojang</groupId>
       <artifactId>authlib</artifactId>
       <version>1.5.21</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
@@ -88,7 +98,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.6.0</version>
         <configuration>
 
           <relocations>
@@ -101,16 +111,25 @@
               <pattern>org.mariadb</pattern>
               <shadedPattern>com.sulphate.chatcolor2.lib.org.mariadb</shadedPattern>
             </relocation>
-          </relocations>
 
-          <minimizeJar>true</minimizeJar>
+            <relocation>
+              <pattern>com.zaxxer</pattern>
+              <shadedPattern>com.sulphate.chatcolor2.lib.com.zaxxer</shadedPattern>
+            </relocation>
+          </relocations>
 
           <filters>
             <filter>
-              <artifact>org.mariadb.jdbc:mariadb-java-client</artifact>
-              <includes>
-                <include>org/mariadb/**</include>
-              </includes>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>org/slf4j/**</exclude>
+                <exclude>org/apache/**</exclude>
+                <exclude>org/checkerframework/**</exclude>
+                <exclude>waffle/**</exclude>
+                <exclude>com/github/**</exclude>
+                <exclude>com/google/**</exclude>
+                <exclude>com/sun/jna/platform/**</exclude>
+              </excludes>
             </filter>
           </filters>
 

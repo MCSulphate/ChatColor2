@@ -1,0 +1,6 @@
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.addon.ClearPasswordPlugin
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.addon.SendGssApiAuthPacket
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.standard.Ed25519PasswordPlugin
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.standard.NativePasswordPlugin
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.standard.SendPamAuthPacket
+com.sulphate.chatcolor2.lib.org.mariadb.jdbc.plugin.authentication.standard.CachingSha2PasswordPlugin

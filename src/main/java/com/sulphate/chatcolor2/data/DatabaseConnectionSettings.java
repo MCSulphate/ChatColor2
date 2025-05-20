@@ -1,44 +1,57 @@
 package com.sulphate.chatcolor2.data;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.mariadb.jdbc.Driver;
+import org.mariadb.jdbc.plugin.AuthenticationPlugin;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.Properties;
+import java.util.ServiceLoader;
+
+import javax.sql.DataSource;
 
 public class DatabaseConnectionSettings {
 
     public static final String TABLE_NAME = "chatcolor_players";
+    private static final int MAX_CONNECTIONS = 10;
 
-    private final String databaseType;
     private final String address;
     private final int port;
-    private final String databaseName;
-    private final String databaseUser;
-    private final String databasePassword;
+    private final String database;
+    private final String user;
+    private final String password;
 
     public DatabaseConnectionSettings(ConfigurationSection section) {
-        databaseType = section.getString("type");
         address = section.getString("address");
         port = section.getInt("port");
-        databaseName = section.getString("name");
-        databaseUser = section.getString("user");
-        databasePassword = section.getString("password");
+        database = section.getString("name");
+        user = section.getString("user");
+        password = section.getString("password");
     }
 
     public String getDatabaseName() {
-        return databaseName;
+        return database;
     }
 
-    public String getConnectionString() {
-        try {
-            String user = URLEncoder.encode(databaseUser, "UTF-8").replace("+", "%20");
-            String password = URLEncoder.encode(databasePassword, "UTF-8").replace("+", "%20");
+    private Properties getDatabaseProperties() {
+        Properties properties = new Properties();
+        String url = String.format("jdbc:mariadb://%s:%d/%s", address, port, database);
 
-            return String.format("jdbc:%s://%s:%d?user=%s&password=%s&autoReconnect=true", databaseType, address, port, user, password);
-        }
-        catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        properties.setProperty("dataSourceClassName", "com.sulphate.chatcolor2.lib.org.mariadb.jdbc.MariaDbDataSource");
+        properties.setProperty("dataSource.url", url);
+        properties.setProperty("dataSource.user", user);
+        properties.setProperty("dataSource.password", password);
+
+        return properties;
+    }
+
+    public DataSource createDataSource() {
+        HikariConfig config = new HikariConfig(getDatabaseProperties());
+        config.setMaximumPoolSize(MAX_CONNECTIONS);
+
+        return new HikariDataSource(config);
     }
 
 }
