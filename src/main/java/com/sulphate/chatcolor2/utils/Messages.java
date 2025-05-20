@@ -74,6 +74,8 @@ public class Messages implements Reloadable {
     public String HELP_INFO_MESSAGE;
     public String HELP_PLUGIN_PAGE;
     public String HELP_WIKI_LINK;
+    public String PLAYER_PAUSED;
+    public String PLAYER_UNPAUSED;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -217,6 +219,8 @@ public class Messages implements Reloadable {
         HELP_INFO_MESSAGE = getAndColourise("help-info-message");
         HELP_PLUGIN_PAGE = getAndColourise("help-plugin-page");
         HELP_WIKI_LINK = getAndColourise("help-wiki-link");
+        PLAYER_PAUSED = getAndColourise("player-paused");
+        PLAYER_UNPAUSED = getAndColourise("player-unpaused");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");

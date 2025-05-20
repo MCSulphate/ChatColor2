@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -29,12 +30,15 @@ public class ChatListener implements Listener, Reloadable {
     private final PlayerDataStore dataStore;
 
     private YamlConfiguration mainConfig;
+    private final Set<Player> pausedPlayers;
 
     public ChatListener(ConfigsManager configsManager, GeneralUtils generalUtils, GroupColoursManager groupColoursManager, PlayerDataStore dataStore) {
         this.configsManager = configsManager;
         this.generalUtils = generalUtils;
         this.groupColoursManager = groupColoursManager;
         this.dataStore = dataStore;
+
+        pausedPlayers = new HashSet<>();
 
         reload();
     }
@@ -43,12 +47,23 @@ public class ChatListener implements Listener, Reloadable {
         mainConfig = configsManager.getConfig(Config.MAIN_CONFIG);
     }
 
+    public boolean togglePause(Player player) {
+        if (pausedPlayers.contains(player)) {
+            pausedPlayers.remove(player);
+            return false;
+        }
+        else {
+            pausedPlayers.add(player);
+            return true;
+        }
+    }
+
     public void onEvent(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
         UUID uuid = player.getUniqueId();
 
-        if (event.isCancelled() || checkHasSymbolPrefix(message)) {
+        if (event.isCancelled() || checkHasSymbolPrefix(message) || pausedPlayers.contains(player)) {
             return;
         }
 

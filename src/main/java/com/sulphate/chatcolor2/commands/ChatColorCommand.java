@@ -2,6 +2,7 @@ package com.sulphate.chatcolor2.commands;
 
 import com.sulphate.chatcolor2.data.PlayerDataStore;
 import com.sulphate.chatcolor2.data.YamlStorageImpl;
+import com.sulphate.chatcolor2.listeners.ChatListener;
 import com.sulphate.chatcolor2.main.ChatColor;
 import com.sulphate.chatcolor2.managers.*;
 import com.sulphate.chatcolor2.gui.GuiManager;
@@ -45,6 +46,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     private final CustomColoursManager customColoursManager;
     private final GroupColoursManager groupColoursManager;
     private final PlayerDataStore dataStore;
+    private final ChatListener chatListener;
 
     private YamlConfiguration mainConfig;
 
@@ -52,7 +54,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
             Messages M, GeneralUtils generalUtils, ConfirmationsManager confirmationsManager,
             ConfigsManager configsManager, HandlersManager handlersManager, GuiManager guiManager,
             CustomColoursManager customColoursManager, GroupColoursManager groupColoursManager,
-            PlayerDataStore playerDataStore
+            PlayerDataStore playerDataStore, ChatListener chatListener
     ) {
         this.M = M;
         this.generalUtils = generalUtils;
@@ -63,6 +65,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         this.customColoursManager = customColoursManager;
         this.groupColoursManager = groupColoursManager;
         this.dataStore = playerDataStore;
+        this.chatListener = chatListener;
 
         reload();
     }
@@ -90,7 +93,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                 args = new String[] { "gui" };
             }
 
-            List<String> cmds = Arrays.asList("clear", "confirm", "help", "commandshelp", "permissionshelp", "settingshelp", "set", "reset", "reload", "available", "gui", "add", "remove", "group", "custom");
+            List<String> cmds = Arrays.asList("clear", "confirm", "help", "set", "reset", "reload", "available", "gui", "add", "remove", "group", "custom", "pause");
             if (cmds.contains(args[0].toLowerCase())) {
                 switch (args[0].toLowerCase()) {
                     case "clear": {
@@ -105,8 +108,8 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
 
                     case "help": {
                         s.sendMessage(M.PREFIX + M.HELP_INFO_MESSAGE);
-                        s.sendMessage(M.PREFIX + M.HELP_PLUGIN_PAGE);
-                        s.sendMessage(M.PREFIX + M.HELP_WIKI_LINK);
+                        s.sendMessage(M.HELP_PLUGIN_PAGE);
+                        s.sendMessage(M.HELP_WIKI_LINK);
                         return true;
                     }
 
@@ -140,6 +143,19 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                         }
 
                         s.sendMessage(M.PREFIX + M.RELOADED_MESSAGES);
+                        return true;
+                    }
+
+                    case "pause": {
+                        boolean paused = chatListener.togglePause(s);
+
+                        if (paused) {
+                            s.sendMessage(M.PREFIX + M.PLAYER_PAUSED);
+                        }
+                        else {
+                            s.sendMessage(M.PREFIX + M.PLAYER_UNPAUSED);
+                        }
+
                         return true;
                     }
 
@@ -479,14 +495,14 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         }
 
         // Single-argument commands.
-        List<String> cmds = Arrays.asList("confirm", "reload", "reset", "help", "permissionshelp", "commandshelp", "settingshelp", "available");
+        List<String> cmds = Arrays.asList("confirm", "reload", "reset", "help", "available", "pause");
         if (cmds.contains(args[0])) {
             if (args[0].equalsIgnoreCase("reset") && confirmationsManager.isConfirming(player)) {
                 player.sendMessage(M.PREFIX + M.ALREADY_CONFIRMING);
                 return false;
             }
 
-            if (!player.isOp() && !player.hasPermission("chatcolor.admin") && !(args[0].equals("commandshelp") || args[0].equals("available"))) {
+            if (!player.isOp() && !player.hasPermission("chatcolor.admin") && !(args[0].equals("available") || args[0].equals("help"))) {
                 player.sendMessage(M.PREFIX + M.NO_PERMISSIONS);
                 return false;
             }

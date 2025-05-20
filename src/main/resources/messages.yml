@@ -10,7 +10,7 @@ placeholders-disabled: '&bPlaceholderAPI not found, placeholders &cwill not be a
 legacy-detected: '&bLegacy Minecraft version detected, hex colours &cwill not be available&b.'
 
 # General Messages and Strings
-prefix: '&bChat&g[#ff0000,#ffa500,#ffff00,#008000,#0000ff,#4b0082,#ee82ee]Color &7&l> &e'
+prefix: '&g[#ffadad,#ffd6a5,#fdffb6,#caffbf,#9bf6ff,#a0c4ff,#bdb2ff,#ffc6ff]ChatColor &7&l> &e'
 command-exists: '&cThat command already exists!'
 colors: 'Colors'
 modifiers: 'Modifiers'
@@ -50,8 +50,10 @@ custom-color-removed: 'Removed a custom color, [color][color-name]&e.'
 color-cleared: 'Your color has been cleared.'
 reset-warning: '&c&lWarning: This will reset all ChatColor configs.'
 help-info-message: 'Please see the following links for plugin support:'
-help-plugin-page: ' &7- &ePlugin page: &bhttps://www.spigotmc.org/resources/chatcolor.22692/'
-help-wiki-link: ' &7- &ePlugin wiki: &bhttps://github.com/MCSulphate/ChatColor2/wiki'
+help-plugin-page: ' &7- &eSpigot: &bhttps://www.spigotmc.org/resources/chatcolor.22692/'
+help-wiki-link: ' &7- &eWiki: &bhttps://github.com/MCSulphate/ChatColor2/wiki'
+player-paused: 'Your chat colour has been paused. Run the command again to unpause.'
+player-unpaused: 'Your chat colour has been unpaused.'
 
 # Group-Color Messages
 group-color-exists: '&cThat group color already exists!'

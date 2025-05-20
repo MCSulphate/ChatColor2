@@ -106,5 +106,8 @@ permissions:
   chatcolor.admin:
     description: Allows the player to use ChatColor admin commands.
 
+  chatcolor.clear:
+    description: Allows the player to clear their chat colour.
+
   chatcolor.custom.*:
     description: Allows the player to use all custom colors.
