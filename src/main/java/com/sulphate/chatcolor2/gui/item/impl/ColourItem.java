@@ -7,6 +7,7 @@ import com.sulphate.chatcolor2.gui.item.ItemStackTemplate;
 import com.sulphate.chatcolor2.gui.item.ComplexGuiItem;
 import com.sulphate.chatcolor2.gui.item.PermissibleItem;
 import com.sulphate.chatcolor2.gui.item.SelectableItem;
+import com.sulphate.chatcolor2.utils.GeneralUtils;
 import com.sulphate.chatcolor2.utils.InventoryUtils;
 import com.sulphate.chatcolor2.utils.StaticMaps;
 import org.bukkit.entity.Player;
@@ -19,16 +20,19 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
     private static String selectedText = "Selected";
     private static String unselectedText = "Unselected";
 
+    private final GeneralUtils generalUtils;
+
     private final PlayerData playerData;
     private final String permission;
     private final List<String> noPermissionLore;
     private boolean hasPermission = false;
     private boolean selected;
 
-    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData, List<String> noPermissionLore, boolean isDefault) {
+    public ColourItem(String colour, ItemStackTemplate itemTemplate, PlayerData playerData, List<String> noPermissionLore, GeneralUtils generalUtils) {
         super(colour, itemTemplate);
+        this.generalUtils = generalUtils;
 
-        if (isDefault) {
+        if (colour.equals("default")) {
             permission = "chatcolor.use";
         }
         else if (colour.startsWith("%")) {
@@ -118,10 +122,13 @@ public class ColourItem extends ComplexGuiItem implements PermissibleItem, Selec
 
             selected = true;
 
-            // Unless it's a custom colour, just set the 'name' of the colour.
+            // Unless it's a custom colour or the default, just set the name.
             // e.g., a, b, c, #123456
             if (data.startsWith("%")) {
                 playerData.setColour(data);
+            }
+            else if (data.equals("default")) {
+                playerData.setColour(generalUtils.getDefaultColourForPlayer(playerData.getUuid()));
             }
             else {
                 playerData.setColourName(data);
