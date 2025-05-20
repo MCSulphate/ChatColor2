@@ -279,13 +279,7 @@ public class Gui {
                     itemTemplate.setDisplayName(parsePrefixedColouredString(itemTemplate.getDisplayName()));
                 }
 
-                boolean isDefault = data.equalsIgnoreCase("default");
-
-                if (isDefault) {
-                    data = generalUtils.getDefaultColourForPlayer(owner.getUniqueId());
-                }
-
-                item = new ColourItem(data, itemTemplate, playerData, noPermissionLore, isDefault);
+                item = new ColourItem(data, itemTemplate, playerData, noPermissionLore, generalUtils);
             }
             else if (type.equals(ItemType.COMMAND)) {
                 if (!itemSection.contains("material")) {
