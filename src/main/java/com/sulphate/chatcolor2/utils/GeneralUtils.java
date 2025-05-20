@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 public class GeneralUtils implements Reloadable {
 
     private static final String COLOUR_PLACEHOLDER = "[color]";
+    private static final String BASE_COLOUR_PATTERN = "&([a-f0-9]|#[0-9A-Fa-f]{6}|[ug]\\[(#[0-9A-Fa-f]{6}|[0-9A-Fa-f])(,(#[0-9A-Fa-f]{6}|[0-9A-Fa-f]))*])(&[k-o])*";
+    public static final Pattern COLOUR_PATTERN = Pattern.compile(String.format("^%s$", BASE_COLOUR_PATTERN));
+    public static final Pattern COLOUR_IN_MESSAGE_PATTERN = Pattern.compile(BASE_COLOUR_PATTERN);
 
     private enum SpecialColorType {
         RAINBOW,
@@ -88,28 +91,60 @@ public class GeneralUtils implements Reloadable {
 
     // Small utility method to colourise messages.
     public static String colourise(String message) {
-        // Attempt to colourise any rainbow text.
-        if (message.contains("&u")) {
-            message = colouriseSpecial(message, SpecialColorType.RAINBOW);
+        Matcher matcher = COLOUR_IN_MESSAGE_PATTERN.matcher(message);
+        StringBuilder result = new StringBuilder();
+
+        String previousColour = null;
+        int previousMatchEnd = -1;
+
+        while (matcher.find()) {
+            if (previousColour != null) {
+                result.append(colourPartial(previousColour, message.substring(previousMatchEnd, matcher.start())));
+            }
+            else if (matcher.start() > 0) {
+                result.append(message, 0, matcher.start());
+            }
+
+            previousColour = matcher.group();
+            previousMatchEnd = matcher.end();
         }
-        else if (message.contains("&g")) {
-            message = colouriseSpecial(message, SpecialColorType.GRADIENT);
+
+        if (previousColour != null) {
+            if (previousMatchEnd == message.length()) {
+                result.append(colourPartial(previousColour, ""));
+            }
+            else {
+                result.append(colourPartial(previousColour, message.substring(previousMatchEnd)));
+            }
+
+            return result.toString();
+        }
+        else {
+            return message;
+        }
+    }
+
+    private static String colourPartial(String colour, String text) {
+        String partial = colour + text;
+
+        // Attempt to colourise any rainbow text.
+        if (partial.contains("&u")) {
+            partial = colouriseSpecial(partial, SpecialColorType.RAINBOW);
+        }
+        else if (partial.contains("&g")) {
+            partial = colouriseSpecial(partial, SpecialColorType.GRADIENT);
         }
 
         // Replace hex colour codes with the correct hex colour(s).
         Pattern hexPattern = Pattern.compile("&#[A-Fa-f0-9]{6}");
-        Matcher matcher = hexPattern.matcher(message);
+        Matcher matcher = hexPattern.matcher(partial);
         StringBuffer result = new StringBuffer();
 
         while (matcher.find()) {
             matcher.appendReplacement(result, createHexColour(matcher.group()));
         }
 
-        matcher.appendTail(result);
-        message = result.toString();
-
-        // Then, translate '&' colour codes.
-        return ChatColor.translateAlternateColorCodes('&', message);
+        return ChatColor.translateAlternateColorCodes('&', partial);
     }
 
     public static boolean containsHexColour(String message, boolean strict) {

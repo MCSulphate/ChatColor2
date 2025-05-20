@@ -71,6 +71,9 @@ public class Messages implements Reloadable {
     public String CUSTOM_COLOR_REMOVED;
     public String COLOR_CLEARED;
     public String RESET_WARNING;
+    public String HELP_INFO_MESSAGE;
+    public String HELP_PLUGIN_PAGE;
+    public String HELP_WIKI_LINK;
 
     // Group-Colour Messages
     public String GROUP_COLOR_EXISTS;
@@ -211,6 +214,9 @@ public class Messages implements Reloadable {
         CUSTOM_COLOR_REMOVED = getAndColourise("custom-color-removed");
         COLOR_CLEARED = getAndColourise("color-cleared");
         RESET_WARNING = getAndColourise("reset-warning");
+        HELP_INFO_MESSAGE = getAndColourise("help-info-message");
+        HELP_PLUGIN_PAGE = getAndColourise("help-plugin-page");
+        HELP_WIKI_LINK = getAndColourise("help-wiki-link");
 
         // Group-Color Messages
         GROUP_COLOR_EXISTS = getAndColourise("group-color-exists");

@@ -103,19 +103,10 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
                         return handlersManager.callHandler(ConfirmHandler.class, s);
                     }
 
-                    case "help":
-                    case "commandshelp": {
-                        handleCommandsHelp(s);
-                        return true;
-                    }
-
-                    case "permissionshelp": {
-                        handlePermissionsHelp(s);
-                        return true;
-                    }
-
-                    case "settingshelp": {
-                        handleSettingsHelp(s);
+                    case "help": {
+                        s.sendMessage(M.PREFIX + M.HELP_INFO_MESSAGE);
+                        s.sendMessage(M.PREFIX + M.HELP_PLUGIN_PAGE);
+                        s.sendMessage(M.PREFIX + M.HELP_WIKI_LINK);
                         return true;
                     }
 
@@ -916,109 +907,6 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
         return false;
     }
 
-    //This is how the help command will be handled.
-    // TODO: Make these all configurable messages when I regain the will to live.
-    private void handleCommandsHelp(Player player) {
-        player.sendMessage(M.PREFIX + "Displaying command help!");
-        player.sendMessage(GeneralUtils.colourise(" &7- &eMain Command: &c/chatcolor <color/default> [modifiers]"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &eOther Commands:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eCommands Help: &c/chatcolor commandshelp"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eSee Available Colors: &c/chatcolor available"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eOpen the ChatColor GUI: &c/chatcolor gui"));
-
-        if (player.isOp() || player.hasPermission("chatcolor.admin")) {
-            player.sendMessage(GeneralUtils.colourise(" &7- &ePermissions Help: &c/chatcolor permissionshelp"));
-            player.sendMessage(GeneralUtils.colourise(" &7- &eSettings Help: &c/chatcolor settingshelp"));
-            player.sendMessage(GeneralUtils.colourise(" &7- &eReload Configs: &c/chatcolor reload"));
-            player.sendMessage(GeneralUtils.colourise(" &7- &eSet Settings: &c/chatcolor set <setting> <value>"));
-        }
-
-        player.sendMessage(GeneralUtils.colourise(" &7- &eSet Color to Default: &c/chatcolor [player] default"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eValid Colors:"));
-        player.sendMessage(GeneralUtils.colourise("&00&11&22&33&44&55&66&77&88&99"));
-        player.sendMessage(GeneralUtils.colourise("&aa&bb&cc&dd&ee&ff"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eAlternatively:"));
-        player.sendMessage(GeneralUtils.colourise("&0black, &1dark.blue, &2dark.green, &3dark.aqua,"));
-        player.sendMessage(GeneralUtils.colourise("&4dark.red, &5dark.purple, &6gold, &7grey, &8dark.grey, &9blue"));
-        player.sendMessage(GeneralUtils.colourise("&agreen, &baqua, &cred, &dlight.purple, &eyellow, &fwhite"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eValid modifiers:"));
-        player.sendMessage(GeneralUtils.colourise("&ck, &c&ll&r, &c&mm&r, &c&nn&r, &c&oo"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eAlternatively:"));
-        player.sendMessage(GeneralUtils.colourise("&cobfuscated, &c&lbold&r, &c&mstrikethrough&r, &c&nunderlined&r, &c&oitalic"));
-    }
-
-    private void handlePermissionsHelp(Player player) {
-        player.sendMessage(M.PREFIX + "Displaying permissions help!");
-        player.sendMessage(GeneralUtils.colourise(" &7- &eMain Permission: &cchatcolor.use"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eAll Perms: &cchatcolor.*"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eAdmin Permissions:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eAll Admin Commands: &cchatcolor.admin"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eColor Permissions:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &ePermission: &cchatcolor.color.<color>"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eExample: &cchatcolor.color.a"));
-        player.sendMessage(GeneralUtils.colourise("&eNote: &cYou must use characters (e.g. a, b, c), not words."));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eModifier Permissions:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &ePermission: &cchatcolor.modifier.<modifier>"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eExample: &cchatcolor.modifier.k"));
-        player.sendMessage(GeneralUtils.colourise("&eNote: No words may be used."));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise("&eOther Permissions:"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eChange Own Color: &cchatcolor.change.self"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eChange Other's Color: &cchatcolor.change.others"));
-        player.sendMessage(GeneralUtils.colourise(" &7- &eSet a Group Chat Color: &cchatcolor.group.<color name>"));
-    }
-
-    private void handleSettingsHelp(Player player) {
-        player.sendMessage(M.PREFIX + "Displaying settings help!");
-        player.sendMessage(GeneralUtils.colourise(" &7- &eauto-save: &cAuto save data every 5 minutes."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set auto-save <true/false>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &esave-interval: &cSets the time between saves, in minutes."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set save-interval <time>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &ecolor-override: &cOverride '&' symbols in chat."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set color-override <true/false>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &econfirm-timeout: &cSet time for confirming settings."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set confirm-timeout <seconds>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &edefault-color: &cChange the default color."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set default-color <color> <modifiers..>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &ejoin-message: &cTell players their color on join."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set join-message <true/false>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &enotify-others: &cTell others if you change their color."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set notify-others <true/false>"));
-
-        player.sendMessage("");
-        player.sendMessage(GeneralUtils.colourise(" &7- &eforce-group-colors: &cForce group colors to be active."));
-        player.sendMessage(GeneralUtils.colourise("   &eUsage: &b/chatcolor set force-group-colors <true/false>"));
-    }
-
     private void handleSet(String[] args, Player player) {
         String trueVal = GeneralUtils.colourise("&aTRUE");
         String falseVal = GeneralUtils.colourise("&cFALSE");
@@ -1200,12 +1088,7 @@ public class ChatColorCommand implements CommandExecutor, Reloadable {
     }
 
     private boolean isValidColourString(String customColourString) {
-        // This actually matches all possible colours - probably can be used elsewhere. However, doesn't provide any
-        // context as to why it's *not* a valid colour if it isn't. God I love/hate regex.
-        Pattern pattern = Pattern.compile("^&([a-f0-9]|#[0-9A-Fa-f]{6}|[ug]\\[(#[0-9A-Fa-f]{6}|[0-9A-Fa-f])(,(#[0-9A-Fa-f]{6}|[0-9A-Fa-f]))*])(&[k-o])*$");
-        Matcher matcher = pattern.matcher(customColourString);
-
-        return matcher.matches();
+        return GeneralUtils.COLOUR_PATTERN.matcher(customColourString).matches();
     }
 
 }
