@@ -74,6 +74,9 @@ permissions:
       chatcolor.color.e: true
       chatcolor.color.f: true
 
+  chatcolor.special:
+    description: Allows the player to use gradients and rainbows.
+
   chatcolor.modifier.k:
     description: Allows the player to use the obfuscated modifier.
   chatcolor.modifier.l:
@@ -105,6 +108,9 @@ permissions:
 
   chatcolor.admin:
     description: Allows the player to use ChatColor admin commands.
+
+  chatcolor.clear:
+    description: Allows the player to clear their chat colour.
 
   chatcolor.custom.*:
     description: Allows the player to use all custom colors.

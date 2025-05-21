@@ -53,6 +53,7 @@ public class ChatColor extends JavaPlugin {
     private Messages M;
 
     private PlayerJoinListener joinListener;
+    private ChatListener chatListener;
     private YamlConfiguration config;
 
     private final ConsoleCommandSender console = Bukkit.getConsoleSender();
@@ -74,8 +75,8 @@ public class ChatColor extends JavaPlugin {
 
         // Setup objects. commands & listeners.
         setupObjects();
-        setupCommands();
         setupListeners();
+        setupCommands();
 
         //Checking if Metrics is allowed for this plugin
         boolean metrics = getConfig().getBoolean("stats");
@@ -202,7 +203,7 @@ public class ChatColor extends JavaPlugin {
     private void setupCommands() {
         ChatColorCommand command = new ChatColorCommand(
                 M, generalUtils, confirmationsManager, configsManager, handlersManager, guiManager,
-                customColoursManager, groupColoursManager, playerDataStore
+                customColoursManager, groupColoursManager, playerDataStore, chatListener
         );
         ConfirmHandler confirmHandler = new ConfirmHandler(
                 M, confirmationsManager, configsManager, customColoursManager, guiManager, generalUtils,
@@ -217,7 +218,8 @@ public class ChatColor extends JavaPlugin {
 
     private void setupListeners() {
         EventPriority chatPriority = EventPriority.valueOf(config.getString("settings.event-priority"));
-        ChatListener chatListener = new ChatListener(configsManager, generalUtils, groupColoursManager, playerDataStore);
+        chatListener = new ChatListener(configsManager, generalUtils, groupColoursManager, playerDataStore);
+
         EventExecutor executor = (listener, event) -> {
             if (listener instanceof ChatListener && event instanceof AsyncPlayerChatEvent) {
                 ((ChatListener) listener).onEvent((AsyncPlayerChatEvent) event);
