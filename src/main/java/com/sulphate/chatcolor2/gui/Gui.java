@@ -29,7 +29,7 @@ public class Gui {
 
     private static ItemStackTemplate fillerItemTemplate = new ItemStackTemplate(
             Material.GRAY_STAINED_GLASS_PANE,
-            "&r",
+            "&f",
             null,
             null
     );
@@ -469,7 +469,7 @@ public class Gui {
     public static void setFillerItemMaterial(Material material) {
         fillerItemTemplate = new ItemStackTemplate(
                 material,
-                "&r",
+                "&f",
                 null,
                 null
         );
